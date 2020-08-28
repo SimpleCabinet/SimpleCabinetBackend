@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+group 'org.example'
+version '1.0-SNAPSHOT'
+def mainClassName = "pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule"
+
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    mavenCentral()
+}
+jar {
+    manifest.attributes("Module-Main-Class": mainClassName)
+}
+dependencies {
+    implementation "pro.gravit.launcher:launcher-core:5.1.8-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.1.8-SNAPSHOT"
+    implementation "pro.gravit.launcher:launchserver-api:5.1.8-SNAPSHOT"
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.mindrot:jbcrypt:0.4'
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
+    implementation group: 'io.netty', name: 'netty-all', version: '4.1.48.Final'
+}
