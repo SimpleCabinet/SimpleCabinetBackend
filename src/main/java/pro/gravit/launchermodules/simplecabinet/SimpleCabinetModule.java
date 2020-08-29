@@ -21,10 +21,12 @@ import pro.gravit.launchserver.socket.WebSocketService;
 import pro.gravit.utils.Version;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class SimpleCabinetModule extends LauncherModule {
     public JsonConfigurable<SimpleCabinetConfig> configurable;
+    public SimpleCabinetConfig config;
     private LaunchServer server;
 
     public SimpleCabinetModule() {
@@ -58,11 +60,28 @@ public class SimpleCabinetModule extends LauncherModule {
 
     public void initPhase(LaunchServerInitPhase initPhase)
     {
-        configurable = modulesConfigManager.getConfigurable(SimpleCabinetConfig.class, moduleInfo.name);
+        SimpleCabinetModule module = this;
+        configurable = new JsonConfigurable<SimpleCabinetConfig>(SimpleCabinetConfig.class, modulesConfigManager.getModuleConfig(moduleInfo.name)) {
+            @Override
+            public SimpleCabinetConfig getConfig() {
+                return module.config;
+            }
+
+            @Override
+            public void setConfig(SimpleCabinetConfig config) {
+                module.config = config;
+                module.config.init();
+            }
+
+            @Override
+            public SimpleCabinetConfig getDefaultConfig() {
+                return SimpleCabinetConfig.getDefault();
+            }
+        };
         try {
             configurable.loadConfig();
         } catch (IOException e) {
-            LogHelper.error(e);
+            if(!(e instanceof FileNotFoundException)) LogHelper.error(e);
             configurable.setConfig(configurable.getDefaultConfig());
         }
         server.commandHandler.registerCommand("cabinet", new CabinetCommand(server));

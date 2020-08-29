@@ -3,6 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.dao;
 import org.hibernate.*;
 import pro.gravit.launchermodules.simplecabinet.model.HardwareId;
 import pro.gravit.launchermodules.simplecabinet.model.User;
+import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
 import pro.gravit.launchserver.dao.UserDAO;
 
 import javax.persistence.EntityManager;
@@ -78,6 +79,18 @@ public class SimpleCabinetUserDAO implements UserDAO {
         }
     }
 
+    public List<UserGroup> fetchGroups(User user)
+    {
+        try (Session session = factory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.lock(user, LockMode.NONE);
+            List<UserGroup> groups = user.getGroups();
+            Hibernate.initialize(groups);
+            transaction.commit();
+            return groups;
+        }
+    }
+
     public void save(pro.gravit.launchserver.dao.User user) {
         if(!(user instanceof User)) throw new IllegalArgumentException("User type unsupported");
         try (Session session = factory.openSession()) {
@@ -98,6 +111,30 @@ public class SimpleCabinetUserDAO implements UserDAO {
 
     public void delete(pro.gravit.launchserver.dao.User user) {
         if(!(user instanceof User)) throw new IllegalArgumentException("User type unsupported");
+        try (Session session = factory.openSession()) {
+            Transaction tx1 = session.beginTransaction();
+            session.delete(user);
+            tx1.commit();
+        }
+    }
+
+    public void save(UserGroup user) {
+        try (Session session = factory.openSession()) {
+            Transaction tx1 = session.beginTransaction();
+            session.save(user);
+            tx1.commit();
+        }
+    }
+
+    public void update(UserGroup user) {
+        try (Session session = factory.openSession()) {
+            Transaction tx1 = session.beginTransaction();
+            session.update(user);
+            tx1.commit();
+        }
+    }
+
+    public void delete(UserGroup user) {
         try (Session session = factory.openSession()) {
             Transaction tx1 = session.beginTransaction();
             session.delete(user);

@@ -29,7 +29,6 @@ import java.time.Instant;
 public class CabinetAuthProvider extends AuthProvider {
     private transient LaunchServer server;
     private transient SimpleCabinetModule module;
-    private transient SimpleCabinetUserDAO userDAO;
     @Override
     public void init(LaunchServer srv) {
         this.server = srv;
@@ -83,6 +82,7 @@ public class CabinetAuthProvider extends AuthProvider {
                 throw new AuthException("Password wrong");
             }
         }
+        ((SimpleCabinetUserDAO)server.config.dao.userDAO).fetchGroups(user);
         return new AuthProviderDAOResult(user.getUsername(), SecurityHelper.randomStringToken(), user.getPermissions(), user);
     }
 

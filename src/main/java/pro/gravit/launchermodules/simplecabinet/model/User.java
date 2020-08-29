@@ -5,6 +5,7 @@ import pro.gravit.launcher.ClientPermissions;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 @Entity(name = "User")
 @Table(name = "users")
@@ -73,6 +74,14 @@ public class User implements pro.gravit.launchserver.dao.User {
         this.totpSecretKey = totpSecretKey;
     }
 
+    public List<UserGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<UserGroup> groups) {
+        this.groups = groups;
+    }
+
     public enum HashType
     {
         BCRYPT
@@ -118,6 +127,8 @@ public class User implements pro.gravit.launchserver.dao.User {
     private String status;
 
     private byte[] totpSecretKey;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserGroup>  groups;
     @Override
     public String getUsername() {
         return username;

@@ -1,5 +1,6 @@
 package pro.gravit.launchermodules.simplecabinet.commands;
 
+import pro.gravit.launchermodules.simplecabinet.commands.cabinet.GroupCommand;
 import pro.gravit.launchermodules.simplecabinet.commands.cabinet.MigratorCommand;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.command.Command;
@@ -12,6 +13,7 @@ public class CabinetCommand extends Command {
     public CabinetCommand(LaunchServer server) {
         super(new HashMap<>(), server);
         childCommands.put("migrator", new MigratorCommand(server));
+        childCommands.put("group", new GroupCommand(server));
     }
 
 

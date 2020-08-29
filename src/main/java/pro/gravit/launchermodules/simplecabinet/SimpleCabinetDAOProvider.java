@@ -9,6 +9,7 @@ import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.model.HardwareId;
 import pro.gravit.launchermodules.simplecabinet.model.HardwareIdLogEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
+import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
 import pro.gravit.launchermodules.simplecabinet.model.converter.UUIDConverter;
 import pro.gravit.launchserver.dao.UserDAO;
 import pro.gravit.launchserver.dao.provider.HibernateDaoProvider;
@@ -31,6 +32,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(HardwareId.class);
         configuration.addAnnotatedClass(HardwareIdLogEntity.class);
+        configuration.addAnnotatedClass(UserGroup.class);
         if(stringUUID)
         {
             configuration.addAnnotatedClass(UUIDConverter.class);
@@ -38,7 +40,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         try {
             Thread.currentThread().getContextClassLoader().loadClass(User.class.getName());
         } catch (ClassNotFoundException e) {
-            LogHelper.warning("ClassLoading bug detected. Your LaunchServer <5.1.7");
+            LogHelper.warning("ClassLoading bug detected. Your LaunchServer <5.1.8");
             Thread.currentThread().setContextClassLoader(SimpleCabinetUserDAO.class.getClassLoader());
         }
     }

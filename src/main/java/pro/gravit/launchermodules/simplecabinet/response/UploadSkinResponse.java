@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.UploadSkinRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetConfig;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
 import pro.gravit.utils.helper.IOHelper;
@@ -43,15 +44,11 @@ public class UploadSkinResponse extends SimpleResponse {
         }
         SimpleCabinetConfig.SkinSizeConfig sizeConfig = null;
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
-        switch (skinType)
+        sizeConfig = module.configurable.getConfig().findSkinSizeConfig((User) client.daoObject, skinType);
+        if(sizeConfig == null)
         {
-
-            case SKIN:
-                sizeConfig = module.configurable.getConfig().maxSkin;
-                break;
-            case CLOAK:
-                sizeConfig = module.configurable.getConfig().maxCloak;
-                break;
+            sendError("Permissions denied");
+            return;
         }
         if(data.length > sizeConfig.maxBytes)
         {
