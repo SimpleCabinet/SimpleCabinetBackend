@@ -1,5 +1,8 @@
 package pro.gravit.launchermodules.simplecabinet;
 
+import com.eatthepath.otp.HmacOneTimePasswordGenerator;
+import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
+import org.apache.commons.codec.binary.Base32;
 import org.hibernate.cfg.Configuration;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetHwidDAO;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
@@ -13,6 +16,10 @@ import pro.gravit.utils.command.Command;
 import pro.gravit.utils.command.SubCommand;
 import pro.gravit.utils.helper.LogHelper;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
@@ -66,6 +73,56 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
                 user.setUuid(UUID.randomUUID());
                 //Save
                 dao.save(user);
+            }
+        });
+        commands.put("enable2fa", new SubCommand() {
+            @Override
+            public void invoke(String... args) throws Exception {
+                verifyArgs(args, 1);
+                User user = (User) userDAO.findByUsername(args[0]);
+                if(user == null) {
+                    throw new IllegalArgumentException("User not found");
+                }
+                final Key key;
+                {
+                    final KeyGenerator keyGenerator = KeyGenerator.getInstance(HmacOneTimePasswordGenerator.HOTP_HMAC_ALGORITHM);
+
+                    // SHA-1 and SHA-256 prefer 64-byte (512-bit) keys; SHA512 prefers 128-byte (1024-bit) keys
+                    keyGenerator.init(128);
+
+                    key = keyGenerator.generateKey();
+                }
+                byte[] secretKey = key.getEncoded();
+                user.setTotpSecretKey(secretKey);
+                userDAO.update(user);
+                LogHelper.info("User 2FA Key now: %s", new Base32().encodeAsString(secretKey));
+            }
+        });
+        commands.put("disable2fa", new SubCommand() {
+            @Override
+            public void invoke(String... args) throws Exception {
+                verifyArgs(args, 1);
+                User user = (User) userDAO.findByUsername(args[0]);
+                if(user == null) {
+                    throw new IllegalArgumentException("User not found");
+                }
+                user.setTotpSecretKey(null);
+                userDAO.update(user);
+                LogHelper.info("User 2FA disabled");
+            }
+        });
+        commands.put("check2fa", new SubCommand() {
+            @Override
+            public void invoke(String... args) throws Exception {
+                verifyArgs(args, 1);
+                User user = (User) userDAO.findByUsername(args[0]);
+                if(user == null) {
+                    throw new IllegalArgumentException("User not found");
+                }
+                TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
+                SecretKeySpec signingKey = new SecretKeySpec(user.getTotpSecretKey(), totp.getAlgorithm());
+                int result = totp.generateOneTimePassword(signingKey, Instant.now());
+                LogHelper.info("Generated 2FA key: %d", result);
             }
         });
         return commands;

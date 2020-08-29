@@ -8,10 +8,12 @@ import pro.gravit.launcher.modules.LauncherModule;
 import pro.gravit.launcher.modules.LauncherModuleInfo;
 import pro.gravit.launcher.modules.events.PreConfigPhase;
 import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
+import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetHWIDProvider;
 import pro.gravit.launchermodules.simplecabinet.response.*;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.auth.protect.hwid.HWIDProvider;
+import pro.gravit.launchserver.auth.provider.AuthProvider;
 import pro.gravit.launchserver.dao.provider.DaoProvider;
 import pro.gravit.launchserver.modules.events.LaunchServerInitPhase;
 import pro.gravit.launchserver.modules.events.NewLaunchServerInstanceEvent;
@@ -40,6 +42,7 @@ public class SimpleCabinetModule extends LauncherModule {
     {
         DaoProvider.providers.register("simplecabinet", SimpleCabinetDAOProvider.class);
         HWIDProvider.providers.register("cabinet", CabinetHWIDProvider.class);
+        AuthProvider.providers.register("cabinet", CabinetAuthProvider.class);
         WebSocketService.providers.register("lkExtendedInfo", ExtendedInfoResponse.class);
         WebSocketService.providers.register("lkUploadSkin", UploadSkinResponse.class);
         WebSocketService.providers.register("lkChangePassword", ChangePasswordResponse.class);

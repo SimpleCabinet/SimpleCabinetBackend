@@ -23,6 +23,8 @@ dependencies {
     implementation "pro.gravit.launcher:launchserver-api:5.1.8-SNAPSHOT"
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.mindrot:jbcrypt:0.4'
+    implementation 'com.eatthepath:java-otp:0.2.0'
+    implementation 'commons-codec:commons-codec:1.14'
     implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
     implementation group: 'io.netty', name: 'netty-all', version: '4.1.48.Final'
 }

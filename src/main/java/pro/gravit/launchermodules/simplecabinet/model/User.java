@@ -65,6 +65,14 @@ public class User implements pro.gravit.launchserver.dao.User {
         this.hardwareId = hardwareId;
     }
 
+    public byte[] getTotpSecretKey() {
+        return totpSecretKey;
+    }
+
+    public void setTotpSecretKey(byte[] totpSecretKey) {
+        this.totpSecretKey = totpSecretKey;
+    }
+
     public enum HashType
     {
         BCRYPT
@@ -108,6 +116,8 @@ public class User implements pro.gravit.launchserver.dao.User {
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
     private String status;
+
+    private byte[] totpSecretKey;
     @Override
     public String getUsername() {
         return username;
