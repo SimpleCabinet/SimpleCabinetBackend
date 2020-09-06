@@ -6,6 +6,8 @@ import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public abstract class AbstractUserResponse extends SimpleResponse {
@@ -61,5 +63,5 @@ public abstract class AbstractUserResponse extends SimpleResponse {
     {
         return client.permissions != null && client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN);
     }
-    public abstract void executeByUser(ChannelHandlerContext channelHandlerContext,  User user, boolean self, Client client);
+    public abstract void executeByUser(ChannelHandlerContext channelHandlerContext,  User user, boolean self, Client client) throws Exception;
 }

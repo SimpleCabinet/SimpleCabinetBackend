@@ -51,6 +51,7 @@ public class SimpleCabinetModule extends LauncherModule {
         WebSocketService.providers.register("lkUpdateExtendedInfo", UpdateExtendedInfoResponse.class);
         WebSocketService.providers.register("lkChangeUsername", ChangeUsernameResponse.class);
         WebSocketService.providers.register("lkRegister", RegisterResponse.class);
+        WebSocketService.providers.register("lkTwoFactorEnable", TwoFactorEnableResponse.class);
     }
 
     public void getLaunchServerEvent(NewLaunchServerInstanceEvent event)

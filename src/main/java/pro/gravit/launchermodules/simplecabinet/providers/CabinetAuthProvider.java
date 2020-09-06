@@ -23,7 +23,9 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
 public class CabinetAuthProvider extends AuthProvider {
@@ -38,6 +40,10 @@ public class CabinetAuthProvider extends AuthProvider {
     @Override
     public AuthProviderResult auth(String login, AuthRequest.AuthPasswordInterface password, String ip) throws Exception {
         User user = (User) server.config.dao.userDAO.findByUsername(login);
+        if(user == null)
+        {
+            throw new AuthException("User or password incorrect");
+        }
         byte[] keyBytes = user.getTotpSecretKey();
         if(keyBytes != null)
         {
@@ -55,11 +61,9 @@ public class CabinetAuthProvider extends AuthProvider {
             AuthTOTPPassword secondPassword = (AuthTOTPPassword) auth2FAPassword.secondPassword;
             if(!user.verifyPassword(firstPassword.password))
             {
-                throw new AuthException("Password wrong");
+                throw new AuthException("User or password incorrect");
             }
-            TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
-            SecretKeySpec signingKey = new SecretKeySpec(keyBytes, totp.getAlgorithm());
-            int result = totp.generateOneTimePassword(signingKey, Instant.now());
+            int result = generateTotp(keyBytes, Instant.now());
             try {
                 int totpPassword = Integer.parseInt(secondPassword.totp);
                 if(totpPassword != result)
@@ -79,11 +83,18 @@ public class CabinetAuthProvider extends AuthProvider {
             }
             if(!user.verifyPassword(((AuthPlainPassword) password).password))
             {
-                throw new AuthException("Password wrong");
+                throw new AuthException("User or password incorrect");
             }
         }
         ((SimpleCabinetUserDAO)server.config.dao.userDAO).fetchGroups(user);
         return new AuthProviderDAOResult(user.getUsername(), SecurityHelper.randomStringToken(), user.getPermissions(), user);
+    }
+
+    public static int generateTotp(byte[] keyBytes, Instant time) throws InvalidKeyException, NoSuchAlgorithmException {
+
+        TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
+        SecretKeySpec signingKey = new SecretKeySpec(keyBytes, totp.getAlgorithm());
+        return totp.generateOneTimePassword(signingKey, time);
     }
 
     @Override
