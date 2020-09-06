@@ -3,6 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.model;
 import org.mindrot.jbcrypt.BCrypt;
 import pro.gravit.launcher.ClientPermissions;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
+import pro.gravit.launchermodules.simplecabinet.utils.PasswordHelper;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,6 +11,9 @@ import java.util.UUID;
 @Entity(name = "User")
 @Table(name = "users")
 public class User implements pro.gravit.launchserver.dao.User {
+
+    public static HashType DEFAULT_PASSWORD_HASH = HashType.BCRYPT;
+
     public String getEmail() {
         return email;
     }
@@ -84,7 +88,11 @@ public class User implements pro.gravit.launchserver.dao.User {
 
     public enum HashType
     {
-        BCRYPT
+        BCRYPT,
+        DOUBLEMD5,
+        MD5,
+        SHA256,
+        AUTHMESHA256
     }
     public enum Gender
     {
@@ -147,17 +155,18 @@ public class User implements pro.gravit.launchserver.dao.User {
 
     @Override
     public boolean verifyPassword(String password) {
-        if (hashType == HashType.BCRYPT) {
-            return BCrypt.checkpw(password, "$2a" + this.password.substring(3));
-        }
-        return false;
+        return PasswordHelper.verifyPassword(hashType, this.password, password);
     }
 
     @Override
     public void setPassword(String password) {
-        if(hashType == HashType.BCRYPT) {
-            this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        String newPassword = PasswordHelper.hashPassword(hashType, password);
+        if(newPassword == null)
+        {
+            this.hashType = DEFAULT_PASSWORD_HASH;
+            newPassword = PasswordHelper.hashPassword(hashType, password);
         }
+        this.password = newPassword;
     }
     public void setRawPassword(String password)
     {
