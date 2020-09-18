@@ -11,6 +11,7 @@ import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetHWIDProvider;
 import pro.gravit.launchermodules.simplecabinet.response.*;
+import pro.gravit.launchermodules.simplecabinet.severlet.UnitPaySeverlet;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.auth.protect.hwid.HWIDProvider;
 import pro.gravit.launchserver.auth.provider.AuthProvider;
@@ -18,6 +19,7 @@ import pro.gravit.launchserver.dao.provider.DaoProvider;
 import pro.gravit.launchserver.modules.events.LaunchServerInitPhase;
 import pro.gravit.launchserver.modules.events.NewLaunchServerInstanceEvent;
 import pro.gravit.launchserver.socket.WebSocketService;
+import pro.gravit.launchserver.socket.handlers.NettyWebAPIHandler;
 import pro.gravit.utils.Version;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -52,6 +54,7 @@ public class SimpleCabinetModule extends LauncherModule {
         WebSocketService.providers.register("lkChangeUsername", ChangeUsernameResponse.class);
         WebSocketService.providers.register("lkRegister", RegisterResponse.class);
         WebSocketService.providers.register("lkTwoFactorEnable", TwoFactorEnableResponse.class);
+        NettyWebAPIHandler.addNewSeverlet("lk/unitpay", new UnitPaySeverlet(this));
     }
 
     public void getLaunchServerEvent(NewLaunchServerInstanceEvent event)

@@ -57,8 +57,24 @@ public class SimpleCabinetConfig {
             this.priority = priority;
         }
     }
+    public static class MailSenderConfig {
+
+    }
+    public static class PaymentUnitPayConfig {
+        public String secretKey;
+        public int projectId;
+        public String resultUrl;
+        public boolean testMode;
+        public String login;
+    }
+    public static class PaymentsConfig {
+        public PaymentUnitPayConfig unitPay;
+    }
     public List<UploadSkinEntity> uploads = new ArrayList<>();
     public List<GroupEntity> groups = new ArrayList<>();
+
+    public PaymentsConfig payments;
+
     //public SkinSizeConfig maxSkin = new SkinSizeConfig(1024, 512, 1024 * 1024, "updates/skins/%s.png"); // 1MB
     //public SkinSizeConfig maxCloak = new SkinSizeConfig(512, 256, 256 * 1024, "updates/cloaks/%s.png"); // 256Kb
     public void init()
@@ -82,6 +98,10 @@ public class SimpleCabinetConfig {
         config.groups.add(new GroupEntity("HD", 0, 1));
         config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(1024, 1024, 1024 * 1024, "updates/skins/%s.png"), "HD", UploadSkinResponse.SkinType.SKIN));
         config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(512, 512, 512 * 1024, "updates/cloaks/%s.png"), "HD", UploadSkinResponse.SkinType.CLOAK));
+
+        config.payments = new PaymentsConfig();
+        config.payments.unitPay = new PaymentUnitPayConfig();
+        config.payments.unitPay.secretKey = "yourSecretKey";
         return config;
     }
     public GroupEntity findGroupByName(String name)

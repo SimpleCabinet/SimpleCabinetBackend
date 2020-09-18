@@ -53,11 +53,19 @@ public class ExtendedInfoResponse extends SimpleResponse {
             event.donateMoney = user.getDonateMoney();
             event.economyMoney = user.getEconomyMoney();
             event.extendedMoney = user.getExtendedMoney();
+            event.privateUserZone = fillPrivateUserZone(user);
         }
         event.gender = user.getGender();
         event.status = user.getStatus();
         event.isBanned = permissions.isFlag(ClientPermissions.FlagConsts.BANNED);
         event.groups = ExtendedInfoRequestEvent.ExtendedGroup.getGroupsByClientPermissions(user.getPermissions());
         sendResult(event);
+    }
+
+    public static ExtendedInfoRequestEvent.PrivateUserZone fillPrivateUserZone(User user)
+    {
+        ExtendedInfoRequestEvent.PrivateUserZone privateUserZone = new ExtendedInfoRequestEvent.PrivateUserZone();
+        privateUserZone.isEnabled2FA = (user.getTotpSecretKey() != null);
+        return privateUserZone;
     }
 }

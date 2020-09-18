@@ -6,6 +6,7 @@ import javax.persistence.*;
 @Table(name = "hwids_log")
 public class HardwareIdLogEntity {
     @Id
+    @GeneratedValue
     private long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="hwid_id")

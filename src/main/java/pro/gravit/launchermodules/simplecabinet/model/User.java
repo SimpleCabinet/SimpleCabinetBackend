@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 @Entity(name = "User")
 @Table(name = "users")
+@Cacheable
 public class User implements pro.gravit.launchserver.dao.User {
 
     public static HashType DEFAULT_PASSWORD_HASH = HashType.BCRYPT;

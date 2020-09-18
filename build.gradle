@@ -25,6 +25,7 @@ dependencies {
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'com.eatthepath:java-otp:0.2.0'
     implementation 'commons-codec:commons-codec:1.14'
+    implementation 'javax.mail:javax.mail-api:1.6.2'
     implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.12.Final'
     implementation group: 'io.netty', name: 'netty-all', version: '4.1.48.Final'
 }

@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Table(name = "hwids")
 public class HardwareId {
     @Id
+    @GeneratedValue
     private long id;
 
     private int bitness;

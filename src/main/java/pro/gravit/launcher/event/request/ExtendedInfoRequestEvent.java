@@ -55,8 +55,12 @@ public class ExtendedInfoRequestEvent extends RequestEvent {
             return groups;
         }
     }
+    public static class PrivateUserZone {
+        public boolean isEnabled2FA;
+    }
     //Group info
     public List<ExtendedGroup> groups;
+    public PrivateUserZone privateUserZone;
     @Override
     public String getType() {
         return "lkExtendedInfo";

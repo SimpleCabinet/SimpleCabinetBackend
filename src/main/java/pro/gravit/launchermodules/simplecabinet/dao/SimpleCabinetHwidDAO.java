@@ -42,11 +42,15 @@ public class SimpleCabinetHwidDAO {
     {
         try(StatelessSession session = factory.openStatelessSession())
         {
+            session.setJdbcBatchSize(256);
             CriteriaBuilder cb = factory.getCriteriaBuilder();
             CriteriaQuery<HardwareId> personCriteria = cb.createQuery(HardwareId.class);
             Root<HardwareId> rootUser = personCriteria.from(HardwareId.class);
             personCriteria.select(rootUser);
-            ScrollableResults ret = session.createQuery(personCriteria).scroll(ScrollMode.FORWARD_ONLY);
+            ScrollableResults ret = session.createQuery(personCriteria)
+                    .setReadOnly(true)
+
+                    .scroll(ScrollMode.FORWARD_ONLY);
             while( ret.next() )
             {
                 HardwareId id = (HardwareId) ret.get(0);
