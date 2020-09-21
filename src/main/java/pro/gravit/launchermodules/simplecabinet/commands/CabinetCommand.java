@@ -1,8 +1,6 @@
 package pro.gravit.launchermodules.simplecabinet.commands;
 
-import pro.gravit.launchermodules.simplecabinet.commands.cabinet.GroupCommand;
-import pro.gravit.launchermodules.simplecabinet.commands.cabinet.MigratorCommand;
-import pro.gravit.launchermodules.simplecabinet.commands.cabinet.TestCommand;
+import pro.gravit.launchermodules.simplecabinet.commands.cabinet.*;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.command.Command;
 import pro.gravit.utils.helper.LogHelper;
@@ -16,6 +14,8 @@ public class CabinetCommand extends Command {
         childCommands.put("migrator", new MigratorCommand(server));
         childCommands.put("group", new GroupCommand(server));
         childCommands.put("test", new TestCommand(server));
+        childCommands.put("check", new CheckCommand(server));
+        childCommands.put("helper", new HelperCommand(server));
     }
 
 
