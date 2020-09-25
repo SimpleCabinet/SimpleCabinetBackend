@@ -51,6 +51,10 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         return new SimpleCabinetUserDAO(sessionFactory);
     }
 
+    public boolean isOpen() {
+        return sessionFactory != null && sessionFactory.isOpen();
+    }
+
     @Override
     public Map<String, Command> getCommands() {
         Map<String, Command> commands = super.getCommands();
