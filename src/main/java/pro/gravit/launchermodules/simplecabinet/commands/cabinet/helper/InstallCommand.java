@@ -50,8 +50,8 @@ public class InstallCommand extends Command {
                     dialect = "org.hibernate.dialect.MariaDB103Dialect";
                 }
                 else {
-                    System.out.print("Press your dialect(org.hibernate.dialect.MariaDB103Dialect, org.hibernate.dialect.MySQL8Dialect or other): ");
-                    dialect = server.commandHandler.readLine();
+                    System.out.print("Press your dialect(MariaDB103Dialect, MySQL8Dialect or other): ");
+                    dialect = "org.hibernate.dialect.".concat(server.commandHandler.readLine());
                     Class.forName(dialect);
                 }
                 break;
@@ -111,7 +111,7 @@ public class InstallCommand extends Command {
                 System.getProperties().setProperty("hibernate.hbm2ddl.auto", "update");
                 LogHelper.info("Aluriel: Okay, if possible, the data will be saved");
             }
-            //daoProvider.init(server);
+            daoProvider.init(server);
             LogHelper.info("Wait 2 seconds...");
             Thread.sleep(2000);
             if(daoProvider.isOpen()) LogHelper.info("Successful initialization!");

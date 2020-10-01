@@ -126,6 +126,7 @@ public class User implements pro.gravit.launchserver.dao.User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hwid_id")
     private HardwareId hardwareId;
+
     //Economic info
     private long economyMoney;
     private double donateMoney;
@@ -138,6 +139,8 @@ public class User implements pro.gravit.launchserver.dao.User {
     private byte[] totpSecretKey;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserGroup>  groups;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PaymentId>  payments;
     @Override
     public String getUsername() {
         return username;

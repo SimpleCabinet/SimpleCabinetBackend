@@ -1,8 +1,6 @@
 package pro.gravit.launchermodules.simplecabinet;
 
 import pro.gravit.launcher.config.JsonConfigurable;
-import pro.gravit.launcher.config.SimpleConfigurable;
-import pro.gravit.launcher.event.request.ExtendedInfoRequestEvent;
 import pro.gravit.launcher.modules.LauncherInitContext;
 import pro.gravit.launcher.modules.LauncherModule;
 import pro.gravit.launcher.modules.LauncherModuleInfo;
@@ -11,6 +9,9 @@ import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetHWIDProvider;
 import pro.gravit.launchermodules.simplecabinet.response.*;
+import pro.gravit.launchermodules.simplecabinet.services.PaymentService;
+import pro.gravit.launchermodules.simplecabinet.services.SyncService;
+import pro.gravit.launchermodules.simplecabinet.severlet.RobokassaSeverlet;
 import pro.gravit.launchermodules.simplecabinet.severlet.UnitPaySeverlet;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.auth.protect.hwid.HWIDProvider;
@@ -29,6 +30,9 @@ import java.io.IOException;
 public class SimpleCabinetModule extends LauncherModule {
     public JsonConfigurable<SimpleCabinetConfig> configurable;
     public SimpleCabinetConfig config;
+    public SimpleCabinetMailSender mail;
+    public PaymentService paymentService;
+    public SyncService syncService;
     private LaunchServer server;
 
     public SimpleCabinetModule() {
@@ -54,7 +58,9 @@ public class SimpleCabinetModule extends LauncherModule {
         WebSocketService.providers.register("lkChangeUsername", ChangeUsernameResponse.class);
         WebSocketService.providers.register("lkRegister", RegisterResponse.class);
         WebSocketService.providers.register("lkTwoFactorEnable", TwoFactorEnableResponse.class);
+        WebSocketService.providers.register("lkInitPayment", InitPaymentResponse.class);
         NettyWebAPIHandler.addNewSeverlet("lk/unitpay", new UnitPaySeverlet(this));
+        NettyWebAPIHandler.addNewSeverlet("lk/robokassa", new RobokassaSeverlet(this));
     }
 
     public void getLaunchServerEvent(NewLaunchServerInstanceEvent event)
@@ -88,6 +94,9 @@ public class SimpleCabinetModule extends LauncherModule {
             if(!(e instanceof FileNotFoundException)) LogHelper.error(e);
             configurable.setConfig(configurable.getDefaultConfig());
         }
+        this.mail = new SimpleCabinetMailSender(this);
+        this.paymentService = new PaymentService(this, server);
+        this.syncService = new SyncService(this, server);
         server.commandHandler.registerCommand("cabinet", new CabinetCommand(server));
     }
 }

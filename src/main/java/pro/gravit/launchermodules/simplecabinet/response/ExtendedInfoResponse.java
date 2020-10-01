@@ -46,9 +46,15 @@ public class ExtendedInfoResponse extends SimpleResponse {
             sendError("User not found");
             return;
         }
+        ExtendedInfoRequestEvent event;
+        event = fetchExtendedInfo(user, client.isAuth && client.username.equals(user.getUsername()), ( client.permissions != null && client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN)));
+        sendResult(event);
+    }
+
+    public static ExtendedInfoRequestEvent fetchExtendedInfo(User user, boolean self, boolean admin) {
+        ClientPermissions permissions = user.getPermissions();
         ExtendedInfoRequestEvent event = new ExtendedInfoRequestEvent();
-        if(client.isAuth && client.username.equals(user.getUsername()) || ( client.permissions != null && client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN)))
-        {
+        if(self || admin) {
             event.email = user.getEmail();
             event.donateMoney = user.getDonateMoney();
             event.economyMoney = user.getEconomyMoney();
@@ -59,7 +65,7 @@ public class ExtendedInfoResponse extends SimpleResponse {
         event.status = user.getStatus();
         event.isBanned = permissions.isFlag(ClientPermissions.FlagConsts.BANNED);
         event.groups = ExtendedInfoRequestEvent.ExtendedGroup.getGroupsByClientPermissions(user.getPermissions());
-        sendResult(event);
+        return event;
     }
 
     public static ExtendedInfoRequestEvent.PrivateUserZone fillPrivateUserZone(User user)

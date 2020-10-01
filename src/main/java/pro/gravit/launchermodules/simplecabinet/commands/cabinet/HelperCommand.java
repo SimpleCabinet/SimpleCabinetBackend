@@ -2,6 +2,7 @@ package pro.gravit.launchermodules.simplecabinet.commands.cabinet;
 
 import pro.gravit.launchermodules.simplecabinet.commands.cabinet.helper.AddServerCommand;
 import pro.gravit.launchermodules.simplecabinet.commands.cabinet.helper.InstallCommand;
+import pro.gravit.launchermodules.simplecabinet.commands.cabinet.helper.SendEmailCommand;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.command.Command;
 
@@ -10,6 +11,7 @@ public class HelperCommand extends Command {
         super(server);
         childCommands.put("addserver", new AddServerCommand(server));
         childCommands.put("install", new InstallCommand(server));
+        childCommands.put("sendemail", new SendEmailCommand(server));
     }
 
     @Override

@@ -57,9 +57,6 @@ public class SimpleCabinetConfig {
             this.priority = priority;
         }
     }
-    public static class MailSenderConfig {
-
-    }
     public static class PaymentUnitPayConfig {
         public String secretKey;
         public int projectId;
@@ -67,13 +64,29 @@ public class SimpleCabinetConfig {
         public boolean testMode;
         public String login;
     }
+    public static class PaymentRobokassaConfig {
+        public String merchantId;
+        public String password1;
+        public String password2;
+        public boolean test;
+    }
     public static class PaymentsConfig {
         public PaymentUnitPayConfig unitPay;
+        public PaymentRobokassaConfig robokassa;
+    }
+    public static class MailSenderConfig {
+        public String host;
+        public int port;
+        public boolean auth;
+        public String username;
+        public String password;
+        public String from;
     }
     public List<UploadSkinEntity> uploads = new ArrayList<>();
     public List<GroupEntity> groups = new ArrayList<>();
 
     public PaymentsConfig payments;
+    public MailSenderConfig mail;
 
     //public SkinSizeConfig maxSkin = new SkinSizeConfig(1024, 512, 1024 * 1024, "updates/skins/%s.png"); // 1MB
     //public SkinSizeConfig maxCloak = new SkinSizeConfig(512, 256, 256 * 1024, "updates/cloaks/%s.png"); // 256Kb
@@ -102,6 +115,19 @@ public class SimpleCabinetConfig {
         config.payments = new PaymentsConfig();
         config.payments.unitPay = new PaymentUnitPayConfig();
         config.payments.unitPay.secretKey = "yourSecretKey";
+        config.payments.robokassa = new PaymentRobokassaConfig();
+        config.payments.robokassa.merchantId = "yourMerchantId";
+        config.payments.robokassa.password1 = "yourPassword1";
+        config.payments.robokassa.password2 = "yourPassword2";
+        config.payments.robokassa.test = true;
+
+        config.mail = new MailSenderConfig();
+        config.mail.host = "smtp.yandex.com";
+        config.mail.port = 465;
+        config.mail.auth = true;
+        config.mail.from = "noreply@example.com";
+        config.mail.username = "noreply@example.com";
+        config.mail.password = "yourpassword";
         return config;
     }
     public GroupEntity findGroupByName(String name)
