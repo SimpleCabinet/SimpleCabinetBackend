@@ -2,8 +2,8 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 group 'org.example'
 version '1.0-SNAPSHOT'
 def mainClassName = "pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule"
@@ -18,9 +18,9 @@ jar {
     manifest.attributes("Module-Main-Class": mainClassName)
 }
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.1.8-SNAPSHOT"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.1.8-SNAPSHOT"
-    implementation "pro.gravit.launcher:launchserver-api:5.1.8-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-core:5.1.8"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.1.8"
+    implementation "pro.gravit.launcher:launchserver-api:5.1.8"
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'com.eatthepath:java-otp:0.2.0'

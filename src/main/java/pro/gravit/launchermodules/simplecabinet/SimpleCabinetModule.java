@@ -4,6 +4,7 @@ import pro.gravit.launcher.config.JsonConfigurable;
 import pro.gravit.launcher.modules.LauncherInitContext;
 import pro.gravit.launcher.modules.LauncherModule;
 import pro.gravit.launcher.modules.LauncherModuleInfo;
+import pro.gravit.launcher.modules.events.ClosePhase;
 import pro.gravit.launcher.modules.events.PreConfigPhase;
 import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
@@ -22,10 +23,14 @@ import pro.gravit.launchserver.modules.events.NewLaunchServerInstanceEvent;
 import pro.gravit.launchserver.socket.WebSocketService;
 import pro.gravit.launchserver.socket.handlers.NettyWebAPIHandler;
 import pro.gravit.utils.Version;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class SimpleCabinetModule extends LauncherModule {
     public JsonConfigurable<SimpleCabinetConfig> configurable;
@@ -33,6 +38,8 @@ public class SimpleCabinetModule extends LauncherModule {
     public SimpleCabinetMailSender mail;
     public PaymentService paymentService;
     public SyncService syncService;
+    public ScheduledExecutorService scheduler;
+    public ExecutorService workers;
     private LaunchServer server;
 
     public SimpleCabinetModule() {
@@ -44,6 +51,7 @@ public class SimpleCabinetModule extends LauncherModule {
         registerEvent(this::preConfigPhase, PreConfigPhase.class);
         registerEvent(this::initPhase, LaunchServerInitPhase.class);
         registerEvent(this::getLaunchServerEvent, NewLaunchServerInstanceEvent.class);
+        registerEvent(this::closePhase, ClosePhase.class);
     }
 
     public void preConfigPhase(PreConfigPhase preConfigPhase)
@@ -59,6 +67,7 @@ public class SimpleCabinetModule extends LauncherModule {
         WebSocketService.providers.register("lkRegister", RegisterResponse.class);
         WebSocketService.providers.register("lkTwoFactorEnable", TwoFactorEnableResponse.class);
         WebSocketService.providers.register("lkInitPayment", InitPaymentResponse.class);
+        WebSocketService.providers.register("lkPasswordReset", PasswordResetResponse.class);
         NettyWebAPIHandler.addNewSeverlet("lk/unitpay", new UnitPaySeverlet(this));
         NettyWebAPIHandler.addNewSeverlet("lk/robokassa", new RobokassaSeverlet(this));
     }
@@ -94,9 +103,20 @@ public class SimpleCabinetModule extends LauncherModule {
             if(!(e instanceof FileNotFoundException)) LogHelper.error(e);
             configurable.setConfig(configurable.getDefaultConfig());
         }
+        if(config.workersCorePoolSize <= 0) config.workersCorePoolSize = 3;
+        if(config.schedulerCorePoolSize <= 0) config.schedulerCorePoolSize = 2;
+        this.scheduler = Executors.newScheduledThreadPool(config.schedulerCorePoolSize);
+        this.workers = Executors.newWorkStealingPool(config.workersCorePoolSize);
         this.mail = new SimpleCabinetMailSender(this);
         this.paymentService = new PaymentService(this, server);
         this.syncService = new SyncService(this, server);
         server.commandHandler.registerCommand("cabinet", new CabinetCommand(server));
+    }
+    public void closePhase(ClosePhase closePhase)
+    {
+        if(this.workers != null)
+            this.workers.shutdownNow();
+        if(this.scheduler != null)
+            this.scheduler.shutdownNow();
     }
 }

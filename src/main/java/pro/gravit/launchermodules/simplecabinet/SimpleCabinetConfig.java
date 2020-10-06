@@ -4,6 +4,7 @@ import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
 import pro.gravit.launchermodules.simplecabinet.response.UploadSkinResponse;
 import pro.gravit.launchserver.auth.MySQLSourceConfig;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.ArrayList;
@@ -82,11 +83,17 @@ public class SimpleCabinetConfig {
         public String password;
         public String from;
     }
+    public static class UrlConfig {
+        public String frontendUrl;
+    }
+    public int schedulerCorePoolSize;
+    public int workersCorePoolSize;
     public List<UploadSkinEntity> uploads = new ArrayList<>();
     public List<GroupEntity> groups = new ArrayList<>();
 
     public PaymentsConfig payments;
     public MailSenderConfig mail;
+    public UrlConfig urls;
 
     //public SkinSizeConfig maxSkin = new SkinSizeConfig(1024, 512, 1024 * 1024, "updates/skins/%s.png"); // 1MB
     //public SkinSizeConfig maxCloak = new SkinSizeConfig(512, 256, 256 * 1024, "updates/cloaks/%s.png"); // 256Kb
@@ -106,6 +113,8 @@ public class SimpleCabinetConfig {
     public static SimpleCabinetConfig getDefault()
     {
         SimpleCabinetConfig config = new SimpleCabinetConfig();
+        config.workersCorePoolSize = 3;
+        config.schedulerCorePoolSize = 2;
         config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(64, 64, 100 * 1024, "updates/skins/%s.png"), null, UploadSkinResponse.SkinType.SKIN));
         config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(32, 32, 40 * 1024, "updates/cloaks/%s.png"), null, UploadSkinResponse.SkinType.CLOAK));
         config.groups.add(new GroupEntity("HD", 0, 1));
@@ -128,6 +137,9 @@ public class SimpleCabinetConfig {
         config.mail.from = "noreply@example.com";
         config.mail.username = "noreply@example.com";
         config.mail.password = "yourpassword";
+
+        config.urls = new UrlConfig();
+        config.urls.frontendUrl = "https://cabinet.yoursite.ru";
         return config;
     }
     public GroupEntity findGroupByName(String name)

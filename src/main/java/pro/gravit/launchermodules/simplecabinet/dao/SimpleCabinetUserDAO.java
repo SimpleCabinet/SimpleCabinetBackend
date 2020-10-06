@@ -2,6 +2,7 @@ package pro.gravit.launchermodules.simplecabinet.dao;
 
 import org.hibernate.*;
 import pro.gravit.launchermodules.simplecabinet.model.HardwareId;
+import pro.gravit.launchermodules.simplecabinet.model.PasswordResetEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
 import pro.gravit.launchserver.dao.UserDAO;
@@ -23,6 +24,12 @@ public class SimpleCabinetUserDAO implements UserDAO {
     public User findById(long id) {
         try (Session s = factory.openSession()) {
             return s.get(User.class, id);
+        }
+    }
+
+    public PasswordResetEntity findPasswordResetById(long id) {
+        try (Session s = factory.openSession()) {
+            return s.get(PasswordResetEntity.class, id);
         }
     }
 
@@ -135,6 +142,30 @@ public class SimpleCabinetUserDAO implements UserDAO {
     }
 
     public void delete(UserGroup user) {
+        try (Session session = factory.openSession()) {
+            Transaction tx1 = session.beginTransaction();
+            session.delete(user);
+            tx1.commit();
+        }
+    }
+
+    public void save(PasswordResetEntity user) {
+        try (Session session = factory.openSession()) {
+            Transaction tx1 = session.beginTransaction();
+            session.save(user);
+            tx1.commit();
+        }
+    }
+
+    public void update(PasswordResetEntity user) {
+        try (Session session = factory.openSession()) {
+            Transaction tx1 = session.beginTransaction();
+            session.update(user);
+            tx1.commit();
+        }
+    }
+
+    public void delete(PasswordResetEntity user) {
         try (Session session = factory.openSession()) {
             Transaction tx1 = session.beginTransaction();
             session.delete(user);

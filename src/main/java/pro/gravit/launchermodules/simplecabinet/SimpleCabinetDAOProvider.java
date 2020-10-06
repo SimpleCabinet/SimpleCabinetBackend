@@ -9,6 +9,7 @@ import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetPaymentDAO;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.model.*;
 import pro.gravit.launchermodules.simplecabinet.model.converter.UUIDConverter;
+import pro.gravit.launchermodules.simplecabinet.response.PasswordResetResponse;
 import pro.gravit.launchserver.dao.UserDAO;
 import pro.gravit.launchserver.dao.provider.HibernateDaoProvider;
 import pro.gravit.utils.command.Command;
@@ -33,6 +34,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         configuration.addAnnotatedClass(HardwareIdLogEntity.class);
         configuration.addAnnotatedClass(UserGroup.class);
         configuration.addAnnotatedClass(PaymentId.class);
+        configuration.addAnnotatedClass(PasswordResetResponse.class);
         if(stringUUID)
         {
             configuration.addAnnotatedClass(UUIDConverter.class);
