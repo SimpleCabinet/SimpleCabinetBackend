@@ -68,6 +68,7 @@ public class SimpleCabinetModule extends LauncherModule {
         WebSocketService.providers.register("lkTwoFactorEnable", TwoFactorEnableResponse.class);
         WebSocketService.providers.register("lkInitPayment", InitPaymentResponse.class);
         WebSocketService.providers.register("lkPasswordReset", PasswordResetResponse.class);
+        WebSocketService.providers.register("lkPasswordResetApply", PasswordResetApplyResponse.class);
         NettyWebAPIHandler.addNewSeverlet("lk/unitpay", new UnitPaySeverlet(this));
         NettyWebAPIHandler.addNewSeverlet("lk/robokassa", new RobokassaSeverlet(this));
     }

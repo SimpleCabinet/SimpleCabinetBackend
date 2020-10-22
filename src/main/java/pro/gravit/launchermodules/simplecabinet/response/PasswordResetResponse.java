@@ -33,8 +33,12 @@ public class PasswordResetResponse extends SimpleResponse {
         User user = userDAO.findByEmail(email);
         if(user == null) {
             //Skip
+            sendError("User not found");
+            return;
         } else {
             module.workers.submit(() -> {
+            try {
+                LogHelper.debug("User %s request password reset (start)", user.getEmail());
                 PasswordResetEntity passwordResetEntity = new PasswordResetEntity();
                 passwordResetEntity.setUser(user);
                 passwordResetEntity.setUuid(UUID.randomUUID());
@@ -44,9 +48,13 @@ public class PasswordResetResponse extends SimpleResponse {
                 try {
                     String content = String.format("Link: <a href=\"%s/cb/passwordreset/%d/%s\">Here</a>", module.config.urls.frontendUrl, id, uuid.toString());
                     module.mail.simpleSendEmail(user.getEmail(), "Account Password Reset", content);
+                    LogHelper.debug("User %s request password reset", user.getEmail());
                 } catch (Throwable e) {
                     LogHelper.error(e);
                     userDAO.delete(passwordResetEntity);
+                }
+                } catch(Throwable ex) {
+                LogHelper.error(ex);
                 }
             });
         }

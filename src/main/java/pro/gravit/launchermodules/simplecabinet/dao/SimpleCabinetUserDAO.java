@@ -86,6 +86,18 @@ public class SimpleCabinetUserDAO implements UserDAO {
         }
     }
 
+    public User fetchUserInPasswordResetEntity(PasswordResetEntity entity)
+    {
+        try (Session session = factory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.lock(entity, LockMode.NONE);
+            User user = entity.getUser();
+            Hibernate.initialize(user);
+            transaction.commit();
+            return user;
+        }
+    }
+
     public List<UserGroup> fetchGroups(User user)
     {
         try (Session session = factory.openSession()) {
