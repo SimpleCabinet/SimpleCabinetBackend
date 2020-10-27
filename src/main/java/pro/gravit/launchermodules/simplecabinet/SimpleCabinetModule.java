@@ -23,11 +23,16 @@ import pro.gravit.launchserver.modules.events.NewLaunchServerInstanceEvent;
 import pro.gravit.launchserver.socket.WebSocketService;
 import pro.gravit.launchserver.socket.handlers.NettyWebAPIHandler;
 import pro.gravit.utils.Version;
+import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -40,6 +45,7 @@ public class SimpleCabinetModule extends LauncherModule {
     public SyncService syncService;
     public ScheduledExecutorService scheduler;
     public ExecutorService workers;
+    public Path baseConfigPath;
     private LaunchServer server;
 
     public SimpleCabinetModule() {
@@ -81,6 +87,7 @@ public class SimpleCabinetModule extends LauncherModule {
     public void initPhase(LaunchServerInitPhase initPhase)
     {
         SimpleCabinetModule module = this;
+        baseConfigPath = modulesConfigManager.getModuleConfigDir(moduleInfo.name);
         configurable = new JsonConfigurable<SimpleCabinetConfig>(SimpleCabinetConfig.class, modulesConfigManager.getModuleConfig(moduleInfo.name)) {
             @Override
             public SimpleCabinetConfig getConfig() {
@@ -104,6 +111,11 @@ public class SimpleCabinetModule extends LauncherModule {
             if(!(e instanceof FileNotFoundException)) LogHelper.error(e);
             configurable.setConfig(configurable.getDefaultConfig());
         }
+        try {
+            Path emailPasswordResetHtml = exportFile(baseConfigPath.resolve("emailPasswordReset.html"), "emailPasswordReset.html");
+        } catch (IOException e) {
+            LogHelper.error(e);
+        }
         if(config.workersCorePoolSize <= 0) config.workersCorePoolSize = 3;
         if(config.schedulerCorePoolSize <= 0) config.schedulerCorePoolSize = 2;
         this.scheduler = Executors.newScheduledThreadPool(config.schedulerCorePoolSize);
@@ -119,5 +131,15 @@ public class SimpleCabinetModule extends LauncherModule {
             this.workers.shutdownNow();
         if(this.scheduler != null)
             this.scheduler.shutdownNow();
+    }
+
+    private Path exportFile(Path target, String name) throws IOException
+    {
+        if(Files.exists(target)) return target;
+        try(InputStream input = IOHelper.newInput(Objects.requireNonNull(SimpleCabinetModule.class.getClassLoader().getResource("pro/gravit/launchermodules/simplecabinet/".concat(name)))))
+        {
+            IOHelper.transfer(input, target);
+        }
+        return target;
     }
 }

@@ -9,6 +9,7 @@ import pro.gravit.launchermodules.simplecabinet.model.PasswordResetEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
+import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.UUID;
@@ -46,7 +47,9 @@ public class PasswordResetResponse extends SimpleResponse {
                 long id = passwordResetEntity.getId();
                 UUID uuid = passwordResetEntity.getUuid();
                 try {
-                    String content = String.format("Link: <a href=\"%s/cb/passwordreset/%d/%s\">Here</a>", module.config.urls.frontendUrl, id, uuid.toString());
+                    String url = String.format("%s/cb/passwordreset/%d/%s", module.config.urls.frontendUrl, id, uuid.toString());
+                    String template = new String(IOHelper.read(module.baseConfigPath.resolve("emailPasswordReset.html")));
+                    String content = String.format(template, user.getUsername(), url);
                     module.mail.simpleSendEmail(user.getEmail(), "Account Password Reset", content);
                     LogHelper.debug("User %s request password reset", user.getEmail());
                 } catch (Throwable e) {

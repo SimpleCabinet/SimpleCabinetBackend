@@ -57,7 +57,7 @@ public class SimpleCabinetMailSender {
         try {
             Message message = newEmailInstance(addressTo);
             message.setSubject(title);
-            message.setText(content);
+            message.setContent(content, "text/html; charset=UTF-8");
             sendEmail(message);
         }  catch (MessagingException e) {
             throw new RuntimeException(e);
