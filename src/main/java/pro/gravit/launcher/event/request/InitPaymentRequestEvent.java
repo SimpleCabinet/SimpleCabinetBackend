@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class InitPaymentRequestEvent extends RequestEvent {
     public enum PaymentVariant {
-        ROBOKASSA
+        ROBOKASSA,UNITPAY, SELF
     }
     public String redirectUri;
     public String method;

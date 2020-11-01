@@ -41,6 +41,8 @@ public class InitPaymentResponse extends SimpleResponse {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         User user = (User) client.daoObject;
         PaymentId paymentId = new PaymentId();
+        paymentId.setSum(sum);
+        paymentId.setUser(user);
         paymentId.setInitialTime(LocalDateTime.now());
         paymentId.setDescription("Balance replenishment");
         paymentId.setStatus(PaymentId.PaymentStatus.CREATED);

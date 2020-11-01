@@ -31,15 +31,6 @@ public class RobokassaSeverlet implements NettyWebAPIHandler.SimpleSeverletHandl
         this.module = module;
     }
 
-    static class KeyValuePair {
-        public String key;
-        public String value;
-
-        public KeyValuePair(String key, String value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
     @Override
     public void handle(ChannelHandlerContext ctx, FullHttpRequest msg, NettyConnectContext context) throws Exception {
         LogHelper.dev("Robokassa request: %s", msg.uri());

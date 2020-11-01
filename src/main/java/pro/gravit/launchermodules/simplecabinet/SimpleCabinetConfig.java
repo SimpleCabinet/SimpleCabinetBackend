@@ -71,9 +71,13 @@ public class SimpleCabinetConfig {
         public String password2;
         public boolean test;
     }
+    public static class PaymentSelfConfig {
+
+    }
     public static class PaymentsConfig {
         public PaymentUnitPayConfig unitPay;
         public PaymentRobokassaConfig robokassa;
+        public PaymentSelfConfig self;
     }
     public static class MailSenderConfig {
         public String host;

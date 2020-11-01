@@ -1,7 +1,6 @@
 package pro.gravit.launchermodules.simplecabinet.commands.cabinet;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import pro.gravit.launcher.HTTPRequest;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
@@ -11,7 +10,6 @@ import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
 import java.net.URL;
-import java.net.URLConnection;
 
 public class TestCommand extends Command {
     public TestCommand(LaunchServer server) {
