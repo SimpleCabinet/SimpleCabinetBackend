@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "payments")
 public class PaymentId {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -12,8 +13,13 @@ public class PaymentId {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="user_id")
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="order_id")
+    private OrderEntity order;
     private String description;
+    @Column(name = "initial_time")
     private LocalDateTime initialTime;
+    @Column(name = "success_time")
     private LocalDateTime successTime;
     public enum PaymentStatus {
         CREATED, COMPLETED, FAILED

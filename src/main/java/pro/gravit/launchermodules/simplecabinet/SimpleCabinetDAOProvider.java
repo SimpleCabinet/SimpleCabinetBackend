@@ -4,10 +4,7 @@ import com.eatthepath.otp.HmacOneTimePasswordGenerator;
 import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
 import org.apache.commons.codec.binary.Base32;
 import org.hibernate.cfg.Configuration;
-import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetAuditDAO;
-import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetHwidDAO;
-import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetPaymentDAO;
-import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
+import pro.gravit.launchermodules.simplecabinet.dao.*;
 import pro.gravit.launchermodules.simplecabinet.model.*;
 import pro.gravit.launchermodules.simplecabinet.model.converter.UUIDConverter;
 import pro.gravit.launchserver.dao.UserDAO;
@@ -27,6 +24,8 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
     public transient SimpleCabinetHwidDAO hwidDAO;
     public transient SimpleCabinetPaymentDAO paymentDAO;
     public transient SimpleCabinetAuditDAO auditDAO;
+    public transient SimpleCabinetProductDAO productDAO;
+    public transient SimpleCabinetOrderDAO orderDAO;
     public boolean stringUUID = false;
     @Override
     protected void onConfigure(Configuration configuration) {
@@ -37,6 +36,8 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         configuration.addAnnotatedClass(PaymentId.class);
         configuration.addAnnotatedClass(PasswordResetEntity.class);
         configuration.addAnnotatedClass(AuditEntity.class);
+        configuration.addAnnotatedClass(ProductEntity.class);
+        configuration.addAnnotatedClass(OrderEntity.class);
         if(stringUUID)
         {
             configuration.addAnnotatedClass(UUIDConverter.class);
@@ -54,6 +55,8 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         hwidDAO = new SimpleCabinetHwidDAO(sessionFactory);
         paymentDAO = new SimpleCabinetPaymentDAO(sessionFactory);
         auditDAO = new SimpleCabinetAuditDAO(sessionFactory);
+        productDAO = new SimpleCabinetProductDAO(sessionFactory);
+        orderDAO = new SimpleCabinetOrderDAO(sessionFactory);
         return new SimpleCabinetUserDAO(sessionFactory);
     }
 
