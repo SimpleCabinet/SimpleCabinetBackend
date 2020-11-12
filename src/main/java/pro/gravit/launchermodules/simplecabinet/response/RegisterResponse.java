@@ -10,6 +10,7 @@ import pro.gravit.launchserver.socket.response.SimpleResponse;
 import pro.gravit.utils.HookException;
 import pro.gravit.utils.helper.VerifyHelper;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class RegisterResponse extends SimpleResponse {
@@ -54,6 +55,7 @@ public class RegisterResponse extends SimpleResponse {
         user.setUuid(UUID.randomUUID());
         user.setEmail(email);
         user.setGender(gender);
+        user.setRegistrationDate(LocalDateTime.now());
         dao.save(user);
         sendResult(new RegisterRequestEvent(username, user.getUuid()));
     }

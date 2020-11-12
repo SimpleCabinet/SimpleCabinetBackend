@@ -6,6 +6,7 @@ import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.utils.PasswordHelper;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 @Entity(name = "User")
@@ -135,6 +136,7 @@ public class User implements pro.gravit.launchserver.dao.User {
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
     private String status;
+    private LocalDateTime registrationDate;
 
     private byte[] totpSecretKey;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -218,5 +220,13 @@ public class User implements pro.gravit.launchserver.dao.User {
     public static boolean isCorrectEmail(String email) //Very simple check
     {
         return email != null && email.contains("@") && email.length() >= 3;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 }
