@@ -4,6 +4,7 @@ import pro.gravit.launcher.ClientPermissions;
 import pro.gravit.launcher.events.RequestEvent;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,8 @@ public class ExtendedInfoRequestEvent extends RequestEvent {
     public long economyMoney;
     public double donateMoney;
     public double extendedMoney;
+
+    public String registrationDate;
     //Addional info
     public boolean isBanned;
     public static class ExtendedGroup {
@@ -57,6 +60,10 @@ public class ExtendedInfoRequestEvent extends RequestEvent {
     }
     public static class PrivateUserZone {
         public boolean isEnabled2FA;
+    }
+
+    public static String formatDate(LocalDate date) {
+        return date.toString();
     }
     //Group info
     public List<ExtendedGroup> groups;

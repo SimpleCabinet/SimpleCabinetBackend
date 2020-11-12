@@ -63,6 +63,7 @@ public class ExtendedInfoResponse extends SimpleResponse {
         }
         event.gender = user.getGender();
         event.status = user.getStatus();
+        event.registrationDate = user.getRegistrationDate() == null ? null : ExtendedInfoRequestEvent.formatDate(user.getRegistrationDate().toLocalDate());
         event.isBanned = permissions.isFlag(ClientPermissions.FlagConsts.BANNED);
         event.groups = ExtendedInfoRequestEvent.ExtendedGroup.getGroupsByClientPermissions(user.getPermissions());
         return event;

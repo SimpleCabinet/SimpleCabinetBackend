@@ -46,11 +46,5 @@ public class SyncService {
                     webSocketFrameHandler.service.sendObject(channel, currentUserRequestEvent);
             }
         }));
-        for(Client client : server.sessionManager.getSessions()) {
-            if(client.isAuth && username.equals(client.username) && client.daoObject != null) {
-                client.daoObject = user;
-                client.permissions = user.getPermissions();
-            }
-        }
     }
 }

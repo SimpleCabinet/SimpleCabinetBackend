@@ -4,6 +4,7 @@ import com.eatthepath.otp.HmacOneTimePasswordGenerator;
 import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
 import org.apache.commons.codec.binary.Base32;
 import org.hibernate.cfg.Configuration;
+import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetAuditDAO;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetHwidDAO;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetPaymentDAO;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
     public transient SimpleCabinetHwidDAO hwidDAO;
     public transient SimpleCabinetPaymentDAO paymentDAO;
+    public transient SimpleCabinetAuditDAO auditDAO;
     public boolean stringUUID = false;
     @Override
     protected void onConfigure(Configuration configuration) {
@@ -34,6 +36,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         configuration.addAnnotatedClass(UserGroup.class);
         configuration.addAnnotatedClass(PaymentId.class);
         configuration.addAnnotatedClass(PasswordResetEntity.class);
+        configuration.addAnnotatedClass(AuditEntity.class);
         if(stringUUID)
         {
             configuration.addAnnotatedClass(UUIDConverter.class);
@@ -50,6 +53,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
     protected UserDAO newUserDAO() {
         hwidDAO = new SimpleCabinetHwidDAO(sessionFactory);
         paymentDAO = new SimpleCabinetPaymentDAO(sessionFactory);
+        auditDAO = new SimpleCabinetAuditDAO(sessionFactory);
         return new SimpleCabinetUserDAO(sessionFactory);
     }
 
