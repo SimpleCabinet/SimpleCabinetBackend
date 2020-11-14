@@ -5,6 +5,10 @@ import javax.persistence.*;
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
+    public enum OrderStatus
+    {
+        CREATED, PROCESS, DELIVERY, FINISHED, FAILED
+    }
     @Id
     @GeneratedValue
     private long id;
@@ -16,6 +20,7 @@ public class OrderEntity {
     private User user;
     private double sum;
     private int quantity;
+    private OrderStatus status;
 
     public long getId() {
         return id;
@@ -51,5 +56,13 @@ public class OrderEntity {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 }

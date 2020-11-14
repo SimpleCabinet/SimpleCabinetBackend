@@ -10,6 +10,7 @@ import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetHWIDProvider;
 import pro.gravit.launchermodules.simplecabinet.response.*;
+import pro.gravit.launchermodules.simplecabinet.services.OrderService;
 import pro.gravit.launchermodules.simplecabinet.services.PaymentService;
 import pro.gravit.launchermodules.simplecabinet.services.SyncService;
 import pro.gravit.launchermodules.simplecabinet.severlet.RobokassaSeverlet;
@@ -43,6 +44,7 @@ public class SimpleCabinetModule extends LauncherModule {
     public SimpleCabinetMailSender mail;
     public PaymentService paymentService;
     public SyncService syncService;
+    public OrderService orderService;
     public ScheduledExecutorService scheduler;
     public ExecutorService workers;
     public Path baseConfigPath;
@@ -75,6 +77,9 @@ public class SimpleCabinetModule extends LauncherModule {
         WebSocketService.providers.register("lkInitPayment", InitPaymentResponse.class);
         WebSocketService.providers.register("lkPasswordReset", PasswordResetResponse.class);
         WebSocketService.providers.register("lkPasswordResetApply", PasswordResetApplyResponse.class);
+        WebSocketService.providers.register("lkCreateOrder", CreateOrderResponse.class);
+        WebSocketService.providers.register("lkCreateProduct", CreateProductResponse.class);
+        WebSocketService.providers.register("lkFetchProducts", FetchProductsResponse.class);
         NettyWebAPIHandler.addNewSeverlet("lk/unitpay", new UnitPaySeverlet(this));
         NettyWebAPIHandler.addNewSeverlet("lk/robokassa", new RobokassaSeverlet(this));
     }
@@ -123,6 +128,7 @@ public class SimpleCabinetModule extends LauncherModule {
         this.mail = new SimpleCabinetMailSender(this);
         this.paymentService = new PaymentService(this, server);
         this.syncService = new SyncService(this, server);
+        this.orderService = new OrderService(this, server);
         server.commandHandler.registerCommand("cabinet", new CabinetCommand(server));
     }
     public void closePhase(ClosePhase closePhase)
