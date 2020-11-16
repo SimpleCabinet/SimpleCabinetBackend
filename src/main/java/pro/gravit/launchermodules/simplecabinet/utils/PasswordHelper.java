@@ -1,5 +1,6 @@
 package pro.gravit.launchermodules.simplecabinet.utils;
 
+import com.github.wolf480pl.phpass.PHPass;
 import org.mindrot.jbcrypt.BCrypt;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.utils.helper.SecurityHelper;
@@ -8,11 +9,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class PasswordHelper {
-    public static boolean verifyPassword(User.HashType type, String hashedPassword, String password)
-    {
-        if(type == null) throw new NullPointerException("password hash type must not null");
-        switch (type)
-        {
+    public static boolean verifyPassword(User.HashType type, String hashedPassword, String password) {
+        if (type == null) throw new NullPointerException("password hash type must not null");
+        switch (type) {
             case BCRYPT:
                 return verifyBCryptPassword(hashedPassword, password);
             case DOUBLEMD5:
@@ -23,22 +22,24 @@ public class PasswordHelper {
                 return verifySha256Password(hashedPassword, password);
             case AUTHMESHA256:
                 return verifyAuthMeSha256Password(hashedPassword, password);
+            case PHPASS:
+                return verifyPhpassPassword(hashedPassword, password);
             default:
                 throw new IllegalArgumentException(type.toString());
         }
     }
-    public static boolean verifyBCryptPassword(String hashedPassword, String password)
-    {
+
+    public static boolean verifyBCryptPassword(String hashedPassword, String password) {
         return BCrypt.checkpw(password, "$2a" + hashedPassword.substring(3));
     }
-    public static boolean verifyDoubleMD5Password(String hashedPassword, String password)
-    {
+
+    public static boolean verifyDoubleMD5Password(String hashedPassword, String password) {
         String firstMD5 = SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, password.getBytes()));
         String secondMD5 = SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, firstMD5.getBytes()));
         return secondMD5.equals(hashedPassword);
     }
-    public static boolean verifyMD5Password(String hashedPassword, String password)
-    {
+
+    public static boolean verifyMD5Password(String hashedPassword, String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             String firstMD5 = SecurityHelper.toHex(md.digest(password.getBytes()));
@@ -47,15 +48,20 @@ public class PasswordHelper {
             throw new RuntimeException(e);
         }
     }
-    public static boolean verifySha256Password(String hashedPassword, String password)
-    {
+
+    public static boolean verifyPhpassPassword(String hashedPassword, String password) {
+        PHPass pass = new PHPass(8);
+        return pass.checkPassword(password, hashedPassword);
+    }
+
+    public static boolean verifySha256Password(String hashedPassword, String password) {
         String hashed = SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, password));
         return hashed.equals(hashedPassword);
     }
-    public static boolean verifyAuthMeSha256Password(String hashedPassword, String password)
-    {
+
+    public static boolean verifyAuthMeSha256Password(String hashedPassword, String password) {
         String[] splited = hashedPassword.split("\\$");
-        if(splited.length != 4) {
+        if (splited.length != 4) {
             return false;
         }
         String salt = splited[2];
@@ -65,9 +71,9 @@ public class PasswordHelper {
                         .concat(salt)));
         return saltedHash.equals(checkHash);
     }
-    public static String hashPassword(User.HashType type, String password)
-    {
-        if(type == null) throw new NullPointerException("password hash type must not null");
+
+    public static String hashPassword(User.HashType type, String password) {
+        if (type == null) throw new NullPointerException("password hash type must not null");
         switch (type) {
             case BCRYPT:
                 return hashBCryptPassword(password);
@@ -77,24 +83,26 @@ public class PasswordHelper {
                 return hashMD5Password(password);
             case SHA256:
                 return hashSha256Password(password);
+            case PHPASS:
+                return hashPhpassPassword(password);
             case AUTHMESHA256:
                 return null;
             default:
                 throw new IllegalArgumentException(type.toString());
         }
     }
-    public static String hashBCryptPassword(String password)
-    {
+
+    public static String hashBCryptPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
-    public static String hashDoubleMD5Password(String password)
-    {
+
+    public static String hashDoubleMD5Password(String password) {
         String firstMD5 = SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, password.getBytes()));
         return SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, firstMD5.getBytes()));
 
     }
-    public static String hashMD5Password(String password)
-    {
+
+    public static String hashMD5Password(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             return SecurityHelper.toHex(md.digest(password.getBytes()));
@@ -102,8 +110,14 @@ public class PasswordHelper {
             throw new RuntimeException(e);
         }
     }
-    public static String hashSha256Password(String password)
-    {
+
+    public static String hashSha256Password(String password) {
         return SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, password));
+    }
+
+    public static String hashPhpassPassword(String password)
+    {
+        PHPass pass = new PHPass(8);
+        return pass.hashPassword(password);
     }
 }

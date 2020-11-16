@@ -94,7 +94,8 @@ public class User implements pro.gravit.launchserver.dao.User {
         DOUBLEMD5,
         MD5,
         SHA256,
-        AUTHMESHA256
+        AUTHMESHA256,
+        PHPASS
     }
     public enum Gender
     {
