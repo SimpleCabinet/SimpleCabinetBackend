@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.UploadSkinRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetConfig;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
@@ -44,6 +45,7 @@ public class UploadSkinResponse extends SimpleResponse {
         }
         SimpleCabinetConfig.SkinSizeConfig sizeConfig = null;
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
+        ((SimpleCabinetUserDAO)server.config.dao.userDAO).fetchGroups((User) client.daoObject);
         sizeConfig = module.configurable.getConfig().findSkinSizeConfig((User) client.daoObject, skinType);
         if(sizeConfig == null)
         {

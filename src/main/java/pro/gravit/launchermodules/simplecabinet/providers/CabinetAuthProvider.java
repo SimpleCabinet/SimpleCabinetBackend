@@ -86,7 +86,6 @@ public class CabinetAuthProvider extends AuthProvider {
                 throw new AuthException("User or password incorrect");
             }
         }
-        ((SimpleCabinetUserDAO)server.config.dao.userDAO).fetchGroups(user);
         return new AuthProviderDAOResult(user.getUsername(), SecurityHelper.randomStringToken(), user.getPermissions(), user);
     }
 
