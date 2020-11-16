@@ -1,10 +1,16 @@
 package pro.gravit.launchermodules.simplecabinet.dao;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
+import pro.gravit.launchermodules.simplecabinet.model.User;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.util.List;
 
 public class SimpleCabinetProductDAO {
     private final SessionFactory factory;
@@ -16,6 +22,17 @@ public class SimpleCabinetProductDAO {
     public ProductEntity findById(long id) {
         try (Session s = factory.openSession()) {
             return s.get(ProductEntity.class, id);
+        }
+    }
+    @SuppressWarnings("unchecked")
+    public List<ProductEntity> fetchPage(int startId, int limit)
+    {
+        try (Session s = factory.openSession()) {
+            Query query = s.createQuery("From Product");
+            query.setFirstResult(startId);
+            query.setMaxResults(limit);
+
+            return (List<ProductEntity>) query.getResultList();
         }
     }
 

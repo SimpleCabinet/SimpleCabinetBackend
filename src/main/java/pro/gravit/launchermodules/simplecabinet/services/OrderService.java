@@ -21,8 +21,6 @@ public class OrderService {
     public void processOrder(OrderEntity entity)
     {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
-        entity.setStatus(OrderEntity.OrderStatus.PROCESS);
-        dao.orderDAO.update(entity);
         User user = entity.getUser();
         if(entity.getSum() > user.getDonateMoney())
         {
@@ -30,5 +28,17 @@ public class OrderService {
             dao.orderDAO.update(entity);
             return;
         }
+        user.setDonateMoney(user.getDonateMoney() - entity.getSum());
+        dao.userDAO.update(user);
+        entity.setStatus(OrderEntity.OrderStatus.PROCESS);
+        dao.orderDAO.update(entity);
+        module.workers.submit(() -> {
+            deliveryOrder(entity);
+        });
+    }
+
+    private void deliveryOrder(OrderEntity entity)
+    {
+        //TODO: Implement
     }
 }
