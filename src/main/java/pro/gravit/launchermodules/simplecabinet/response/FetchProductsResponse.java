@@ -21,7 +21,7 @@ public class FetchProductsResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext channelHandlerContext, Client client) throws Exception {
-        if(lastId <= 0) {
+        if(lastId < 0) {
             sendError("Invalid request");
             return;
         }

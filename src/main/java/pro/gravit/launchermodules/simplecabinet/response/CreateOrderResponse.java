@@ -49,7 +49,7 @@ public class CreateOrderResponse extends SimpleResponse {
             sendError("Sum invalid");
             return;
         }
-        if(totalSum < user.getDonateMoney())
+        if(totalSum > user.getDonateMoney())
         {
             sendError("Insufficient funds in your account");
             return;
