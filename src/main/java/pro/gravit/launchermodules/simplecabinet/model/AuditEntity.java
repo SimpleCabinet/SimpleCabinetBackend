@@ -67,7 +67,7 @@ public class AuditEntity {
     }
 
     public enum AuditType {
-        UNKNOWN, CHANGE_PASSWORD, CHANGE_USERNAME, PASSWORD_RESET, CREATE_PRODUCT
+        UNKNOWN, CHANGE_PASSWORD, CHANGE_USERNAME, PASSWORD_RESET, CREATE_PRODUCT, DISABLE_2FA
     }
     @Id
     @GeneratedValue

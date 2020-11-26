@@ -130,15 +130,20 @@ public class User implements pro.gravit.launchserver.dao.User {
     private HardwareId hardwareId;
 
     //Economic info
+    @Column(name = "economy_money")
     private long economyMoney;
+    @Column(name = "donate_money")
     private double donateMoney;
+    @Column(name = "extended_money")
     private double extendedMoney;
     //Addional info (may be null)
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
     private String status;
+    @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
+    @Column(name = "totp_secret_key")
     private byte[] totpSecretKey;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserGroup>  groups;
