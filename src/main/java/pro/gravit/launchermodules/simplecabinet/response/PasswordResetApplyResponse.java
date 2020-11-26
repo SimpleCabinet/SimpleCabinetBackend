@@ -2,7 +2,9 @@ package pro.gravit.launchermodules.simplecabinet.response;
 
 import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.PasswordResetApplyRequestEvent;
+import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
+import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
 import pro.gravit.launchermodules.simplecabinet.model.PasswordResetEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
@@ -40,6 +42,7 @@ public class PasswordResetApplyResponse extends SimpleResponse {
         user.setPassword(newPassword);
         dao.update(user);
         dao.delete(entity);
+        server.modulesManager.getModule(SimpleCabinetModule.class).auditService.pushBaseAudit(AuditEntity.AuditType.PASSWORD_RESET, user, ip, user);
         sendResult(new PasswordResetApplyRequestEvent());
     }
 }

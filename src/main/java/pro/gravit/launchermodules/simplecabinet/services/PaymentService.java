@@ -203,7 +203,7 @@ public class PaymentService {
         result.params.put("Description", id.getDescription());
         result.params.put("Encoding", "UTF-8");
         result.params.put("IsTest", config.test ? "1" : "0");
-        String signature = calculateP2RobokassaHash(String.format("%s:%s:%s", config.merchantId, outSum, invId), null);
+        String signature = calculateP1RobokassaHash(String.format("%s:%s:%s", config.merchantId, outSum, invId), null);
         result.params.put("SignatureValue", signature);
         return result;
     }

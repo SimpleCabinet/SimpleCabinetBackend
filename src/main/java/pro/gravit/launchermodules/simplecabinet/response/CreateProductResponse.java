@@ -5,6 +5,7 @@ import pro.gravit.launcher.ClientPermissions;
 import pro.gravit.launcher.event.request.CreateProductRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
@@ -65,6 +66,7 @@ public class CreateProductResponse extends SimpleResponse {
         productEntity.setSysExtra(sysExtra);
         productEntity.setSysQuantity(sysQuantity);
         dao.productDAO.save(productEntity);
+        server.modulesManager.getModule(SimpleCabinetModule.class).auditService.pushAdvancedAudit(AuditEntity.AuditType.CREATE_PRODUCT, user, ip, null, String.valueOf(productEntity.getId()), null);
         sendResult(new CreateProductRequestEvent(productEntity.getId()));
     }
 }

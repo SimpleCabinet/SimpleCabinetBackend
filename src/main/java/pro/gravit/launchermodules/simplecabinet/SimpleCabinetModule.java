@@ -10,6 +10,7 @@ import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetHWIDProvider;
 import pro.gravit.launchermodules.simplecabinet.response.*;
+import pro.gravit.launchermodules.simplecabinet.services.AuditService;
 import pro.gravit.launchermodules.simplecabinet.services.OrderService;
 import pro.gravit.launchermodules.simplecabinet.services.PaymentService;
 import pro.gravit.launchermodules.simplecabinet.services.SyncService;
@@ -45,6 +46,7 @@ public class SimpleCabinetModule extends LauncherModule {
     public PaymentService paymentService;
     public SyncService syncService;
     public OrderService orderService;
+    public AuditService auditService;
     public ScheduledExecutorService scheduler;
     public ExecutorService workers;
     public Path baseConfigPath;
@@ -129,6 +131,7 @@ public class SimpleCabinetModule extends LauncherModule {
         this.paymentService = new PaymentService(this, server);
         this.syncService = new SyncService(this, server);
         this.orderService = new OrderService(this, server);
+        this.auditService = new AuditService(this, server);
         server.commandHandler.registerCommand("cabinet", new CabinetCommand(server));
     }
     public void closePhase(ClosePhase closePhase)
