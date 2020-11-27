@@ -82,6 +82,8 @@ public class SimpleCabinetModule extends LauncherModule {
         WebSocketService.providers.register("lkCreateOrder", CreateOrderResponse.class);
         WebSocketService.providers.register("lkCreateProduct", CreateProductResponse.class);
         WebSocketService.providers.register("lkFetchProducts", FetchProductsResponse.class);
+        WebSocketService.providers.register("lkUserHardwareInfo", UserHardwareInfoResponse.class);
+        WebSocketService.providers.register("lkBanUser", BanUserResponse.class);
         NettyWebAPIHandler.addNewSeverlet("lk/unitpay", new UnitPaySeverlet(this));
         NettyWebAPIHandler.addNewSeverlet("lk/robokassa", new RobokassaSeverlet(this));
     }

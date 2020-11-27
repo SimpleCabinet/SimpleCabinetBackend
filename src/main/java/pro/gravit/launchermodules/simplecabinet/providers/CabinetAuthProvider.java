@@ -1,6 +1,7 @@
 package pro.gravit.launchermodules.simplecabinet.providers;
 
 import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
+import pro.gravit.launcher.ClientPermissions;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.password.Auth2FAPassword;
@@ -43,6 +44,10 @@ public class CabinetAuthProvider extends AuthProvider {
         if(user == null)
         {
             throw new AuthException("User or password incorrect");
+        }
+        if(user.getPermissions().isFlag(ClientPermissions.FlagConsts.BANNED))
+        {
+            throw new AuthException("User banned");
         }
         byte[] keyBytes = user.getTotpSecretKey();
         if(keyBytes != null)
