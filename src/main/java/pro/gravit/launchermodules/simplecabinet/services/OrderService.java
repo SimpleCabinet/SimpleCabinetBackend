@@ -37,6 +37,20 @@ public class OrderService {
         });
     }
 
+    public void completeOrder(OrderEntity entity)
+    {
+        SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
+        entity.setStatus(OrderEntity.OrderStatus.FINISHED);
+        dao.orderDAO.update(entity);
+    }
+
+    public void failOrder(OrderEntity entity)
+    {
+        SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
+        entity.setStatus(OrderEntity.OrderStatus.FAILED);
+        dao.orderDAO.update(entity);
+    }
+
     private void deliveryOrder(OrderEntity entity)
     {
         //TODO: Implement

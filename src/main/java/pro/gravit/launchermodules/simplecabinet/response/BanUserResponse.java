@@ -2,6 +2,7 @@ package pro.gravit.launchermodules.simplecabinet.response;
 
 import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.ClientPermissions;
+import pro.gravit.launcher.event.UserBannedEvent;
 import pro.gravit.launcher.event.request.BanUserRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
@@ -57,6 +58,17 @@ public class BanUserResponse extends SimpleResponse {
         permissions.setFlag(ClientPermissions.FlagConsts.BANNED, true);
         user.setPermissions(permissions);
         dao.userDAO.update(user);
+        service.kickByUserUUID(user.getUuid(), true);
         sendResult(new BanUserRequestEvent());
+        UserBannedEvent event = new UserBannedEvent();
+        event.username = user.getUsername();
+        event.hardware = hardware;
+        event.adminUsername = client.daoObject.getUsername();
+        service.forEachActiveChannels((ch, wsHandler) -> {
+            Client cClient = wsHandler.getClient();
+            if(cClient != null && cClient.permissions != null && cClient.permissions.isPermission(ClientPermissions.PermissionConsts.MANAGEMENT)) {
+                service.sendObject(ch, event);
+            }
+        });
     }
 }

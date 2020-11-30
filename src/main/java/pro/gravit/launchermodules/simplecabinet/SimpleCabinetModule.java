@@ -6,7 +6,9 @@ import pro.gravit.launcher.modules.LauncherModule;
 import pro.gravit.launcher.modules.LauncherModuleInfo;
 import pro.gravit.launcher.modules.events.ClosePhase;
 import pro.gravit.launcher.modules.events.PreConfigPhase;
+import pro.gravit.launcher.modules.events.PreGsonPhase;
 import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
+import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetHWIDProvider;
 import pro.gravit.launchermodules.simplecabinet.response.*;
@@ -24,6 +26,7 @@ import pro.gravit.launchserver.modules.events.LaunchServerInitPhase;
 import pro.gravit.launchserver.modules.events.NewLaunchServerInstanceEvent;
 import pro.gravit.launchserver.socket.WebSocketService;
 import pro.gravit.launchserver.socket.handlers.NettyWebAPIHandler;
+import pro.gravit.utils.UniversalJsonAdapter;
 import pro.gravit.utils.Version;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
@@ -62,6 +65,12 @@ public class SimpleCabinetModule extends LauncherModule {
         registerEvent(this::initPhase, LaunchServerInitPhase.class);
         registerEvent(this::getLaunchServerEvent, NewLaunchServerInstanceEvent.class);
         registerEvent(this::closePhase, ClosePhase.class);
+        registerEvent(this::preGsonPhase, PreGsonPhase.class);
+    }
+
+    public void preGsonPhase(PreGsonPhase preGsonPhase)
+    {
+        preGsonPhase.gsonBuilder.registerTypeAdapter(DeliveryProvider.class, new UniversalJsonAdapter<>(DeliveryProvider.providers));
     }
 
     public void preConfigPhase(PreConfigPhase preConfigPhase)
