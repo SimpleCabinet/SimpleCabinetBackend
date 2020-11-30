@@ -11,6 +11,8 @@ import pro.gravit.utils.helper.LogHelper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 public class MigratorCommand extends Command {
@@ -53,6 +55,16 @@ public class MigratorCommand extends Command {
                 user.setUsername(username);
                 user.setRawPassword(encryptedPassword);
                 user.setRawPasswordType(type);
+                if(set.findColumn("economy_money") > 0)
+                    user.setEconomyMoney(set.getLong("economy_money"));
+                if(set.findColumn("donate_money") > 0)
+                    user.setDonateMoney(set.getDouble("donate_money"));
+                if(set.findColumn("extended_money") > 0)
+                    user.setExtendedMoney(set.getLong("extended_money"));
+                if(set.findColumn("registration_date") > 0)
+                    user.setRegistrationDate(set.getTimestamp("registration_date").toLocalDateTime());
+                else
+                    user.setRegistrationDate(LocalDateTime.now());
                 //user.economyMoney = economyMoney;
                 //user.donateMoney = donateMoney;
                 if(LogHelper.isDebugEnabled())
