@@ -1,5 +1,6 @@
 package pro.gravit.launchermodules.simplecabinet;
 
+import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
 import pro.gravit.launchermodules.simplecabinet.response.UploadSkinResponse;
@@ -7,9 +8,7 @@ import pro.gravit.launchserver.auth.MySQLSourceConfig;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class SimpleCabinetConfig {
     public static class SkinSizeConfig
@@ -94,6 +93,7 @@ public class SimpleCabinetConfig {
     public int workersCorePoolSize;
     public List<UploadSkinEntity> uploads = new ArrayList<>();
     public List<GroupEntity> groups = new ArrayList<>();
+    public Map<String, DeliveryProvider> deliveryProviders = new HashMap<>();
 
     public PaymentsConfig payments;
     public MailSenderConfig mail;

@@ -9,8 +9,12 @@ import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.command.Command;
 import pro.gravit.utils.helper.LogHelper;
 
+import javax.persistence.TemporalType;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 
 public class GroupCommand extends Command {
@@ -61,12 +65,11 @@ public class GroupCommand extends Command {
             }
             else
             {
-                Date date = Date.from(Instant.now());
-                Date endTime;
+                LocalDateTime date = LocalDateTime.now();
+                LocalDateTime endTime;
                 if(args.length > 3)
                 {
-                    Duration duration = Duration.ofDays(Long.parseLong(args[3]));
-                    endTime = Date.from((Instant) duration.addTo(date.toInstant()));
+                    endTime = date.plusDays(Long.parseLong(args[2]));
                 }
                 else endTime = null;
                 UserGroup userGroup = new UserGroup();

@@ -1,6 +1,7 @@
 package pro.gravit.launchermodules.simplecabinet.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity(name = "UserGroup")
@@ -9,8 +10,8 @@ public class UserGroup {
     @Id
     private long id;
     private String groupName;
-    private Date startDate;
-    private Date endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -27,19 +28,19 @@ public class UserGroup {
         this.groupName = groupName;
     }
 
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

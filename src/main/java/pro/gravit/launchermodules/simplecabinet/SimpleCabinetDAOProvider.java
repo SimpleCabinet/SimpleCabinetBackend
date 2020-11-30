@@ -38,6 +38,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         configuration.addAnnotatedClass(AuditEntity.class);
         configuration.addAnnotatedClass(ProductEntity.class);
         configuration.addAnnotatedClass(OrderEntity.class);
+        configuration.addAnnotatedClass(ProductEnchantEntity.class);
         if(stringUUID)
         {
             configuration.addAnnotatedClass(UUIDConverter.class);

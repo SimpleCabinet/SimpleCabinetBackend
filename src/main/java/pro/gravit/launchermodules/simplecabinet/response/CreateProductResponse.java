@@ -27,7 +27,8 @@ public class CreateProductResponse extends SimpleResponse {
     public String sysId;
     public int sysQuantity;
     public String sysExtra;
-    public LocalDateTime sysDate;
+    public String sysNbt;
+    public String sysDeliveryProvider;
 
     @Override
     public String getType() {
@@ -62,7 +63,8 @@ public class CreateProductResponse extends SimpleResponse {
         productEntity.setEndDate(endDate);
         productEntity.setAllowStack(allowStack);
         productEntity.setSysId(sysId);
-        productEntity.setSysDate(sysDate);
+        productEntity.setSysNbt(sysNbt);
+        productEntity.setSysDeliveryProvider(sysDeliveryProvider);
         productEntity.setSysExtra(sysExtra);
         productEntity.setSysQuantity(sysQuantity);
         dao.productDAO.save(productEntity);

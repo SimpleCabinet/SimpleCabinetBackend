@@ -2,9 +2,11 @@ package pro.gravit.launchermodules.simplecabinet.services;
 
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.LaunchServer;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.util.UUID;
 
@@ -53,6 +55,19 @@ public class OrderService {
 
     private void deliveryOrder(OrderEntity entity)
     {
-        //TODO: Implement
+        String providerName = entity.getProduct().getSysDeliveryProvider();
+        DeliveryProvider provider = module.config.deliveryProviders.get(providerName);
+        if(provider == null) {
+            LogHelper.warning("Error processing order %d. DeliveryProvider %s not found", entity.getId(), providerName == null ? "null" : providerName);
+            failOrder(entity);
+            return;
+        }
+        if(!provider.safeDelivery(entity))
+        {
+            failOrder(entity);
+        }
+        else {
+            completeOrder(entity);
+        }
     }
 }

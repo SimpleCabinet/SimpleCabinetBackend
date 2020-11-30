@@ -2,6 +2,7 @@ package pro.gravit.launchermodules.simplecabinet.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "Product")
 @Table(name = "products")
@@ -102,16 +103,32 @@ public class ProductEntity {
         this.sysExtra = sysExtra;
     }
 
-    public LocalDateTime getSysDate() {
-        return sysDate;
+    public List<ProductEnchantEntity> getEnchants() {
+        return enchants;
     }
 
-    public void setSysDate(LocalDateTime sysDate) {
-        this.sysDate = sysDate;
+    public void setEnchants(List<ProductEnchantEntity> enchants) {
+        this.enchants = enchants;
+    }
+
+    public String getSysNbt() {
+        return sysNbt;
+    }
+
+    public void setSysNbt(String sysNbt) {
+        this.sysNbt = sysNbt;
+    }
+
+    public String getSysDeliveryProvider() {
+        return sysDeliveryProvider;
+    }
+
+    public void setSysDeliveryProvider(String sysDeliveryProvider) {
+        this.sysDeliveryProvider = sysDeliveryProvider;
     }
 
     public enum ProductType {
-        GROUP, ITEM
+        GROUP, ITEM, SPECIAL
     }
     private ProductType type;
     private String name;
@@ -131,8 +148,11 @@ public class ProductEntity {
     private int sysQuantity;
     @Column(name = "sys_extra")
     private String sysExtra;
-    @Column(name = "sys_date")
-    private LocalDateTime sysDate;
-
+    @Column(name = "sys_nbt")
+    private String sysNbt;
+    @Column(name = "sys_delivery_provider")
+    private String sysDeliveryProvider;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductEnchantEntity> enchants;
 
 }
