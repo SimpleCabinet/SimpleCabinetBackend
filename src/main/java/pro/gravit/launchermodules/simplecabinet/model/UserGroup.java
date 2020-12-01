@@ -8,6 +8,7 @@ import java.util.Date;
 @Table(name = "user_groups")
 public class UserGroup {
     @Id
+    @GeneratedValue
     private long id;
     private String groupName;
     private LocalDateTime startDate;

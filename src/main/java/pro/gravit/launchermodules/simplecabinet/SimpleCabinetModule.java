@@ -73,6 +73,7 @@ public class SimpleCabinetModule extends LauncherModule {
     public void preGsonPhase(PreGsonPhase preGsonPhase)
     {
         preGsonPhase.gsonBuilder.registerTypeAdapter(DeliveryProvider.class, new UniversalJsonAdapter<>(DeliveryProvider.providers));
+        DeliveryProvider.registerProviders();
     }
 
     public void exitPhase(pro.gravit.launcher.modules.events.ClosePhase closePhase) {
@@ -132,7 +133,7 @@ public class SimpleCabinetModule extends LauncherModule {
             @Override
             public void setConfig(SimpleCabinetConfig config) {
                 module.config = config;
-                module.config.init();
+                module.config.init(server, module);
             }
 
             @Override

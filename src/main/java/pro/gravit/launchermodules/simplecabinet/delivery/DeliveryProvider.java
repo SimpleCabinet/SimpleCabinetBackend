@@ -8,7 +8,7 @@ import pro.gravit.utils.helper.LogHelper;
 
 public abstract class DeliveryProvider {
     public static ProviderMap<DeliveryProvider> providers = new ProviderMap<>();
-    private boolean registeredProviders = false;
+    private static boolean registeredProviders = false;
     public abstract void init(LaunchServer server, SimpleCabinetModule module);
     protected abstract void delivery(OrderEntity entity) throws Exception;
     public final boolean safeDelivery(OrderEntity entity)
@@ -18,15 +18,18 @@ public abstract class DeliveryProvider {
             return true;
         } catch (Exception e) {
             LogHelper.warning("Error with delivery order %d", entity.getId());
-            if(!(e instanceof RuntimeException))
             LogHelper.error(e);
             return false;
         }
     }
-    public void registerProviders()
+    public static void registerProviders()
     {
-        providers.register("event", EventDeliveryProvider.class);
-        providers.register("debug", DebugDeliveryProvider.class);
-        providers.register("luckperms", LuckPermsDeliveryProvider.class);
+        if(!registeredProviders)
+        {
+            providers.register("event", EventDeliveryProvider.class);
+            providers.register("debug", DebugDeliveryProvider.class);
+            providers.register("luckperms", LuckPermsDeliveryProvider.class);
+            registeredProviders = true;
+        }
     }
 }

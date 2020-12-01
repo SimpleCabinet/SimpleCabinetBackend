@@ -64,10 +64,12 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
         }
         group.setEndDate(endDate);
         if(!isKnownGroup) {
-            group.setStartDate(LocalDateTime.now());
-            group.setUser(user);
-            group.setGroupName(groupName);
-            ((SimpleCabinetUserDAO) dao.userDAO).save(group);
+            if(module.config.findGroupByName(groupName) != null) {
+                group.setStartDate(LocalDateTime.now());
+                group.setUser(user);
+                group.setGroupName(groupName);
+                ((SimpleCabinetUserDAO) dao.userDAO).save(group);
+            }
         }
         else  {
             ((SimpleCabinetUserDAO) dao.userDAO).update(group);

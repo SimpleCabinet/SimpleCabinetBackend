@@ -1,9 +1,11 @@
 package pro.gravit.launchermodules.simplecabinet;
 
+import pro.gravit.launchermodules.simplecabinet.delivery.DebugDeliveryProvider;
 import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
 import pro.gravit.launchermodules.simplecabinet.response.UploadSkinResponse;
+import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.auth.MySQLSourceConfig;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -93,7 +95,7 @@ public class SimpleCabinetConfig {
     public int workersCorePoolSize;
     public List<UploadSkinEntity> uploads = new ArrayList<>();
     public List<GroupEntity> groups = new ArrayList<>();
-    public Map<String, DeliveryProvider> deliveryProviders = new HashMap<>();
+    public Map<String, DeliveryProvider> deliveryProviders;
 
     public PaymentsConfig payments;
     public MailSenderConfig mail;
@@ -101,7 +103,7 @@ public class SimpleCabinetConfig {
 
     //public SkinSizeConfig maxSkin = new SkinSizeConfig(1024, 512, 1024 * 1024, "updates/skins/%s.png"); // 1MB
     //public SkinSizeConfig maxCloak = new SkinSizeConfig(512, 256, 256 * 1024, "updates/cloaks/%s.png"); // 256Kb
-    public void init()
+    public void init(LaunchServer server, SimpleCabinetModule module)
     {
         groups.sort(Comparator.comparingInt(e -> e.priority));
         for(UploadSkinEntity e : uploads)
@@ -112,6 +114,9 @@ public class SimpleCabinetConfig {
             {
                 throw new IllegalArgumentException(String.format("group %s not found", e.groupName));
             }
+        }
+        for(DeliveryProvider provider : deliveryProviders.values()) {
+            provider.init(server, module);
         }
     }
     public static SimpleCabinetConfig getDefault()
@@ -144,6 +149,8 @@ public class SimpleCabinetConfig {
 
         config.urls = new UrlConfig();
         config.urls.frontendUrl = "https://cabinet.yoursite.ru";
+        config.deliveryProviders = new HashMap<>();
+        config.deliveryProviders.put("debug", new DebugDeliveryProvider());
         return config;
     }
     public GroupEntity findGroupByName(String name)
