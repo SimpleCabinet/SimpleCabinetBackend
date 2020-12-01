@@ -63,6 +63,18 @@ public class SimpleCabinetHwidDAO {
         return null;
     }
 
+    public List<User> findUsersByHardwareId(HardwareId id)
+    {
+        try (Session session = factory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.lock(id, LockMode.NONE);
+            List<User> users = id.getUsers();
+            Hibernate.initialize(users);
+            transaction.commit();
+            return users;
+        }
+    }
+
     public void save(HardwareId hardwareId) {
         try (Session session = factory.openSession()) {
             Transaction tx1 = session.beginTransaction();

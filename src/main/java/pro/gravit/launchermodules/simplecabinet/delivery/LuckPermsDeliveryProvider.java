@@ -79,6 +79,8 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
     private void deliveryWithSource(String groupName, String extra, String nbt, UUID userUUID, LocalDateTime endDate) throws IOException, SQLException {
         if(mySQLSource != null)
             deliveryWithMySQLSource(groupName, extra, nbt, userUUID, endDate);
+        else if(postgreSQLSource != null)
+            deliveryWithPostgreSQLSource(groupName, extra, nbt, userUUID, endDate);
         else {
             throw new IllegalArgumentException("mySQLSource or postgreSQLSource not configured");
         }
@@ -88,6 +90,23 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
         LogHelper.debug("Delivery lk group %s to user %s (%s end date)", groupName, userUUID.toString(), endDate.toString());
         long timestamp = endDate.toEpochSecond(ZoneOffset.UTC);
         try(Connection connection = mySQLSource.getConnection())
+        {
+            PreparedStatement query = connection.prepareStatement(sql);
+            query.setString(1, userUUID.toString());
+            query.setString(2, "group.".concat(groupName.toLowerCase()));
+            query.setBoolean(3, true);
+            query.setString(4, extra == null ? "global" : extra);
+            query.setString(5, nbt == null ? "global" : nbt);
+            query.setLong(6, timestamp);
+            query.setString(7, "{}");
+            query.execute();
+        }
+    }
+
+    private void deliveryWithPostgreSQLSource(String groupName, String extra, String nbt, UUID userUUID, LocalDateTime endDate) throws IOException, SQLException {
+        LogHelper.debug("Delivery lk group %s to user %s (%s end date)", groupName, userUUID.toString(), endDate.toString());
+        long timestamp = endDate.toEpochSecond(ZoneOffset.UTC);
+        try(Connection connection = postgreSQLSource.getConnection())
         {
             PreparedStatement query = connection.prepareStatement(sql);
             query.setString(1, userUUID.toString());

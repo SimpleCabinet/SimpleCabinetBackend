@@ -7,6 +7,7 @@ import pro.gravit.launcher.modules.LauncherModuleInfo;
 import pro.gravit.launcher.modules.events.ClosePhase;
 import pro.gravit.launcher.modules.events.PreConfigPhase;
 import pro.gravit.launcher.modules.events.PreGsonPhase;
+import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
 import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
@@ -66,11 +67,26 @@ public class SimpleCabinetModule extends LauncherModule {
         registerEvent(this::getLaunchServerEvent, NewLaunchServerInstanceEvent.class);
         registerEvent(this::closePhase, ClosePhase.class);
         registerEvent(this::preGsonPhase, PreGsonPhase.class);
+        registerEvent(this::exitPhase, ClosePhase.class);
     }
 
     public void preGsonPhase(PreGsonPhase preGsonPhase)
     {
         preGsonPhase.gsonBuilder.registerTypeAdapter(DeliveryProvider.class, new UniversalJsonAdapter<>(DeliveryProvider.providers));
+    }
+
+    public void exitPhase(pro.gravit.launcher.modules.events.ClosePhase closePhase) {
+        if(config != null && config.deliveryProviders != null) {
+            for(DeliveryProvider provider : config.deliveryProviders.values()) {
+                if(provider instanceof AutoCloseable) {
+                    try {
+                        ((AutoCloseable) provider).close();
+                    } catch (Exception e) {
+                        LogHelper.error(e);
+                    }
+                }
+            }
+        }
     }
 
     public void preConfigPhase(PreConfigPhase preConfigPhase)
@@ -93,6 +109,7 @@ public class SimpleCabinetModule extends LauncherModule {
         WebSocketService.providers.register("lkFetchProducts", FetchProductsResponse.class);
         WebSocketService.providers.register("lkUserHardwareInfo", UserHardwareInfoResponse.class);
         WebSocketService.providers.register("lkBanUser", BanUserResponse.class);
+        WebSocketService.providers.register("lkFetchUsers", FetchUsersResponse.class);
         NettyWebAPIHandler.addNewSeverlet("lk/unitpay", new UnitPaySeverlet(this));
         NettyWebAPIHandler.addNewSeverlet("lk/robokassa", new RobokassaSeverlet(this));
     }

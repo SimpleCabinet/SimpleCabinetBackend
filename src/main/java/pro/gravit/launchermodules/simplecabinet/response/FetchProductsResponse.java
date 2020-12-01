@@ -27,8 +27,8 @@ public class FetchProductsResponse extends SimpleResponse {
         }
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
-        List<FetchProductsRequestEvent.PublicProductInfo> list = dao.productDAO.fetchPage((int) lastId, MAX_QUERY).stream().map(FetchProductsResponse::fetchPublicInfo).collect(Collectors.toList());
-        sendResult(new FetchProductsRequestEvent(list));
+        List<FetchProductsRequestEvent.PublicProductInfo> list = dao.productDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY).stream().map(FetchProductsResponse::fetchPublicInfo).collect(Collectors.toList());
+        sendResult(new FetchProductsRequestEvent(list, MAX_QUERY));
     }
 
     public static FetchProductsRequestEvent.PublicProductInfo fetchPublicInfo(ProductEntity productEntity)

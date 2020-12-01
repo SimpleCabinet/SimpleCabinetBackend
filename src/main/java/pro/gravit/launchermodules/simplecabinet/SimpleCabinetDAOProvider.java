@@ -17,6 +17,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -139,6 +140,25 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
                 SecretKeySpec signingKey = new SecretKeySpec(user.getTotpSecretKey(), totp.getAlgorithm());
                 int result = totp.generateOneTimePassword(signingKey, Instant.now());
                 LogHelper.info("Generated 2FA key: %d", result);
+            }
+        });
+        commands.put("multiaccount", new SubCommand() {
+            @Override
+            public void invoke(String... args) throws Exception {
+                verifyArgs(args, 1);
+                User user = (User) userDAO.findByUsername(args[0]);
+                if(user == null) {
+                    throw new IllegalArgumentException("User not found");
+                }
+                HardwareId id = user.getHardwareId();
+                if(id == null) {
+                    throw new IllegalArgumentException("User not contains HardwareId info");
+                }
+                List<User> users = hwidDAO.findUsersByHardwareId(id);
+                LogHelper.info("Found %d users in this hardware id", users.size());
+                for(User u : users) {
+                    LogHelper.subInfo("Found user %s (uuid %s)", u.getUsername(), u.getUuid().toString());
+                }
             }
         });
         return commands;

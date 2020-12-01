@@ -3,6 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.model;
 import pro.gravit.launcher.request.secure.HardwareReportRequest;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity(name = "HardwareId")
 @Table(name = "hwids")
@@ -24,6 +25,8 @@ public class HardwareId {
     @Column(unique = true)
     private byte[] publicKey;
     private boolean banned;
+    @OneToMany(mappedBy = "hardwareId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<User> users;
     public void loadFromHardwareInfo(HardwareReportRequest.HardwareInfo info)
     {
         setBitness(info.bitness);
@@ -141,5 +144,13 @@ public class HardwareId {
 
     public void setBanned(boolean banned) {
         this.banned = banned;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

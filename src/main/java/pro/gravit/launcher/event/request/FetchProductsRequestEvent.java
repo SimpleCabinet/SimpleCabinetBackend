@@ -19,9 +19,15 @@ public class FetchProductsRequestEvent extends RequestEvent {
         public boolean allowStack;
     }
     public List<PublicProductInfo> products;
+    public int maxQuery;
 
     public FetchProductsRequestEvent(List<PublicProductInfo> products) {
         this.products = products;
+    }
+
+    public FetchProductsRequestEvent(List<PublicProductInfo> products, int maxQuery) {
+        this.products = products;
+        this.maxQuery = maxQuery;
     }
 
     @Override

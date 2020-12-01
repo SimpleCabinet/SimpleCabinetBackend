@@ -1,13 +1,11 @@
 package pro.gravit.launchermodules.simplecabinet.dao;
 
 import org.hibernate.*;
-import pro.gravit.launchermodules.simplecabinet.model.HardwareId;
-import pro.gravit.launchermodules.simplecabinet.model.PasswordResetEntity;
-import pro.gravit.launchermodules.simplecabinet.model.User;
-import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
+import pro.gravit.launchermodules.simplecabinet.model.*;
 import pro.gravit.launchserver.dao.UserDAO;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -72,6 +70,18 @@ public class SimpleCabinetUserDAO implements UserDAO {
         List<User> ret = em.createQuery(personCriteria).getResultList();
         em.close();
         return ret.size() == 0 ? null : ret.get(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<User> fetchPage(int startId, int limit)
+    {
+        try (Session s = factory.openSession()) {
+            Query query = s.createQuery("From User");
+            query.setFirstResult(startId);
+            query.setMaxResults(limit);
+
+            return (List<User>) query.getResultList();
+        }
     }
 
     public HardwareId fetchHardwareId(User user)
