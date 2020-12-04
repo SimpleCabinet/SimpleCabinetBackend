@@ -1,9 +1,7 @@
 package pro.gravit.launchermodules.simplecabinet.dao;
 
 import org.hibernate.*;
-import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
-import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
-import pro.gravit.launchermodules.simplecabinet.model.User;
+import pro.gravit.launchermodules.simplecabinet.model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -33,6 +31,18 @@ public class SimpleCabinetProductDAO {
             query.setMaxResults(limit);
 
             return (List<ProductEntity>) query.getResultList();
+        }
+    }
+
+    public List<ProductEnchantEntity> fetchEnchantsInProduct(ProductEntity entity)
+    {
+        try (Session session = factory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.lock(entity, LockMode.NONE);
+            List<ProductEnchantEntity> list = entity.getEnchants();
+            Hibernate.initialize(list);
+            transaction.commit();
+            return list;
         }
     }
 
