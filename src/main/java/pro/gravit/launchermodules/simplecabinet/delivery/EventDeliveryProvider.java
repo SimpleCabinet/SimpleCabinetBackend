@@ -39,11 +39,23 @@ public class EventDeliveryProvider extends DeliveryProvider {
         event.orderId = entity.getId();
         event.userUsername = user.getUsername();
         event.userUuid = user.getUuid();
+        event.part = entity.getSysPart();
         event.data = new UserItemDeliveryEvent.OrderSystemInfo();
         event.data.itemId = product.getSysId();
         event.data.itemExtra = product.getSysExtra();
         event.data.enchants = dao.productDAO.fetchEnchantsInProduct(product).stream().map(this::getPublicEnchantInfo).collect(Collectors.toList());
         server.nettyServerSocketHandler.nettyServer.service.sendObjectToUUID(serverUUID, event, WebSocketEvent.class);
+    }
+
+    @Override
+    public UserItemDeliveryEvent.OrderSystemInfo fetchSystemItemInfo(OrderEntity entity) {
+        ProductEntity product = entity.getProduct();
+        SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
+        UserItemDeliveryEvent.OrderSystemInfo data = new UserItemDeliveryEvent.OrderSystemInfo();
+        data.itemId = product.getSysId();
+        data.itemExtra = product.getSysExtra();
+        data.enchants = dao.productDAO.fetchEnchantsInProduct(product).stream().map(this::getPublicEnchantInfo).collect(Collectors.toList());
+        return data;
     }
 
     public UserItemDeliveryEvent.OrderSystemInfo.OrderSystemEnchantInfo getPublicEnchantInfo(ProductEnchantEntity enchant) {

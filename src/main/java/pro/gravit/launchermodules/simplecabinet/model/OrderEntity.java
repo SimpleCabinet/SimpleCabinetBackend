@@ -2,7 +2,7 @@ package pro.gravit.launchermodules.simplecabinet.model;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "Order")
 @Table(name = "orders")
 public class OrderEntity {
     public enum OrderStatus
@@ -21,6 +21,8 @@ public class OrderEntity {
     private double sum;
     private int quantity;
     private OrderStatus status;
+    @Column(name = "sys_part")
+    private int sysPart;
 
     public long getId() {
         return id;
@@ -64,5 +66,13 @@ public class OrderEntity {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public int getSysPart() {
+        return sysPart;
+    }
+
+    public void setSysPart(int sysPart) {
+        this.sysPart = sysPart;
     }
 }

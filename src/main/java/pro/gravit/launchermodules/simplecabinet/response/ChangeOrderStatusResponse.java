@@ -13,6 +13,8 @@ import pro.gravit.launchserver.socket.response.SimpleResponse;
 public class ChangeOrderStatusResponse extends SimpleResponse {
     public long orderId;
     public OrderEntity.OrderStatus status;
+    public boolean isParted;
+    public int part;
     @Override
     public String getType() {
         return "lkChangeOrderStatus";
@@ -22,6 +24,7 @@ public class ChangeOrderStatusResponse extends SimpleResponse {
     public void execute(ChannelHandlerContext ctx, Client client) throws Exception {
         if(orderId <= 0 || status == null) {
             sendError("Invalid request");
+            return;
         }
         if(!client.isAuth || client.username == null || client.permissions == null || !(client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN) || client.permissions.isPermission(ClientPermissions.PermissionConsts.MANAGEMENT)))
         {
@@ -39,9 +42,13 @@ public class ChangeOrderStatusResponse extends SimpleResponse {
         OrderEntity entity = dao.orderDAO.findById(orderId);
         if(entity == null) {
             sendError("Order not found");
+            return;
         }
+        if(isParted) {
+            entity.setSysPart(part);
+        }
+        entity.setStatus(status);
         switch (status) {
-
             case CREATED:
                 break;
             case PROCESS:
@@ -53,6 +60,7 @@ public class ChangeOrderStatusResponse extends SimpleResponse {
             case FAILED:
                 break;
         }
+        dao.orderDAO.update(entity);
         sendResult(new ChangeOrderStatusRequestEvent());
     }
 }

@@ -9,6 +9,7 @@ public class UserItemDeliveryEvent implements WebSocketEvent {
     public long orderId;
     public String userUsername;
     public UUID userUuid;
+    public int part;
     public static class OrderSystemInfo {
         public String itemId;
         public String itemExtra;

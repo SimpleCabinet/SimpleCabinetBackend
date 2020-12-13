@@ -60,6 +60,7 @@ public class CreateOrderResponse extends SimpleResponse {
         orderEntity.setUser(user);
         orderEntity.setQuantity(quantity);
         orderEntity.setSum(totalSum);
+        orderEntity.setSysPart(quantity*productEntity.getSysQuantity());
         dao.orderDAO.save(orderEntity);
         module.workers.submit(() -> {
             module.orderService.processOrder(orderEntity);
