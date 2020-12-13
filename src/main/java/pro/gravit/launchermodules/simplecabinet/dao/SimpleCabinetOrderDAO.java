@@ -4,6 +4,7 @@ import org.hibernate.*;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEnchantEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
+import pro.gravit.launchermodules.simplecabinet.model.User;
 
 import javax.persistence.Query;
 import java.util.List;
@@ -42,6 +43,18 @@ public class SimpleCabinetOrderDAO {
             Hibernate.initialize(product);
             transaction.commit();
             return product;
+        }
+    }
+
+    public User fetchUserInOrder(OrderEntity entity)
+    {
+        try (Session session = factory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.lock(entity, LockMode.NONE);
+            User user = entity.getUser();
+            Hibernate.initialize(user);
+            transaction.commit();
+            return user;
         }
     }
 

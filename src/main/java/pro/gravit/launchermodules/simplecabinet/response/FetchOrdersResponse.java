@@ -57,10 +57,13 @@ public class FetchOrdersResponse extends AbstractUserResponse {
         if(isAdmin) {
             try {
                 ProductEntity product = dao.orderDAO.fetchProductInOrder(entity);
+                User user = dao.orderDAO.fetchUserInOrder(entity);
                 if(product.getType() != ProductEntity.ProductType.ITEM) return orderInfo;
                 DeliveryProvider provider = module.config.deliveryProviders.get(product.getSysDeliveryProvider());
                 if(provider == null) return orderInfo;
                 orderInfo.systemInfo = provider.fetchSystemItemInfo(entity);
+                orderInfo.userUsername = user.getUsername();
+                orderInfo.userUUID = user.getUuid();
             } catch (UnsupportedOperationException ignored) {
 
             }
