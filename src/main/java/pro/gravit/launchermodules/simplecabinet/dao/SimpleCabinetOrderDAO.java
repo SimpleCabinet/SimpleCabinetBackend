@@ -49,8 +49,10 @@ public class SimpleCabinetOrderDAO {
 
             query.setFirstResult(startId);
             query.setMaxResults(limit);
+            List<OrderEntity> result = query.getResultList();
+            em.close();
 
-            return (List<OrderEntity>) query.getResultList();
+            return result;
     }
 
     public ProductEntity fetchProductInOrder(OrderEntity entity)
