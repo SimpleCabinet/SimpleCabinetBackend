@@ -18,6 +18,7 @@ public class FetchOrdersRequestEvent extends RequestEvent {
         public int part;
         public String userUsername;
         public UUID userUUID;
+        public boolean cantDelivery;
     }
     public List<PublicOrderInfo> list;
 

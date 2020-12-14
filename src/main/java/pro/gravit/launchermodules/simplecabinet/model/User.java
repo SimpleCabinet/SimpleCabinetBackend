@@ -142,6 +142,8 @@ public class User implements pro.gravit.launchserver.dao.User {
     private String status;
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
+    @Column(name = "last_login")
+    private LocalDateTime lastLoginDate;
 
     @Column(name = "totp_secret_key")
     private byte[] totpSecretKey;
@@ -234,5 +236,13 @@ public class User implements pro.gravit.launchserver.dao.User {
 
     public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
+    }
+
+    public LocalDateTime getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(LocalDateTime lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
     }
 }

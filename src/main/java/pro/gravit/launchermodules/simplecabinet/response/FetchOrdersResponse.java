@@ -14,12 +14,15 @@ import pro.gravit.launchserver.socket.response.SimpleResponse;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class FetchOrdersResponse extends AbstractUserResponse {
     public static int MAX_QUERY = 10;
     public long lastId;
     public OrderEntity.OrderStatus filterByType;
     public long orderId;
+    public boolean fetchSystemInfo;
+    public boolean deliveryUser;
     @Override
     public String getType() {
         return "lkFetchOrders";
@@ -39,14 +42,19 @@ public class FetchOrdersResponse extends AbstractUserResponse {
                 sendError("Order not found");
                 return;
             }
-            sendResult(new FetchOrdersRequestEvent(List.of(getPublicInfo(entity, true))));
+            sendResult(new FetchOrdersRequestEvent(List.of(getPublicInfo(entity, fetchSystemInfo, deliveryUser, user))));
         }
         else {
-            sendError("Not implemented");
+            if(( deliveryUser || fetchSystemInfo ) && !checkPermissionForNonSelf(client)) {
+                sendError("Permissions denied");
+                return;
+            }
+            List<FetchOrdersRequestEvent.PublicOrderInfo> list = dao.orderDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY, filterByType, user).stream().map(a -> getPublicInfo(a, fetchSystemInfo, deliveryUser, user)).collect(Collectors.toList());
+            sendResult(new FetchOrdersRequestEvent(list));
         }
     }
 
-    public FetchOrdersRequestEvent.PublicOrderInfo getPublicInfo(OrderEntity entity, boolean isAdmin) {
+    public FetchOrdersRequestEvent.PublicOrderInfo getPublicInfo(OrderEntity entity, boolean isAdmin, boolean checkDeliveryUser, User deliveryUser) {
         FetchOrdersRequestEvent.PublicOrderInfo orderInfo = new FetchOrdersRequestEvent.PublicOrderInfo();
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
@@ -54,14 +62,18 @@ public class FetchOrdersResponse extends AbstractUserResponse {
         orderInfo.date = null; // TODO
         orderInfo.part = entity.getSysPart();
         orderInfo.status = entity.getStatus();
-        if(isAdmin) {
+        if(isAdmin || checkDeliveryUser) {
             try {
                 ProductEntity product = dao.orderDAO.fetchProductInOrder(entity);
                 User user = dao.orderDAO.fetchUserInOrder(entity);
                 if(product.getType() != ProductEntity.ProductType.ITEM) return orderInfo;
                 DeliveryProvider provider = module.config.deliveryProviders.get(product.getSysDeliveryProvider());
                 if(provider == null) return orderInfo;
-                orderInfo.systemInfo = provider.fetchSystemItemInfo(entity);
+                if(checkDeliveryUser && !provider.isDeliveryUser(entity, deliveryUser)) {
+                    orderInfo.cantDelivery = true;
+                }
+                if(isAdmin)
+                    orderInfo.systemInfo = provider.fetchSystemItemInfo(entity);
                 orderInfo.userUsername = user.getUsername();
                 orderInfo.userUUID = user.getUuid();
             } catch (UnsupportedOperationException ignored) {

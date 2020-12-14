@@ -3,6 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.delivery;
 import pro.gravit.launcher.event.UserItemDeliveryEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
+import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.utils.ProviderMap;
 import pro.gravit.utils.helper.LogHelper;
@@ -25,6 +26,9 @@ public abstract class DeliveryProvider {
     }
     public UserItemDeliveryEvent.OrderSystemInfo fetchSystemItemInfo(OrderEntity entity) {
         throw new UnsupportedOperationException();
+    }
+    public boolean isDeliveryUser(OrderEntity entity, User user) {
+        return false;
     }
     public static void registerProviders()
     {

@@ -6,7 +6,12 @@ import pro.gravit.launchermodules.simplecabinet.model.ProductEnchantEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class SimpleCabinetOrderDAO {
@@ -23,15 +28,29 @@ public class SimpleCabinetOrderDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<OrderEntity> fetchPage(int startId, int limit)
+    public List<OrderEntity> fetchPage(int startId, int limit, OrderEntity.OrderStatus status, User user)
     {
-        try (Session s = factory.openSession()) {
-            Query query = s.createQuery("From Order");
+            EntityManager em = factory.createEntityManager();
+            em.getTransaction().begin();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<OrderEntity> personCriteria = cb.createQuery(OrderEntity.class);
+            Root<OrderEntity> rootUser = personCriteria.from(OrderEntity.class);
+            Expression<Boolean> where = null;
+            personCriteria.select(rootUser);
+            if(status != null) {
+                where = cb.equal(rootUser.get("status"), status);
+            }
+            if(user != null) {
+                if(where == null) where = cb.equal(rootUser.get("user"), user);
+                else where = cb.and(where, cb.equal(rootUser.get("user"), user));
+            }
+            if(where != null) personCriteria.where(where);
+            Query query  = em.createQuery(personCriteria);
+
             query.setFirstResult(startId);
             query.setMaxResults(limit);
 
             return (List<OrderEntity>) query.getResultList();
-        }
     }
 
     public ProductEntity fetchProductInOrder(OrderEntity entity)

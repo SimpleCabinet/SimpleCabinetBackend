@@ -31,7 +31,7 @@ public class EventDeliveryProvider extends DeliveryProvider {
         ProductEntity product = entity.getProduct();
         User user = entity.getUser();
         if(product.getType() != ProductEntity.ProductType.ITEM) {
-            LogHelper.warning("LuckyPermsDeliveryProvider not support type %s (order %d). Canceled", entity.getProduct().getType().toString(), entity.getId());
+            LogHelper.warning("EventDeliveryProvider not support type %s (order %d). Canceled", entity.getProduct().getType().toString(), entity.getId());
             module.orderService.failOrder(entity);
             return;
         }
@@ -45,6 +45,11 @@ public class EventDeliveryProvider extends DeliveryProvider {
         event.data.itemExtra = product.getSysExtra();
         event.data.enchants = dao.productDAO.fetchEnchantsInProduct(product).stream().map(this::getPublicEnchantInfo).collect(Collectors.toList());
         server.nettyServerSocketHandler.nettyServer.service.sendObjectToUUID(serverUUID, event, WebSocketEvent.class);
+    }
+
+    @Override
+    public boolean isDeliveryUser(OrderEntity entity, User user) {
+        return user.getUuid().equals(serverUUID);
     }
 
     @Override

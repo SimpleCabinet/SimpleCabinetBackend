@@ -27,11 +27,12 @@ public class FetchProductsResponse extends SimpleResponse {
         }
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
-        List<FetchProductsRequestEvent.PublicProductInfo> list = dao.productDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY).stream().map(FetchProductsResponse::fetchPublicInfo).collect(Collectors.toList());
+        List<FetchProductsRequestEvent.PublicProductInfo> list = dao.productDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY).stream().map(a -> fetchPublicInfo(a, module.config.urls.shopPictureBaseUrl))
+                .collect(Collectors.toList());
         sendResult(new FetchProductsRequestEvent(list, MAX_QUERY));
     }
 
-    public static FetchProductsRequestEvent.PublicProductInfo fetchPublicInfo(ProductEntity productEntity)
+    public static FetchProductsRequestEvent.PublicProductInfo fetchPublicInfo(ProductEntity productEntity, String pictureBaseUrl)
     {
         FetchProductsRequestEvent.PublicProductInfo productInfo = new FetchProductsRequestEvent.PublicProductInfo();
         productInfo.name = productEntity.getName();
@@ -41,6 +42,9 @@ public class FetchProductsResponse extends SimpleResponse {
         productInfo.price = productEntity.getPrice();
         productInfo.count = productEntity.getCount();
         productInfo.endDate = productEntity.getEndDate();
+        if(productEntity.getPictureUrl() != null) {
+            productInfo.pictureUrl = (pictureBaseUrl == null ? "" : pictureBaseUrl).concat(productEntity.getPictureUrl());
+        }
         return productInfo;
     }
 }

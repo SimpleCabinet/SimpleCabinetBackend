@@ -55,6 +55,14 @@ public class ProductEntity {
         this.count = count;
     }
 
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+
     public LocalDateTime getEndDate() {
         return endDate;
     }
@@ -141,6 +149,8 @@ public class ProductEntity {
     @Column(name = "allow_stack")
     private boolean allowStack;
     private boolean visible;
+    @Column(name = "picture_url")
+    private String pictureUrl;
     //Sys
     @Column(name = "sys_id")
     private String sysId;

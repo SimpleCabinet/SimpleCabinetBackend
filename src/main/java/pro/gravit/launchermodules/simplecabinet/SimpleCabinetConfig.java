@@ -90,6 +90,7 @@ public class SimpleCabinetConfig {
     }
     public static class UrlConfig {
         public String frontendUrl;
+        public String shopPictureBaseUrl;
     }
     public int schedulerCorePoolSize;
     public int workersCorePoolSize;

@@ -17,6 +17,7 @@ public class FetchProductsRequestEvent extends RequestEvent {
         public long count;
         public LocalDateTime endDate;
         public boolean allowStack;
+        public String pictureUrl;
     }
     public List<PublicProductInfo> products;
     public int maxQuery;
