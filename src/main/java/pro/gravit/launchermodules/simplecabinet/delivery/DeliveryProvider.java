@@ -37,6 +37,7 @@ public abstract class DeliveryProvider {
             providers.register("event", EventDeliveryProvider.class);
             providers.register("debug", DebugDeliveryProvider.class);
             providers.register("luckperms", LuckPermsDeliveryProvider.class);
+            providers.register("group", GroupDeliveryProvider.class);
             registeredProviders = true;
         }
     }

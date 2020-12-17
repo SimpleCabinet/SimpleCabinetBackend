@@ -46,35 +46,11 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
         }
         String groupName = product.getSysId();
         int days = product.getSysQuantity()*entity.getQuantity();
-        LocalDateTime endDate = LocalDateTime.now().plusDays(days);
         LogHelper.debug("Delivery lk group %s to user %s (%d days)", groupName, user.getUsername(), days);
-        List<UserGroup> list = ((SimpleCabinetUserDAO)dao.userDAO).fetchGroups(user);
-        UserGroup group = new UserGroup();
-        boolean isKnownGroup = false;
-        for(UserGroup g : list) {
-            if(g.getGroupName().equals(groupName)) {
-                group = g;
-                isKnownGroup = true;
-                break;
-            }
-        }
-        if(product.isAllowStack() && group.getEndDate() != null)
-        {
-            endDate = endDate.plus(Duration.between(LocalDateTime.now(), group.getEndDate()));
-        }
-        group.setEndDate(endDate);
-        if(!isKnownGroup) {
-            if(module.config.findGroupByName(groupName) != null) {
-                group.setStartDate(LocalDateTime.now());
-                group.setUser(user);
-                group.setGroupName(groupName);
-                ((SimpleCabinetUserDAO) dao.userDAO).save(group);
-            }
-        }
-        else  {
-            ((SimpleCabinetUserDAO) dao.userDAO).update(group);
-        }
-        LogHelper.debug("Delivery lk group %s to user %s (%d days)", groupName, user.getUsername(), days);
+        LocalDateTime endDate = GroupDeliveryProvider.deliveryGroup(module, (SimpleCabinetUserDAO)dao.userDAO, user, groupName, Duration.ofDays(days), product.isAllowStack());
+        if(endDate == null) endDate = LocalDateTime.now().plusDays(days);
+
+        LogHelper.debug("Delivery luckyperms group %s to user %s (%d days)", groupName, user.getUsername(), days);
         deliveryWithSource(groupName, product.getSysExtra(), product.getSysNbt(), user.getUuid(), endDate);
     }
 
