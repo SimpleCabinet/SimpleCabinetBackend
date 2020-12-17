@@ -49,7 +49,7 @@ public class FetchOrdersResponse extends AbstractUserResponse {
                 sendError("Permissions denied");
                 return;
             }
-            List<FetchOrdersRequestEvent.PublicOrderInfo> list = dao.orderDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY, filterByType, user).stream().map(a -> getPublicInfo(a, fetchSystemInfo, deliveryUser, user)).collect(Collectors.toList());
+            List<FetchOrdersRequestEvent.PublicOrderInfo> list = dao.orderDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY, filterByType, user).stream().map(a -> getPublicInfo(a, fetchSystemInfo, deliveryUser, (User) client.daoObject)).collect(Collectors.toList());
             sendResult(new FetchOrdersRequestEvent(list));
         }
     }

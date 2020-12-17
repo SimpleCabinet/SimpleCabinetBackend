@@ -13,13 +13,12 @@ public class UserItemDeliveryEvent implements WebSocketEvent {
     public static class OrderSystemInfo {
         public String itemId;
         public String itemExtra;
-        public List<String> itemLore;
         public static class OrderSystemEnchantInfo {
             public String name;
             public int level;
         }
         public List<OrderSystemEnchantInfo> enchants;
-        public byte[] compressedJsonNBTTags;
+        public String itemNbt;
     }
     public OrderSystemInfo data;
     @Override
