@@ -59,6 +59,7 @@ public class BanUserResponse extends SimpleResponse {
         user.setPermissions(permissions);
         dao.userDAO.update(user);
         service.kickByUserUUID(user.getUuid(), true);
+        server.modulesManager.invokeEvent(new pro.gravit.launchermodules.simplecabinet.event.UserBannedEvent(user, hardware));
         sendResult(new BanUserRequestEvent());
         UserBannedEvent event = new UserBannedEvent();
         event.username = user.getUsername();

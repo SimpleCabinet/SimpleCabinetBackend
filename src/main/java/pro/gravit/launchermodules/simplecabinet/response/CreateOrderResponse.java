@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.CreateOrderRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.event.CreatedOrderEvent;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
@@ -62,6 +63,7 @@ public class CreateOrderResponse extends SimpleResponse {
         orderEntity.setSum(totalSum);
         orderEntity.setSysPart(quantity*productEntity.getSysQuantity());
         dao.orderDAO.save(orderEntity);
+        server.modulesManager.invokeEvent(new CreatedOrderEvent(orderEntity));
         module.workers.submit(() -> {
             module.orderService.processOrder(orderEntity);
         });

@@ -5,6 +5,7 @@ import pro.gravit.launcher.event.request.InitPaymentRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetConfig;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.event.UserInitPaymentEvent;
 import pro.gravit.launchermodules.simplecabinet.model.PaymentId;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
@@ -49,6 +50,7 @@ public class InitPaymentResponse extends SimpleResponse {
         dao.paymentDAO.save(paymentId);
         int id = paymentId.getId();
         LogHelper.debug("User %s initial payment %d", user.getUsername(), id);
+        server.modulesManager.invokeEvent(new UserInitPaymentEvent(user, paymentId));
         sendResult(module.paymentService.makeInitPaymentRequestEvent(paymentId, user, ip, variant));
     }
 }

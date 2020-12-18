@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.ClientPermissions;
 import pro.gravit.launcher.event.request.ChangePasswordRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.event.UserChangedPasswordEvent;
 import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
@@ -33,6 +34,7 @@ public class ChangePasswordResponse extends AbstractUserResponse {
         user.setPassword(newPassword);
         server.config.dao.userDAO.update(user);
         server.modulesManager.getModule(SimpleCabinetModule.class).auditService.pushBaseAudit(AuditEntity.AuditType.CHANGE_PASSWORD, (User) client.daoObject, ip, user);
+        server.modulesManager.invokeEvent(new UserChangedPasswordEvent(user));
         sendResult(new ChangePasswordRequestEvent());
     }
 }

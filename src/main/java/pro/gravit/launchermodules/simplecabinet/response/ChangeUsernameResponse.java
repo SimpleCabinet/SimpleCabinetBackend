@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.ChangeUsernameRequestEvent;
 import pro.gravit.launcher.events.request.ExitRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.event.UserChangedUsernameEvent;
 import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
@@ -33,6 +34,7 @@ public class ChangeUsernameResponse extends AbstractUserResponse {
         user.setUsername(newUsername);
         server.config.dao.userDAO.update(user);
         server.modulesManager.getModule(SimpleCabinetModule.class).auditService.pushBaseAudit(AuditEntity.AuditType.CHANGE_USERNAME, (User) client.daoObject, ip, user);
+        server.modulesManager.invokeEvent(new UserChangedUsernameEvent(user));
         sendResult(new ChangeUsernameRequestEvent());
     }
 

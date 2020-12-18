@@ -5,6 +5,7 @@ import pro.gravit.launcher.event.request.UploadSkinRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetConfig;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
+import pro.gravit.launchermodules.simplecabinet.event.UploadedSkinEvent;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
@@ -68,6 +69,7 @@ public class UploadSkinResponse extends SimpleResponse {
             LogHelper.debug("User %s upload skin. Write %d bytes to %s", client.username, data.length, targetPath.toAbsolutePath().toString());
             IOHelper.createParentDirs(targetPath);
             IOHelper.write(targetPath, data);
+            server.modulesManager.invokeEvent(new UploadedSkinEvent((User) client.daoObject, skinType, targetPath));
             sendResult(new UploadSkinRequestEvent());
         } catch (IOException ex)
         {

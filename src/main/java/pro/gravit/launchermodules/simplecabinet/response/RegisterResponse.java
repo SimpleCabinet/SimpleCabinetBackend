@@ -3,6 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.response;
 import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.RegisterRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
+import pro.gravit.launchermodules.simplecabinet.event.UserRegisteredEvent;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.manangers.hook.AuthHookManager;
 import pro.gravit.launchserver.socket.Client;
@@ -57,6 +58,7 @@ public class RegisterResponse extends SimpleResponse {
         user.setGender(gender);
         user.setRegistrationDate(LocalDateTime.now());
         dao.save(user);
+        server.modulesManager.invokeEvent(new UserRegisteredEvent(user, ip));
         sendResult(new RegisterRequestEvent(username, user.getUuid()));
     }
 }

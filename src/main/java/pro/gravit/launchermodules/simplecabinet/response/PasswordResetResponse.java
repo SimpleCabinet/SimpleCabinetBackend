@@ -5,6 +5,7 @@ import pro.gravit.launcher.event.request.PasswordResetRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
+import pro.gravit.launchermodules.simplecabinet.event.UserPasswordResetEvent;
 import pro.gravit.launchermodules.simplecabinet.model.PasswordResetEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
@@ -37,6 +38,7 @@ public class PasswordResetResponse extends SimpleResponse {
             sendError("User not found");
             return;
         } else {
+            server.modulesManager.invokeEvent(new UserPasswordResetEvent(user, ip));
             module.workers.submit(() -> {
             try {
                 LogHelper.debug("User %s request password reset (start)", user.getEmail());

@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.PasswordResetApplyRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
+import pro.gravit.launchermodules.simplecabinet.event.UserPasswordResetApplyEvent;
 import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
 import pro.gravit.launchermodules.simplecabinet.model.PasswordResetEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
@@ -43,6 +44,7 @@ public class PasswordResetApplyResponse extends SimpleResponse {
         dao.update(user);
         dao.delete(entity);
         server.modulesManager.getModule(SimpleCabinetModule.class).auditService.pushBaseAudit(AuditEntity.AuditType.PASSWORD_RESET, user, ip, user);
+        server.modulesManager.invokeEvent(new UserPasswordResetApplyEvent(user, ip));
         sendResult(new PasswordResetApplyRequestEvent());
     }
 }
