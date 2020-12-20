@@ -13,8 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FetchUsersResponse extends SimpleResponse {
-    public static int MAX_QUERY = 10;
+    public static int MAX_QUERY = 12;
     public long lastId;
+    public String filterByName;
     @Override
     public String getType() {
         return "lkFetchUsers";
@@ -28,7 +29,7 @@ public class FetchUsersResponse extends SimpleResponse {
         }
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
-        List<FetchUsersRequestEvent.UserPublicInfo> list = ((SimpleCabinetUserDAO)dao.userDAO).fetchPage((int) lastId*MAX_QUERY, MAX_QUERY).stream().map(FetchUsersResponse::fetchPublicInfo).collect(Collectors.toList());
+        List<FetchUsersRequestEvent.UserPublicInfo> list = ((SimpleCabinetUserDAO)dao.userDAO).fetchPage((int) lastId*MAX_QUERY, MAX_QUERY, filterByName).stream().map(FetchUsersResponse::fetchPublicInfo).collect(Collectors.toList());
         sendResult(new FetchUsersRequestEvent(list, MAX_QUERY));
     }
 

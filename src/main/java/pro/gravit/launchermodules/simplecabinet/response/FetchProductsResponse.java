@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FetchProductsResponse extends SimpleResponse {
-    public static int MAX_QUERY = 10;
+    public static int MAX_QUERY = 12;
+    public ProductEntity.ProductType filterByType;
+    public String filterByName;
     public long lastId;
     @Override
     public String getType() {
@@ -27,7 +29,8 @@ public class FetchProductsResponse extends SimpleResponse {
         }
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
-        List<FetchProductsRequestEvent.PublicProductInfo> list = dao.productDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY).stream().map(a -> fetchPublicInfo(a, module.config.urls.shopPictureBaseUrl))
+        List<FetchProductsRequestEvent.PublicProductInfo> list = dao.productDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY, filterByType, filterByName, true)
+                .stream().map(a -> fetchPublicInfo(a, module.config.urls.shopPictureBaseUrl))
                 .collect(Collectors.toList());
         sendResult(new FetchProductsRequestEvent(list, MAX_QUERY));
     }

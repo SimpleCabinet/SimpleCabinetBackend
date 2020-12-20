@@ -8,7 +8,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,15 +75,27 @@ public class SimpleCabinetUserDAO implements UserDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<User> fetchPage(int startId, int limit)
+    public List<User> fetchPage(int startId, int limit, String name)
     {
-        try (Session s = factory.openSession()) {
-            Query query = s.createQuery("From User");
-            query.setFirstResult(startId);
-            query.setMaxResults(limit);
-
-            return (List<User>) query.getResultList();
+        EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<User> personCriteria = cb.createQuery(User.class);
+        Root<User> rootUser = personCriteria.from(User.class);
+        Expression<Boolean> where = null;
+        personCriteria.select(rootUser);
+        if(name != null) {
+            where = cb.equal(rootUser.get("username"), name);
         }
+        if(where != null) personCriteria.where(where);
+        Query query  = em.createQuery(personCriteria);
+
+        query.setFirstResult(startId);
+        query.setMaxResults(limit);
+        List<User> result = query.getResultList();
+        em.close();
+
+        return result;
     }
 
     public HardwareId fetchHardwareId(User user)

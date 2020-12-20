@@ -22,8 +22,15 @@ public class FetchOrdersRequestEvent extends RequestEvent {
     }
     public List<PublicOrderInfo> list;
 
+    public int maxQuery;
+
     public FetchOrdersRequestEvent(List<PublicOrderInfo> list) {
         this.list = list;
+    }
+
+    public FetchOrdersRequestEvent(List<PublicOrderInfo> list, int maxQuery) {
+        this.list = list;
+        this.maxQuery = maxQuery;
     }
 
     @Override

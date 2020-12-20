@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class FetchOrdersResponse extends AbstractUserResponse {
-    public static int MAX_QUERY = 10;
+    public static int MAX_QUERY = 12;
     public long lastId;
     public OrderEntity.OrderStatus filterByType;
     public long orderId;
@@ -50,7 +50,7 @@ public class FetchOrdersResponse extends AbstractUserResponse {
                 return;
             }
             List<FetchOrdersRequestEvent.PublicOrderInfo> list = dao.orderDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY, filterByType, user).stream().map(a -> getPublicInfo(a, fetchSystemInfo, deliveryUser, (User) client.daoObject)).collect(Collectors.toList());
-            sendResult(new FetchOrdersRequestEvent(list));
+            sendResult(new FetchOrdersRequestEvent(list, MAX_QUERY));
         }
     }
 

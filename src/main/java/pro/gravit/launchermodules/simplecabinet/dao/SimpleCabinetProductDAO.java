@@ -7,7 +7,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SimpleCabinetProductDAO {
@@ -23,15 +25,31 @@ public class SimpleCabinetProductDAO {
         }
     }
     @SuppressWarnings("unchecked")
-    public List<ProductEntity> fetchPage(int startId, int limit)
+    public List<ProductEntity> fetchPage(int startId, int limit, ProductEntity.ProductType type, String name, boolean active)
     {
-        try (Session s = factory.openSession()) {
-            Query query = s.createQuery("From Product");
-            query.setFirstResult(startId);
-            query.setMaxResults(limit);
-
-            return (List<ProductEntity>) query.getResultList();
+        EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<ProductEntity> personCriteria = cb.createQuery(ProductEntity.class);
+        Root<ProductEntity> rootUser = personCriteria.from(ProductEntity.class);
+        Expression<Boolean> where = null;
+        personCriteria.select(rootUser);
+        if(type != null) {
+            where = cb.equal(rootUser.get("type"), type);
         }
+        if(active) {
+            if(where == null) where = cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now()));
+            else where = cb.and(where, cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now())));
+        }
+        if(where != null) personCriteria.where(where);
+        Query query  = em.createQuery(personCriteria);
+
+        query.setFirstResult(startId);
+        query.setMaxResults(limit);
+        List<ProductEntity> result = query.getResultList();
+        em.close();
+
+        return result;
     }
 
     public List<ProductEnchantEntity> fetchEnchantsInProduct(ProductEntity entity)
