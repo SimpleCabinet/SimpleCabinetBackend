@@ -134,8 +134,8 @@ public class SimpleCabinetConfig {
         SimpleCabinetConfig config = new SimpleCabinetConfig();
         config.workersCorePoolSize = 3;
         config.schedulerCorePoolSize = 2;
-        config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(64, 64, 100 * 1024, "updates/skins/%s.png"), null, UploadSkinResponse.SkinType.SKIN));
-        config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(32, 32, 40 * 1024, "updates/cloaks/%s.png"), null, UploadSkinResponse.SkinType.CLOAK));
+        config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(64, 64, 128 * 1024, "updates/skins/%s.png"), null, UploadSkinResponse.SkinType.SKIN));
+        config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(64, 64, 128 * 1024, "updates/cloaks/%s.png"), null, UploadSkinResponse.SkinType.CLOAK));
         config.groups.add(new GroupEntity("HD", 0, 1));
         config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(1024, 1024, 1024 * 1024, "updates/skins/%s.png"), "HD", UploadSkinResponse.SkinType.SKIN));
         config.uploads.add(new UploadSkinEntity(new SkinSizeConfig(512, 512, 512 * 1024, "updates/cloaks/%s.png"), "HD", UploadSkinResponse.SkinType.CLOAK));

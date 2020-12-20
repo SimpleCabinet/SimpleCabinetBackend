@@ -69,7 +69,7 @@ public class GroupCommand extends Command {
                 LocalDateTime endTime;
                 if(args.length > 3)
                 {
-                    endTime = date.plusDays(Long.parseLong(args[2]));
+                    endTime = date.plusDays(Long.parseLong(args[3]));
                 }
                 else endTime = null;
                 UserGroup userGroup = new UserGroup();
