@@ -47,7 +47,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         try {
             Thread.currentThread().getContextClassLoader().loadClass(User.class.getName());
         } catch (ClassNotFoundException e) {
-            LogHelper.warning("ClassLoading bug detected. Your LaunchServer <5.1.8");
+            //LogHelper.warning("ClassLoading bug detected. Your LaunchServer <5.1.8");
             Thread.currentThread().setContextClassLoader(SimpleCabinetUserDAO.class.getClassLoader());
         }
     }

@@ -9,7 +9,9 @@ import pro.gravit.launcher.modules.events.PreConfigPhase;
 import pro.gravit.launcher.modules.events.PreGsonPhase;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
+import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
+import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetHWIDProvider;
 import pro.gravit.launchermodules.simplecabinet.response.*;
@@ -57,17 +59,29 @@ public class SimpleCabinetModule extends LauncherModule {
     private LaunchServer server;
 
     public SimpleCabinetModule() {
-        super(new LauncherModuleInfo("SimpleCabinet", new Version(1,0,0)));
+        super(new LauncherModuleInfo("SimpleCabinet", new Version(1,0,0, 1, Version.Type.STABLE), new String[]{"LaunchServerCore"}));
     }
 
     @Override
     public void init(LauncherInitContext initContext) {
+        LauncherModule module = modulesManager.getModule("LaunchServerCore");
+        if(!checkLaunchServerVersion(module.getModuleInfo().version))
+        {
+            throw new RuntimeException("SimpleCabinet required LaunchServerCore 5.1.9 or higher");
+        }
         registerEvent(this::preConfigPhase, PreConfigPhase.class);
         registerEvent(this::initPhase, LaunchServerInitPhase.class);
         registerEvent(this::getLaunchServerEvent, NewLaunchServerInstanceEvent.class);
         registerEvent(this::closePhase, ClosePhase.class);
         registerEvent(this::preGsonPhase, PreGsonPhase.class);
         registerEvent(this::exitPhase, ClosePhase.class);
+    }
+
+    public boolean checkLaunchServerVersion(Version version) {
+        if(version.major > 5) return true;
+        if(version.minor > 1) return true;
+        if(version.patch >= 9) return true;
+        return false;
     }
 
     public void preGsonPhase(PreGsonPhase preGsonPhase)
@@ -164,6 +178,14 @@ public class SimpleCabinetModule extends LauncherModule {
         this.orderService = new OrderService(this, server);
         this.auditService = new AuditService(this, server);
         server.commandHandler.registerCommand("cabinet", new CabinetCommand(server));
+        server.sessionManager.clientRestoreHook.registerHook((c) -> {
+            if(c.daoObject != null && server.config.dao != null) {
+                User user = (User) c.daoObject;
+                SimpleCabinetUserDAO userDAO = (SimpleCabinetUserDAO) server.config.dao.userDAO;
+                userDAO.fetchGroups(user);
+            }
+            return false;
+        });
     }
     public void closePhase(ClosePhase closePhase)
     {

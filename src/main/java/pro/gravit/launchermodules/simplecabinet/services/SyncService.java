@@ -25,7 +25,7 @@ public class SyncService {
         ExtendedInfoRequestEvent extendedInfoRequestEvent;
         CurrentUserRequestEvent currentUserRequestEvent;
         if(isExtInfo) {
-            extendedInfoRequestEvent = ExtendedInfoResponse.fetchExtendedInfo(user, true, false);
+            extendedInfoRequestEvent = ExtendedInfoResponse.fetchExtendedInfo(module, user, true, false);
         }
         else extendedInfoRequestEvent = null;
         if(isUserInfo) {

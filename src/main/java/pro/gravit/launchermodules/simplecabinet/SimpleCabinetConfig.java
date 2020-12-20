@@ -50,11 +50,20 @@ public class SimpleCabinetConfig {
     public static class GroupEntity
     {
         public String name;
+        public String displayName;
         public long permission;
         public int priority;
 
         public GroupEntity(String name, long permission, int priority) {
             this.name = name;
+            this.displayName = name;
+            this.permission = permission;
+            this.priority = priority;
+        }
+
+        public GroupEntity(String name, String displayName, long permission, int priority) {
+            this.name = name;
+            this.displayName = displayName;
             this.permission = permission;
             this.priority = priority;
         }

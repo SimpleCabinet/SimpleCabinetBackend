@@ -24,10 +24,12 @@ public class ExtendedInfoRequestEvent extends RequestEvent {
     public static class ExtendedGroup {
         public String key;
         public String name;
+        public int days;
 
         public ExtendedGroup(String key, String name) {
             this.key = key;
             this.name = name;
+            this.days = -1;
         }
 
         public static Map<Long, ExtendedGroup> PERMISSIONS_GROUP = new HashMap<>();

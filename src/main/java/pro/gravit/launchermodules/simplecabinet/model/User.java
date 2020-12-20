@@ -90,12 +90,21 @@ public class User implements pro.gravit.launchserver.dao.User {
 
     public enum HashType
     {
-        BCRYPT,
-        DOUBLEMD5,
-        MD5,
-        SHA256,
-        AUTHMESHA256,
-        PHPASS
+        BCRYPT(true),
+        DOUBLEMD5(false),
+        MD5(false),
+        SHA256(false),
+        AUTHMESHA256(true),
+        PHPASS(true);
+        boolean trusted;
+
+        public boolean isTrusted() {
+            return trusted;
+        }
+
+        HashType(boolean trusted) {
+            this.trusted = trusted;
+        }
     }
     public enum Gender
     {
@@ -174,6 +183,7 @@ public class User implements pro.gravit.launchserver.dao.User {
 
     @Override
     public void setPassword(String password) {
+        if(!hashType.isTrusted()) hashType = DEFAULT_PASSWORD_HASH;
         String newPassword = PasswordHelper.hashPassword(hashType, password);
         if(newPassword == null)
         {
