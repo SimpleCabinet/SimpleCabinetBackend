@@ -52,6 +52,7 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
 
         LogHelper.debug("Delivery luckyperms group %s to user %s (%d days)", groupName, user.getUsername(), days);
         deliveryWithSource(groupName, product.getSysExtra(), product.getSysNbt(), user.getUuid(), endDate);
+        module.orderService.completeOrder(entity);
     }
 
     private void deliveryWithSource(String groupName, String extra, String nbt, UUID userUUID, LocalDateTime endDate) throws IOException, SQLException {

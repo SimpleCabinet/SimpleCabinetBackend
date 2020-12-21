@@ -1,5 +1,7 @@
 package pro.gravit.launchermodules.simplecabinet.services;
 
+import pro.gravit.launcher.event.OrderStatusChangedEvent;
+import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
@@ -44,6 +46,7 @@ public class OrderService {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         entity.setStatus(OrderEntity.OrderStatus.FINISHED);
         dao.orderDAO.update(entity);
+        notifyUser(entity);
     }
 
     public void failOrder(OrderEntity entity)
@@ -51,6 +54,7 @@ public class OrderService {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         entity.setStatus(OrderEntity.OrderStatus.FAILED);
         dao.orderDAO.update(entity);
+        notifyUser(entity);
     }
 
     private void deliveryOrder(OrderEntity entity)
@@ -66,8 +70,11 @@ public class OrderService {
         {
             failOrder(entity);
         }
-        else {
-            completeOrder(entity);
-        }
+    }
+
+    public void notifyUser(OrderEntity entity) {
+        UUID userUUID = entity.getUser().getUuid();
+        OrderStatusChangedEvent event = new OrderStatusChangedEvent(entity.getId(), entity.getStatus(), entity.getSysPart());
+        server.nettyServerSocketHandler.nettyServer.service.sendObjectToUUID(userUUID, event, WebSocketEvent.class);
     }
 }

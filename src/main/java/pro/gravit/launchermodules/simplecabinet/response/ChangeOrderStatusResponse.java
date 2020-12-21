@@ -5,6 +5,7 @@ import pro.gravit.launcher.ClientPermissions;
 import pro.gravit.launcher.event.request.ChangeOrderStatusRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
@@ -54,11 +55,12 @@ public class ChangeOrderStatusResponse extends SimpleResponse {
             case PROCESS:
                 break;
             case DELIVERY:
-                break;
             case FINISHED:
+            case FAILED: {
+                dao.orderDAO.fetchUserInOrder(entity);
+                module.orderService.notifyUser(entity);
                 break;
-            case FAILED:
-                break;
+            }
         }
         dao.orderDAO.update(entity);
         sendResult(new ChangeOrderStatusRequestEvent());

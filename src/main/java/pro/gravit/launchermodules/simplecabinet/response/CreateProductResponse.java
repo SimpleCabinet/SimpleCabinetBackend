@@ -58,6 +58,7 @@ public class CreateProductResponse extends SimpleResponse {
         productEntity.setType(type);
         productEntity.setName(name);
         productEntity.setDescription(description);
+        productEntity.setVisible(visible);
         productEntity.setPrice(price);
         productEntity.setCount(count);
         productEntity.setEndDate(endDate);
