@@ -108,7 +108,7 @@ public class UnitPaySeverlet implements NettyWebAPIHandler.SimpleSeverletHandler
         LogHelper.dev("Calculated hash sum: %s", signature);
         boolean error = false;
         String errorReason = "Unknown error";
-        if(signature.equals(paramSignature) || true) {
+        if(signature.equals(paramSignature) || "check".equals(method)) {
             LogHelper.dev("Signature OK");
             if("pay".equals(method)) {
                 LogHelper.dev("Delivery payment");

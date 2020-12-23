@@ -44,6 +44,7 @@ public class FetchProductsResponse extends SimpleResponse {
         productInfo.allowStack = productEntity.isAllowStack();
         productInfo.price = productEntity.getPrice();
         productInfo.count = productEntity.getCount();
+        productInfo.type = productEntity.getType();
         productInfo.endDate = productEntity.getEndDate();
         if(productEntity.getPictureUrl() != null) {
             productInfo.pictureUrl = (pictureBaseUrl == null ? "" : pictureBaseUrl).concat(productEntity.getPictureUrl());

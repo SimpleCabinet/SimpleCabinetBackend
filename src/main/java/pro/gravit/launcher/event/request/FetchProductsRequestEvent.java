@@ -1,6 +1,7 @@
 package pro.gravit.launcher.event.request;
 
 import pro.gravit.launcher.events.RequestEvent;
+import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 
 import javax.persistence.Column;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public class FetchProductsRequestEvent extends RequestEvent {
         public String name;
         public String description;
         public double price;
+        public ProductEntity.ProductType type;
         //Limitations
         public long count;
         public LocalDateTime endDate;
