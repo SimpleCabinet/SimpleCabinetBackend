@@ -37,9 +37,15 @@ public class SimpleCabinetProductDAO {
         if(type != null) {
             where = cb.equal(rootUser.get("type"), type);
         }
+        if(name != null) {
+            if(where == null) where = cb.equal(rootUser.get("name"), name);
+            else where = cb.and(where, cb.equal(rootUser.get("name"), name));
+        }
         if(active) {
-            if(where == null) where = cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now()));
-            else where = cb.and(where, cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now())));
+            if(where == null) where = cb.and(cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now())),
+                    cb.notEqual(rootUser.get("count"), 0));
+            else where = cb.and(cb.and(where, cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now()))),
+                    cb.notEqual(rootUser.get("count"), 0));
         }
         if(where != null) personCriteria.where(where);
         Query query  = em.createQuery(personCriteria);

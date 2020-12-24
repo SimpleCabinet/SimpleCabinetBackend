@@ -10,11 +10,12 @@ import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.time.LocalDateTime;
 
 public class CreateProductResponse extends SimpleResponse {
-    public ProductEntity.ProductType type;
+    public ProductEntity.ProductType productType;
     public String name;
     public String description;
     public double price;
@@ -37,7 +38,7 @@ public class CreateProductResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext channelHandlerContext, Client client) throws Exception {
-        if(type == null || name == null || description == null || price < 0 || count == 0) {
+        if(productType == null || name == null || price < 0 || count == 0) {
             sendError("Invalid request");
             return;
         }
@@ -55,7 +56,7 @@ public class CreateProductResponse extends SimpleResponse {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         User user = (User) client.daoObject;
         ProductEntity productEntity = new ProductEntity();
-        productEntity.setType(type);
+        productEntity.setType(productType);
         productEntity.setName(name);
         productEntity.setDescription(description);
         productEntity.setVisible(visible);
