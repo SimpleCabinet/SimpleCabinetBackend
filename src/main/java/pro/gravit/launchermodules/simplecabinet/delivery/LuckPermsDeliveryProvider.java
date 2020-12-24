@@ -47,10 +47,10 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
         String groupName = product.getSysId();
         int days = product.getSysQuantity()*entity.getQuantity();
         LogHelper.debug("Delivery lk group %s to user %s (%d days)", groupName, user.getUsername(), days);
-        LocalDateTime endDate = GroupDeliveryProvider.deliveryGroup(module, (SimpleCabinetUserDAO)dao.userDAO, user, groupName, Duration.ofDays(days), product.isAllowStack());
-        if(endDate == null) endDate = LocalDateTime.now().plusDays(days);
+        LocalDateTime endDate = GroupDeliveryProvider.deliveryGroup(module, (SimpleCabinetUserDAO)dao.userDAO, user, groupName, days > 0 ? Duration.ofDays(days) : null, product.isAllowStack());
+        if(endDate == null) endDate = days > 0 ? LocalDateTime.now().plusDays(days) : null;
 
-        LogHelper.debug("Delivery luckyperms group %s to user %s (%d days)", groupName, user.getUsername(), days);
+        LogHelper.debug("Delivery luckperms group %s to user %s (%d days)", groupName, user.getUsername(), days);
         deliveryWithSource(groupName, product.getSysExtra(), product.getSysNbt(), user.getUuid(), endDate);
         module.orderService.completeOrder(entity);
     }
@@ -66,8 +66,8 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
     }
 
     private void deliveryWithMySQLSource(String groupName, String extra, String nbt, UUID userUUID, LocalDateTime endDate) throws IOException, SQLException {
-        LogHelper.debug("Delivery lk group %s to user %s (%s end date)", groupName, userUUID.toString(), endDate.toString());
-        long timestamp = endDate.toEpochSecond(ZoneOffset.UTC);
+        LogHelper.debug("Delivery luckperms group %s to user %s (%s end date)", groupName, userUUID.toString(), endDate == null ? "INF" : endDate.toString());
+        long timestamp = endDate == null ? 0 : endDate.toEpochSecond(ZoneOffset.UTC);
         try(Connection connection = mySQLSource.getConnection())
         {
             PreparedStatement query = connection.prepareStatement(sql);
@@ -83,7 +83,7 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
     }
 
     private void deliveryWithPostgreSQLSource(String groupName, String extra, String nbt, UUID userUUID, LocalDateTime endDate) throws IOException, SQLException {
-        LogHelper.debug("Delivery lk group %s to user %s (%s end date)", groupName, userUUID.toString(), endDate.toString());
+        LogHelper.debug("Delivery luckperms group %s to user %s (%s end date)", groupName, userUUID.toString(), endDate.toString());
         long timestamp = endDate.toEpochSecond(ZoneOffset.UTC);
         try(Connection connection = postgreSQLSource.getConnection())
         {

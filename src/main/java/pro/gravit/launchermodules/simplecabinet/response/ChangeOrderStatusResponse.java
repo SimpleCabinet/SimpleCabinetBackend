@@ -63,6 +63,7 @@ public class ChangeOrderStatusResponse extends SimpleResponse {
             }
         }
         dao.orderDAO.update(entity);
+        module.orderService.updatedOrderStatus(entity.getId(), status);
         sendResult(new ChangeOrderStatusRequestEvent());
     }
 }

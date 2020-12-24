@@ -10,12 +10,17 @@ import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 public class OrderService {
 
     private transient final SimpleCabinetModule module;
     private transient final LaunchServer server;
+    private transient final Map<Long, ScheduledFuture<?>> processingOrdersMap = new ConcurrentHashMap<>();
 
     public OrderService(SimpleCabinetModule module, LaunchServer server) {
         this.module = module;
@@ -76,5 +81,16 @@ public class OrderService {
         UUID userUUID = entity.getUser().getUuid();
         OrderStatusChangedEvent event = new OrderStatusChangedEvent(entity.getId(), entity.getStatus(), entity.getSysPart());
         server.nettyServerSocketHandler.nettyServer.service.sendObjectToUUID(userUUID, event, WebSocketEvent.class);
+    }
+
+    public void addScheduledFuture(long orderId, ScheduledFuture<?> future) {
+        processingOrdersMap.put(orderId, future);
+    }
+
+    public void updatedOrderStatus(long orderId, OrderEntity.OrderStatus status) {
+        ScheduledFuture<?> future =  processingOrdersMap.remove(orderId);
+        if(future != null) {
+            future.cancel(true);
+        }
     }
 }

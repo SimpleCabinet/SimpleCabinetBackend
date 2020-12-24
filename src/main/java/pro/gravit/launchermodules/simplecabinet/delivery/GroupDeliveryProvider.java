@@ -25,13 +25,25 @@ public class GroupDeliveryProvider extends DeliveryProvider {
 
     @Override
     protected void delivery(OrderEntity entity) throws Exception {
-
+        SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
+        ProductEntity product = entity.getProduct();
+        User user = entity.getUser();
+        if(product.getType() != ProductEntity.ProductType.GROUP) {
+            LogHelper.warning("GroupDeliveryProvider not support type %s (order %d). Canceled", entity.getProduct().getType().toString(), entity.getId());
+            module.orderService.failOrder(entity);
+            return;
+        }
+        String groupName = product.getSysId();
+        int days = product.getSysQuantity()*entity.getQuantity();
+        LogHelper.debug("Delivery lk group %s to user %s (%d days)", groupName, user.getUsername(), days);
+        GroupDeliveryProvider.deliveryGroup(module, (SimpleCabinetUserDAO)dao.userDAO, user, groupName, days > 0 ? Duration.ofDays(days) : null, product.isAllowStack());
+        module.orderService.completeOrder(entity);
     }
 
     public static LocalDateTime deliveryGroup(SimpleCabinetModule module, SimpleCabinetUserDAO userDAO, User user, String groupName, Duration duration, boolean stack) {
         List<UserGroup> list = userDAO.fetchGroups(user);
         UserGroup group = new UserGroup();
-        LocalDateTime endDate = LocalDateTime.now().plus(duration);
+        LocalDateTime endDate = duration == null ? null : LocalDateTime.now().plus(duration);
         boolean isKnownGroup = false;
         for(UserGroup g : list) {
             if(g.getGroupName().equals(groupName)) {
@@ -42,7 +54,8 @@ public class GroupDeliveryProvider extends DeliveryProvider {
         }
         if(stack && group.getEndDate() != null)
         {
-            endDate = endDate.plus(Duration.between(LocalDateTime.now(), group.getEndDate()));
+            if(endDate != null)
+                endDate = endDate.plus(Duration.between(LocalDateTime.now(), group.getEndDate()));
         }
         group.setEndDate(endDate);
         if(!isKnownGroup) {
