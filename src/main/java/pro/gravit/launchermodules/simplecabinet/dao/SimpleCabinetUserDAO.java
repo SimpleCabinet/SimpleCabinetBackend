@@ -33,6 +33,15 @@ public class SimpleCabinetUserDAO implements UserDAO {
         }
     }
 
+    public void deleteOrderUserGroups()
+    {
+        try(Session s = factory.openSession()) {
+            Query query = s.createQuery("delete from UserGroup where endDate < :current");
+            query.setParameter("current", LocalDateTime.now());
+            query.executeUpdate();
+        }
+    }
+
     @Override
     public User findById(int id) {
         return findById((long)id);

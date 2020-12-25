@@ -3,6 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.services;
 import pro.gravit.launcher.event.request.ExtendedInfoRequestEvent;
 import pro.gravit.launcher.events.request.CurrentUserRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
+import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchermodules.simplecabinet.response.ExtendedInfoResponse;
 import pro.gravit.launchserver.LaunchServer;
@@ -46,5 +47,14 @@ public class SyncService {
                     webSocketFrameHandler.service.sendObject(channel, currentUserRequestEvent);
             }
         }));
+    }
+
+    public boolean deleteOlderUserGroups() {
+        if(server.config.dao != null) {
+            ((SimpleCabinetUserDAO)server.config.dao.userDAO).deleteOrderUserGroups();
+            return true;
+        } else {
+            return false;
+        }
     }
 }

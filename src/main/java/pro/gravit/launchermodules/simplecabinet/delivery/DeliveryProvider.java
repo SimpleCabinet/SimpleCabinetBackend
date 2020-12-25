@@ -38,6 +38,7 @@ public abstract class DeliveryProvider {
             providers.register("debug", DebugDeliveryProvider.class);
             providers.register("luckperms", LuckPermsDeliveryProvider.class);
             providers.register("group", GroupDeliveryProvider.class);
+            providers.register("cabinet", CabinetDeliveryProvider.class);
             registeredProviders = true;
         }
     }

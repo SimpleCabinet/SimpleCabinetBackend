@@ -44,6 +44,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SimpleCabinetModule extends LauncherModule {
     public JsonConfigurable<SimpleCabinetConfig> configurable;
@@ -186,6 +187,7 @@ public class SimpleCabinetModule extends LauncherModule {
             }
             return false;
         });
+        this.scheduler.scheduleAtFixedRate(syncService::deleteOlderUserGroups, 0, 60, TimeUnit.SECONDS);
     }
     public void closePhase(ClosePhase closePhase)
     {
