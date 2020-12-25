@@ -3,7 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.model;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "PaymentId")
 @Table(name = "payments")
 public class PaymentId {
     @Id

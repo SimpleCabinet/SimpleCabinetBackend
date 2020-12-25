@@ -3,6 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.dao;
 import org.hibernate.*;
 import pro.gravit.launchermodules.simplecabinet.model.*;
 import pro.gravit.launchserver.dao.UserDAO;
+import pro.gravit.utils.helper.LogHelper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -36,9 +37,13 @@ public class SimpleCabinetUserDAO implements UserDAO {
     public void deleteOrderUserGroups()
     {
         try(Session s = factory.openSession()) {
+            s.beginTransaction();
             Query query = s.createQuery("delete from UserGroup where endDate < :current");
             query.setParameter("current", LocalDateTime.now());
             query.executeUpdate();
+            s.getTransaction().commit();
+        } catch (Throwable e) {
+            LogHelper.error(e);
         }
     }
 

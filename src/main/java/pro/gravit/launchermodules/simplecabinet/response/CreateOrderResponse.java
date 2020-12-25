@@ -11,6 +11,8 @@ import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
 
+import java.time.LocalDateTime;
+
 public class CreateOrderResponse extends SimpleResponse {
     public long productId;
     public int quantity;
@@ -55,6 +57,21 @@ public class CreateOrderResponse extends SimpleResponse {
             sendError("Insufficient funds in your account");
             return;
         }
+        //Limits
+        if(productEntity.getCount() == 0) {
+            sendError("Product is no longer in stock");
+            return;
+        }
+        if(!productEntity.isVisible()) {
+            sendError("Product is not available for order");
+            return;
+        }
+        if(productEntity.getEndDate() != null && productEntity.getEndDate().isBefore(LocalDateTime.now()))
+        {
+            sendError("Product is not available for order");
+            return;
+        }
+        //
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setStatus(OrderEntity.OrderStatus.CREATED);
         orderEntity.setProduct(productEntity);

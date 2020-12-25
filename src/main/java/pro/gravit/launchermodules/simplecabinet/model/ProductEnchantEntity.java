@@ -2,7 +2,7 @@ package pro.gravit.launchermodules.simplecabinet.model;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "ProductEnchant")
 @Table(name = "product_enchants")
 public class ProductEnchantEntity {
     @Id

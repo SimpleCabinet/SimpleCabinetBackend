@@ -2,7 +2,7 @@ package pro.gravit.launchermodules.simplecabinet.model;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "HardwareIdLog")
 @Table(name = "hwids_log")
 public class HardwareIdLogEntity {
     @Id

@@ -3,7 +3,7 @@ package pro.gravit.launchermodules.simplecabinet.model;
 import javax.persistence.*;
 import java.util.UUID;
 
-@Entity
+@Entity(name = "PasswordReset")
 @Table(name = "password_resets")
 public class PasswordResetEntity {
     @Id

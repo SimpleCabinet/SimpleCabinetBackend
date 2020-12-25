@@ -2,6 +2,7 @@ package pro.gravit.launchermodules.simplecabinet.services;
 
 import pro.gravit.launcher.event.request.ExtendedInfoRequestEvent;
 import pro.gravit.launcher.events.request.CurrentUserRequestEvent;
+import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.model.User;
@@ -50,7 +51,7 @@ public class SyncService {
     }
 
     public boolean deleteOlderUserGroups() {
-        if(server.config.dao != null) {
+        if(server.config.dao != null && ((SimpleCabinetDAOProvider)server.config.dao).isOpen()) {
             ((SimpleCabinetUserDAO)server.config.dao.userDAO).deleteOrderUserGroups();
             return true;
         } else {

@@ -6,6 +6,7 @@ import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
+import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.utils.helper.LogHelper;
@@ -30,12 +31,17 @@ public class OrderService {
     public void processOrder(OrderEntity entity)
     {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
+        ProductEntity product = entity.getProduct();
         User user = entity.getUser();
         if(entity.getSum() > user.getDonateMoney())
         {
             entity.setStatus(OrderEntity.OrderStatus.FAILED);
             dao.orderDAO.update(entity);
             return;
+        }
+        if(product.getCount() > 0) {
+            product.setCount(product.getCount() - 1);
+            dao.productDAO.update(product);
         }
         user.setDonateMoney(user.getDonateMoney() - entity.getSum());
         dao.userDAO.update(user);
