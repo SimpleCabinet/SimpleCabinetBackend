@@ -37,7 +37,7 @@ public class CreateProductResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext channelHandlerContext, Client client) throws Exception {
-        if (productType == null || name == null || price < 0 || count == 0) {
+        if (productType == null || name == null || price < 0 || sysDeliveryProvider == null || count == 0) {
             sendError("Invalid request");
             return;
         }
