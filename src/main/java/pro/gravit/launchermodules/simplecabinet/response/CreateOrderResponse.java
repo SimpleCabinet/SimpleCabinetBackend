@@ -66,6 +66,10 @@ public class CreateOrderResponse extends SimpleResponse {
             sendError("Product is not available for order");
             return;
         }
+        if (productEntity.getCount() > 0 && productEntity.getCount() < quantity) {
+            sendError("The order is too large");
+            return;
+        }
         //
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setStatus(OrderEntity.OrderStatus.CREATED);

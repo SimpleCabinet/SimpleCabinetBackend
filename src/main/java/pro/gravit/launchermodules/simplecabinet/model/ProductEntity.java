@@ -160,6 +160,7 @@ public class ProductEntity {
     public void setSysDeliveryProvider(String sysDeliveryProvider) {
         this.sysDeliveryProvider = sysDeliveryProvider;
     }
+
     public enum ProductType {
         GROUP, ITEM, SPECIAL
     }

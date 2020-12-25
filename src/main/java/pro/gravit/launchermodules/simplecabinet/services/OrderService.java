@@ -37,7 +37,7 @@ public class OrderService {
             return;
         }
         if (product.getCount() > 0) {
-            product.setCount(product.getCount() - 1);
+            product.setCount(product.getCount() - entity.getQuantity());
             dao.productDAO.update(product);
         }
         user.setDonateMoney(user.getDonateMoney() - entity.getSum());

@@ -9,6 +9,7 @@ import java.util.UUID;
 public class FetchUsersRequestEvent extends RequestEvent {
     public List<UserPublicInfo> list;
     public int maxQuery;
+
     public FetchUsersRequestEvent(List<UserPublicInfo> list, int maxQuery) {
         this.list = list;
         this.maxQuery = maxQuery;

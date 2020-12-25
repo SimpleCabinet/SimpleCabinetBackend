@@ -80,6 +80,7 @@ public class AuditEntity {
     public void setIp(String ip) {
         this.ip = ip;
     }
+
     public enum AuditType {
         UNKNOWN, CHANGE_PASSWORD, CHANGE_USERNAME, PASSWORD_RESET, CREATE_PRODUCT, DISABLE_2FA
     }

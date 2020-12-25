@@ -8,6 +8,7 @@ public class InitPaymentRequestEvent extends RequestEvent {
     public String redirectUri;
     public String method;
     public Map<String, String> params;
+
     public InitPaymentRequestEvent() {
     }
 

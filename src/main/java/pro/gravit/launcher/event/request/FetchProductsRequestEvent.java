@@ -9,6 +9,7 @@ import java.util.List;
 public class FetchProductsRequestEvent extends RequestEvent {
     public List<PublicProductInfo> products;
     public int maxQuery;
+
     public FetchProductsRequestEvent(List<PublicProductInfo> products) {
         this.products = products;
     }
