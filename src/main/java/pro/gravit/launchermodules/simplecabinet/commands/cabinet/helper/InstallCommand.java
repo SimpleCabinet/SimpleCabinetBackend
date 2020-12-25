@@ -4,6 +4,7 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetHWIDProvider;
+import pro.gravit.launchermodules.simplecabinet.providers.CabinetTextureProvider;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.auth.AuthProviderPair;
 import pro.gravit.launchserver.auth.handler.HibernateAuthHandler;
@@ -140,6 +141,10 @@ public class InstallCommand extends Command {
         }
         if (!(pair.provider instanceof CabinetAuthProvider)) {
             pair.provider = new CabinetAuthProvider();
+        }
+        if(!(pair.textureProvider instanceof CabinetTextureProvider)) {
+            pair.textureProvider = new CabinetTextureProvider("https://launcher.yourproject.ru/skins/%username%.png", "https://launcher.yourproject.ru/cloaks/%username%.png",
+                    "updates/skins/%username%.png", "updates/cloaks/%username%.png");
         }
         LogHelper.info("Alurial: Save LaunchServer config");
         server.launchServerConfigManager.writeConfig(server.config);
