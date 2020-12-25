@@ -28,6 +28,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
     public transient SimpleCabinetProductDAO productDAO;
     public transient SimpleCabinetOrderDAO orderDAO;
     public boolean stringUUID = false;
+
     @Override
     protected void onConfigure(Configuration configuration) {
         configuration.addAnnotatedClass(User.class);
@@ -40,8 +41,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
         configuration.addAnnotatedClass(ProductEntity.class);
         configuration.addAnnotatedClass(OrderEntity.class);
         configuration.addAnnotatedClass(ProductEnchantEntity.class);
-        if(stringUUID)
-        {
+        if (stringUUID) {
             configuration.addAnnotatedClass(UUIDConverter.class);
         }
         try {
@@ -76,8 +76,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
                 String login = args[0];
                 String password = args[1];
                 String email = args[2];
-                if(!User.isCorrectEmail(email))
-                {
+                if (!User.isCorrectEmail(email)) {
                     LogHelper.error("Invalid email");
                     return;
                 }
@@ -97,7 +96,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
             public void invoke(String... args) throws Exception {
                 verifyArgs(args, 1);
                 User user = (User) userDAO.findByUsername(args[0]);
-                if(user == null) {
+                if (user == null) {
                     throw new IllegalArgumentException("User not found");
                 }
                 final Key key;
@@ -120,7 +119,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
             public void invoke(String... args) throws Exception {
                 verifyArgs(args, 1);
                 User user = (User) userDAO.findByUsername(args[0]);
-                if(user == null) {
+                if (user == null) {
                     throw new IllegalArgumentException("User not found");
                 }
                 user.setTotpSecretKey(null);
@@ -133,7 +132,7 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
             public void invoke(String... args) throws Exception {
                 verifyArgs(args, 1);
                 User user = (User) userDAO.findByUsername(args[0]);
-                if(user == null) {
+                if (user == null) {
                     throw new IllegalArgumentException("User not found");
                 }
                 TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator();
@@ -147,16 +146,16 @@ public class SimpleCabinetDAOProvider extends HibernateDaoProvider {
             public void invoke(String... args) throws Exception {
                 verifyArgs(args, 1);
                 User user = (User) userDAO.findByUsername(args[0]);
-                if(user == null) {
+                if (user == null) {
                     throw new IllegalArgumentException("User not found");
                 }
                 HardwareId id = user.getHardwareId();
-                if(id == null) {
+                if (id == null) {
                     throw new IllegalArgumentException("User not contains HardwareId info");
                 }
                 List<User> users = hwidDAO.findUsersByHardwareId(id);
                 LogHelper.info("Found %d users in this hardware id", users.size());
-                for(User u : users) {
+                for (User u : users) {
                     LogHelper.subInfo("Found user %s (uuid %s)", u.getUsername(), u.getUuid().toString());
                 }
             }

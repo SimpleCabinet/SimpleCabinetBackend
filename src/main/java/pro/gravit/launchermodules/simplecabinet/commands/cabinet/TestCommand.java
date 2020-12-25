@@ -49,8 +49,8 @@ public class TestCommand extends Command {
         JsonElement result = HTTPRequest.jsonRequest(null, "GET", url);
         LogHelper.info("Output: %s", Launcher.gsonManager.configGson.toJson(result));
     }
-    public String formatParam(String key, String value)
-    {
+
+    public String formatParam(String key, String value) {
         return String.format("&params[%s]=%s", key, value);
     }
 }

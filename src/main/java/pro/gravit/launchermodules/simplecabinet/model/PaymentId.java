@@ -11,19 +11,16 @@ public class PaymentId {
     private int id;
     private double sum;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="order_id")
+    @JoinColumn(name = "order_id")
     private OrderEntity order;
     private String description;
     @Column(name = "initial_time")
     private LocalDateTime initialTime;
     @Column(name = "success_time")
     private LocalDateTime successTime;
-    public enum PaymentStatus {
-        CREATED, COMPLETED, FAILED
-    }
     private PaymentStatus status;
 
     public int getId() {
@@ -34,28 +31,28 @@ public class PaymentId {
         return sum;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public PaymentStatus getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getInitialTime() {
-        return initialTime;
-    }
-
     public void setSum(double sum) {
         this.sum = sum;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
 
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
     public void setStatus(PaymentStatus status) {
         this.status = status;
+    }
+
+    public LocalDateTime getInitialTime() {
+        return initialTime;
     }
 
     public void setInitialTime(LocalDateTime initialTime) {
@@ -76,5 +73,9 @@ public class PaymentId {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public enum PaymentStatus {
+        CREATED, COMPLETED, FAILED
     }
 }

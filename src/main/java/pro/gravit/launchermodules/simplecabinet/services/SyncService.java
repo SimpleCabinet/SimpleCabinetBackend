@@ -11,8 +11,6 @@ import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.profile.ProfileByUUIDResponse;
 
-import java.util.UUID;
-
 public class SyncService {
     private transient final SimpleCabinetModule module;
     private transient final LaunchServer server;
@@ -26,33 +24,31 @@ public class SyncService {
         String username = user.getUsername();
         ExtendedInfoRequestEvent extendedInfoRequestEvent;
         CurrentUserRequestEvent currentUserRequestEvent;
-        if(isExtInfo) {
+        if (isExtInfo) {
             extendedInfoRequestEvent = ExtendedInfoResponse.fetchExtendedInfo(module, user, true, false);
-        }
-        else extendedInfoRequestEvent = null;
-        if(isUserInfo) {
+        } else extendedInfoRequestEvent = null;
+        if (isUserInfo) {
             CurrentUserRequestEvent.UserInfo userInfo = new CurrentUserRequestEvent.UserInfo();
             userInfo.permissions = user.getPermissions();
             userInfo.playerProfile = ProfileByUUIDResponse.getProfile(user.getUuid(), user.getUsername(), "", server.config.getAuthProviderPair().textureProvider);
             currentUserRequestEvent = new CurrentUserRequestEvent(userInfo);
-        }
-        else currentUserRequestEvent = null;
+        } else currentUserRequestEvent = null;
         server.nettyServerSocketHandler.nettyServer.service.forEachActiveChannels(((channel, webSocketFrameHandler) -> {
             Client client = webSocketFrameHandler.getClient();
-            if(client.isAuth && username.equals(client.username) && client.daoObject != null) {
+            if (client.isAuth && username.equals(client.username) && client.daoObject != null) {
                 client.daoObject = user;
                 client.permissions = user.getPermissions();
-                if(isExtInfo)
+                if (isExtInfo)
                     webSocketFrameHandler.service.sendObject(channel, extendedInfoRequestEvent);
-                if(isUserInfo)
+                if (isUserInfo)
                     webSocketFrameHandler.service.sendObject(channel, currentUserRequestEvent);
             }
         }));
     }
 
     public boolean deleteOlderUserGroups() {
-        if(server.config.dao != null && ((SimpleCabinetDAOProvider)server.config.dao).isOpen()) {
-            ((SimpleCabinetUserDAO)server.config.dao.userDAO).deleteOrderUserGroups();
+        if (server.config.dao != null && ((SimpleCabinetDAOProvider) server.config.dao).isOpen()) {
+            ((SimpleCabinetUserDAO) server.config.dao.userDAO).deleteOrderUserGroups();
             return true;
         } else {
             return false;

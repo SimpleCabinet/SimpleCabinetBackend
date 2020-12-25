@@ -2,7 +2,6 @@ package pro.gravit.launchermodules.simplecabinet.response;
 
 import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.InitPaymentRequestEvent;
-import pro.gravit.launchermodules.simplecabinet.SimpleCabinetConfig;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.event.UserInitPaymentEvent;
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 public class InitPaymentResponse extends SimpleResponse {
     public double sum;
     public InitPaymentRequestEvent.PaymentVariant variant;
+
     @Override
     public String getType() {
         return "lkInitPayment";
@@ -24,17 +24,15 @@ public class InitPaymentResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext ctx, Client client) throws Exception {
-        if(sum <= 0.01 || variant == null) {
+        if (sum <= 0.01 || variant == null) {
             sendError("Invalid request");
             return;
         }
-        if(!client.isAuth || client.username == null)
-        {
+        if (!client.isAuth || client.username == null) {
             sendError("Permissions denied");
             return;
         }
-        if(client.daoObject == null)
-        {
+        if (client.daoObject == null) {
             sendError("Your account not connected to lk");
             return;
         }

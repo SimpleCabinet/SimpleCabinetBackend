@@ -8,8 +8,6 @@ import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchermodules.simplecabinet.providers.CabinetAuthProvider;
 import pro.gravit.launchserver.socket.Client;
-import pro.gravit.launchserver.socket.response.SimpleResponse;
-import pro.gravit.utils.helper.LogHelper;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +16,7 @@ import java.time.Instant;
 public class TwoFactorEnableResponse extends AbstractUserResponse {
     public byte[] data;
     public int code;
+
     @Override
     public String getType() {
         return "lkTwoFactorEnable";
@@ -25,52 +24,44 @@ public class TwoFactorEnableResponse extends AbstractUserResponse {
 
     @Override
     public void executeByUser(ChannelHandlerContext channelHandlerContext, User user, boolean self, Client client) throws NoSuchAlgorithmException, InvalidKeyException {
-        if(data == null)
-        {
-            if(user.getTotpSecretKey() == null)
-            {
+        if (data == null) {
+            if (user.getTotpSecretKey() == null) {
                 sendError("TwoFactor already disabled");
                 return;
             }
             int result = CabinetAuthProvider.generateTotp(user.getTotpSecretKey(), Instant.now());
-            if(!self && user.getPermissions().isPermission(ClientPermissions.PermissionConsts.ADMIN)) {
+            if (!self && user.getPermissions().isPermission(ClientPermissions.PermissionConsts.ADMIN)) {
                 sendError("Disable 2FA in admin accounts not allowed");
                 return;
             }
-            if(self && code != result)
-            {
+            if (self && code != result) {
                 sendError("Invalid code");
                 return;
             }
             user.setTotpSecretKey(null);
             server.config.dao.userDAO.update(user);
-            if(!self) {
+            if (!self) {
                 server.modulesManager.getModule(SimpleCabinetModule.class).auditService.pushBaseAudit(AuditEntity.AuditType.DISABLE_2FA, (User) client.daoObject, ip, user);
             }
             sendResult(new TwoFactorEnableRequestEvent());
-        }
-        else if(data.length == 16)
-        {
-            if(user.getTotpSecretKey() != null)
-            {
+        } else if (data.length == 16) {
+            if (user.getTotpSecretKey() != null) {
                 sendError("TwoFactor already enabled");
                 return;
             }
             int result = CabinetAuthProvider.generateTotp(data, Instant.now());
-            if(!self) {
+            if (!self) {
                 sendError("This request not allowed");
                 return;
             }
-            if(code != result)
-            {
+            if (code != result) {
                 sendError("Invalid code");
                 return;
             }
             user.setTotpSecretKey(data);
             server.config.dao.userDAO.update(user);
             sendResult(new TwoFactorEnableRequestEvent());
-        }
-        else {
+        } else {
             sendError("Invalid request");
         }
     }

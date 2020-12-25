@@ -5,13 +5,9 @@ import pro.gravit.launcher.events.RequestEvent;
 import java.util.Map;
 
 public class InitPaymentRequestEvent extends RequestEvent {
-    public enum PaymentVariant {
-        ROBOKASSA,UNITPAY, SELF
-    }
     public String redirectUri;
     public String method;
     public Map<String, String> params;
-
     public InitPaymentRequestEvent() {
     }
 
@@ -24,5 +20,9 @@ public class InitPaymentRequestEvent extends RequestEvent {
     @Override
     public String getType() {
         return "lkInitPayment";
+    }
+
+    public enum PaymentVariant {
+        ROBOKASSA, UNITPAY, SELF
     }
 }

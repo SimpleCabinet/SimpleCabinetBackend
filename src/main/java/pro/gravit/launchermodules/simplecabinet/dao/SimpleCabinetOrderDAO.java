@@ -2,7 +2,6 @@ package pro.gravit.launchermodules.simplecabinet.dao;
 
 import org.hibernate.*;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
-import pro.gravit.launchermodules.simplecabinet.model.ProductEnchantEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 
@@ -28,35 +27,33 @@ public class SimpleCabinetOrderDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<OrderEntity> fetchPage(int startId, int limit, OrderEntity.OrderStatus status, User user)
-    {
-            EntityManager em = factory.createEntityManager();
-            em.getTransaction().begin();
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<OrderEntity> personCriteria = cb.createQuery(OrderEntity.class);
-            Root<OrderEntity> rootUser = personCriteria.from(OrderEntity.class);
-            Expression<Boolean> where = null;
-            personCriteria.select(rootUser);
-            if(status != null) {
-                where = cb.equal(rootUser.get("status"), status);
-            }
-            if(user != null) {
-                if(where == null) where = cb.equal(rootUser.get("user"), user);
-                else where = cb.and(where, cb.equal(rootUser.get("user"), user));
-            }
-            if(where != null) personCriteria.where(where);
-            Query query  = em.createQuery(personCriteria);
+    public List<OrderEntity> fetchPage(int startId, int limit, OrderEntity.OrderStatus status, User user) {
+        EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<OrderEntity> personCriteria = cb.createQuery(OrderEntity.class);
+        Root<OrderEntity> rootUser = personCriteria.from(OrderEntity.class);
+        Expression<Boolean> where = null;
+        personCriteria.select(rootUser);
+        if (status != null) {
+            where = cb.equal(rootUser.get("status"), status);
+        }
+        if (user != null) {
+            if (where == null) where = cb.equal(rootUser.get("user"), user);
+            else where = cb.and(where, cb.equal(rootUser.get("user"), user));
+        }
+        if (where != null) personCriteria.where(where);
+        Query query = em.createQuery(personCriteria);
 
-            query.setFirstResult(startId);
-            query.setMaxResults(limit);
-            List<OrderEntity> result = query.getResultList();
-            em.close();
+        query.setFirstResult(startId);
+        query.setMaxResults(limit);
+        List<OrderEntity> result = query.getResultList();
+        em.close();
 
-            return result;
+        return result;
     }
 
-    public ProductEntity fetchProductInOrder(OrderEntity entity)
-    {
+    public ProductEntity fetchProductInOrder(OrderEntity entity) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.lock(entity, LockMode.NONE);
@@ -67,8 +64,7 @@ public class SimpleCabinetOrderDAO {
         }
     }
 
-    public User fetchUserInOrder(OrderEntity entity)
-    {
+    public User fetchUserInOrder(OrderEntity entity) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.lock(entity, LockMode.NONE);

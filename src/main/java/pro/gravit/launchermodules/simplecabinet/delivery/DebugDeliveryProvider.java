@@ -8,6 +8,7 @@ import pro.gravit.utils.helper.LogHelper;
 public class DebugDeliveryProvider extends DeliveryProvider {
     private transient LaunchServer server;
     private transient SimpleCabinetModule module;
+
     @Override
     public void init(LaunchServer server, SimpleCabinetModule module) {
         this.server = server;

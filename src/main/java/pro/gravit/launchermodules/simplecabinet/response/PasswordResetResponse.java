@@ -25,7 +25,7 @@ public class PasswordResetResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext ctx, Client client) throws Exception {
-        if(email == null || email.isBlank()) {
+        if (email == null || email.isBlank()) {
             sendError("Invalid request");
             return;
         }
@@ -33,33 +33,33 @@ public class PasswordResetResponse extends SimpleResponse {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         SimpleCabinetUserDAO userDAO = (SimpleCabinetUserDAO) dao.userDAO;
         User user = userDAO.findByEmail(email);
-        if(user == null) {
+        if (user == null) {
             //Skip
             sendError("User not found");
             return;
         } else {
             server.modulesManager.invokeEvent(new UserPasswordResetEvent(user, ip));
             module.workers.submit(() -> {
-            try {
-                LogHelper.debug("User %s request password reset (start)", user.getEmail());
-                PasswordResetEntity passwordResetEntity = new PasswordResetEntity();
-                passwordResetEntity.setUser(user);
-                passwordResetEntity.setUuid(UUID.randomUUID());
-                userDAO.save(passwordResetEntity);
-                long id = passwordResetEntity.getId();
-                UUID uuid = passwordResetEntity.getUuid();
                 try {
-                    String url = String.format("%s/cb/passwordreset/%d/%s", module.config.urls.frontendUrl, id, uuid.toString());
-                    String template = new String(IOHelper.read(module.baseConfigPath.resolve("emailPasswordReset.html")));
-                    String content = String.format(template, user.getUsername(), url);
-                    module.mail.simpleSendEmail(user.getEmail(), "Account Password Reset", content);
-                    LogHelper.debug("User %s request password reset", user.getEmail());
-                } catch (Throwable e) {
-                    LogHelper.error(e);
-                    userDAO.delete(passwordResetEntity);
-                }
-                } catch(Throwable ex) {
-                LogHelper.error(ex);
+                    LogHelper.debug("User %s request password reset (start)", user.getEmail());
+                    PasswordResetEntity passwordResetEntity = new PasswordResetEntity();
+                    passwordResetEntity.setUser(user);
+                    passwordResetEntity.setUuid(UUID.randomUUID());
+                    userDAO.save(passwordResetEntity);
+                    long id = passwordResetEntity.getId();
+                    UUID uuid = passwordResetEntity.getUuid();
+                    try {
+                        String url = String.format("%s/cb/passwordreset/%d/%s", module.config.urls.frontendUrl, id, uuid.toString());
+                        String template = new String(IOHelper.read(module.baseConfigPath.resolve("emailPasswordReset.html")));
+                        String content = String.format(template, user.getUsername(), url);
+                        module.mail.simpleSendEmail(user.getEmail(), "Account Password Reset", content);
+                        LogHelper.debug("User %s request password reset", user.getEmail());
+                    } catch (Throwable e) {
+                        LogHelper.error(e);
+                        userDAO.delete(passwordResetEntity);
+                    }
+                } catch (Throwable ex) {
+                    LogHelper.error(ex);
                 }
             });
         }

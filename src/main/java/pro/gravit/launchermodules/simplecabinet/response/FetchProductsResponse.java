@@ -16,27 +16,8 @@ public class FetchProductsResponse extends SimpleResponse {
     public ProductEntity.ProductType filterByType;
     public String filterByName;
     public long lastId;
-    @Override
-    public String getType() {
-        return "lkFetchProducts";
-    }
 
-    @Override
-    public void execute(ChannelHandlerContext channelHandlerContext, Client client) throws Exception {
-        if(lastId < 0) {
-            sendError("Invalid request");
-            return;
-        }
-        SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
-        SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
-        List<FetchProductsRequestEvent.PublicProductInfo> list = dao.productDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY, filterByType, filterByName, true)
-                .stream().map(a -> fetchPublicInfo(a, module.config.urls.shopPictureBaseUrl))
-                .collect(Collectors.toList());
-        sendResult(new FetchProductsRequestEvent(list, MAX_QUERY));
-    }
-
-    public static FetchProductsRequestEvent.PublicProductInfo fetchPublicInfo(ProductEntity productEntity, String pictureBaseUrl)
-    {
+    public static FetchProductsRequestEvent.PublicProductInfo fetchPublicInfo(ProductEntity productEntity, String pictureBaseUrl) {
         FetchProductsRequestEvent.PublicProductInfo productInfo = new FetchProductsRequestEvent.PublicProductInfo();
         productInfo.name = productEntity.getName();
         productInfo.description = productEntity.getDescription();
@@ -46,9 +27,28 @@ public class FetchProductsResponse extends SimpleResponse {
         productInfo.count = productEntity.getCount();
         productInfo.type = productEntity.getType();
         productInfo.endDate = productEntity.getEndDate();
-        if(productEntity.getPictureUrl() != null) {
+        if (productEntity.getPictureUrl() != null) {
             productInfo.pictureUrl = (pictureBaseUrl == null ? "" : pictureBaseUrl).concat(productEntity.getPictureUrl());
         }
         return productInfo;
+    }
+
+    @Override
+    public String getType() {
+        return "lkFetchProducts";
+    }
+
+    @Override
+    public void execute(ChannelHandlerContext channelHandlerContext, Client client) throws Exception {
+        if (lastId < 0) {
+            sendError("Invalid request");
+            return;
+        }
+        SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
+        SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
+        List<FetchProductsRequestEvent.PublicProductInfo> list = dao.productDAO.fetchPage((int) lastId * MAX_QUERY, MAX_QUERY, filterByType, filterByName, true)
+                .stream().map(a -> fetchPublicInfo(a, module.config.urls.shopPictureBaseUrl))
+                .collect(Collectors.toList());
+        sendResult(new FetchProductsRequestEvent(list, MAX_QUERY));
     }
 }

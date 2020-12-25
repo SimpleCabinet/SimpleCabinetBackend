@@ -9,13 +9,7 @@ import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.command.Command;
 import pro.gravit.utils.helper.LogHelper;
 
-import javax.persistence.TemporalType;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
-import java.util.Date;
 
 public class GroupCommand extends Command {
     public GroupCommand(LaunchServer server) {
@@ -38,70 +32,53 @@ public class GroupCommand extends Command {
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
         SimpleCabinetConfig config = module.config;
         SimpleCabinetConfig.GroupEntity group = config.findGroupByName(args[1]);
-        if(group == null)
-        {
+        if (group == null) {
             throw new IllegalArgumentException(String.format("Group %s not found", args[1]));
         }
         User user = (User) server.config.dao.userDAO.findByUsername(args[2]);
-        ((SimpleCabinetUserDAO)server.config.dao.userDAO).fetchGroups(user);
-        if(user == null)
-        {
+        ((SimpleCabinetUserDAO) server.config.dao.userDAO).fetchGroups(user);
+        if (user == null) {
             throw new IllegalArgumentException(String.format("User %s not found", args[2]));
         }
-        if(args[0].equals("add"))
-        {
+        if (args[0].equals("add")) {
             UserGroup entity = null;
-            for(UserGroup e : user.getGroups())
-            {
-                if(e.getGroupName().equals(group.name))
-                {
+            for (UserGroup e : user.getGroups()) {
+                if (e.getGroupName().equals(group.name)) {
                     entity = e;
                     break;
                 }
             }
-            if(entity != null)
-            {
+            if (entity != null) {
                 LogHelper.error("User %s already contains group %s (end time: %s )", user.getUsername(), group.name, entity.getEndDate().toString());
-            }
-            else
-            {
+            } else {
                 LocalDateTime date = LocalDateTime.now();
                 LocalDateTime endTime;
-                if(args.length > 3)
-                {
+                if (args.length > 3) {
                     endTime = date.plusDays(Long.parseLong(args[3]));
-                }
-                else endTime = null;
+                } else endTime = null;
                 UserGroup userGroup = new UserGroup();
                 userGroup.setUser(user);
                 userGroup.setEndDate(endTime);
                 userGroup.setStartDate(date);
                 userGroup.setGroupName(group.name);
-                ((SimpleCabinetUserDAO)server.config.dao.userDAO).save(userGroup);
+                ((SimpleCabinetUserDAO) server.config.dao.userDAO).save(userGroup);
                 LogHelper.info("Successful added group %s to %s (end time %s)", group.name, user.getUsername(), endTime == null ? "no" : endTime.toString());
             }
-        }
-        else if(args[0].equals("remove"))
-        {
+        } else if (args[0].equals("remove")) {
             UserGroup entity = null;
-            for(UserGroup e : user.getGroups())
-            {
-                if(e.getGroupName().equals(group.name))
-                {
+            for (UserGroup e : user.getGroups()) {
+                if (e.getGroupName().equals(group.name)) {
                     entity = e;
                     break;
                 }
             }
-            if(entity == null)
-            {
+            if (entity == null) {
                 LogHelper.error("User %s no contains group %s", user.getUsername(), group.name);
                 return;
             }
-            ((SimpleCabinetUserDAO)server.config.dao.userDAO).delete(entity);
+            ((SimpleCabinetUserDAO) server.config.dao.userDAO).delete(entity);
             LogHelper.info("Successful removed group %s from %s", group.name, user.getUsername());
-        }
-        else
-        {
+        } else {
             LogHelper.error("Action %s not found", args[0]);
         }
     }

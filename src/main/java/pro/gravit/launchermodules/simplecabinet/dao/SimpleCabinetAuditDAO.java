@@ -4,7 +4,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
-import pro.gravit.launchermodules.simplecabinet.model.HardwareId;
 
 public class SimpleCabinetAuditDAO {
     private final SessionFactory factory;

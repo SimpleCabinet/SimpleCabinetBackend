@@ -27,8 +27,8 @@ public class HardwareId {
     private boolean banned;
     @OneToMany(mappedBy = "hardwareId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<User> users;
-    public void loadFromHardwareInfo(HardwareReportRequest.HardwareInfo info)
-    {
+
+    public void loadFromHardwareInfo(HardwareReportRequest.HardwareInfo info) {
         setBitness(info.bitness);
         setTotalMemory(info.totalMemory);
         setLogicalProcessors(info.logicalProcessors);
@@ -39,8 +39,8 @@ public class HardwareId {
         setDisplayId(info.displayId);
         setBaseboardSerialNumber(info.baseboardSerialNumber);
     }
-    public HardwareReportRequest.HardwareInfo toHardwareInfo()
-    {
+
+    public HardwareReportRequest.HardwareInfo toHardwareInfo() {
         HardwareReportRequest.HardwareInfo info = new HardwareReportRequest.HardwareInfo();
         info.bitness = getBitness();
         info.totalMemory = getTotalMemory();

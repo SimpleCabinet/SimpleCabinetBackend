@@ -2,7 +2,6 @@ package pro.gravit.launchermodules.simplecabinet.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity(name = "UserGroup")
 @Table(name = "user_groups")

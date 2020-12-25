@@ -7,6 +7,18 @@ import java.util.List;
 import java.util.UUID;
 
 public class FetchUsersRequestEvent extends RequestEvent {
+    public List<UserPublicInfo> list;
+    public int maxQuery;
+    public FetchUsersRequestEvent(List<UserPublicInfo> list, int maxQuery) {
+        this.list = list;
+        this.maxQuery = maxQuery;
+    }
+
+    @Override
+    public String getType() {
+        return "lkFetchUsers";
+    }
+
     public static class UserPublicInfo {
         public String username;
         public UUID uuid;
@@ -17,18 +29,5 @@ public class FetchUsersRequestEvent extends RequestEvent {
             this.uuid = uuid;
             this.gender = gender;
         }
-    }
-
-    public List<UserPublicInfo> list;
-    public int maxQuery;
-
-    public FetchUsersRequestEvent(List<UserPublicInfo> list, int maxQuery) {
-        this.list = list;
-        this.maxQuery = maxQuery;
-    }
-
-    @Override
-    public String getType() {
-        return"lkFetchUsers";
     }
 }

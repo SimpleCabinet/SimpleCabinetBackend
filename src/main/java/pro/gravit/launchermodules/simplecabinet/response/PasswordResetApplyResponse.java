@@ -17,6 +17,7 @@ public class PasswordResetApplyResponse extends SimpleResponse {
     public long id;
     public UUID uuid;
     public String newPassword;
+
     @Override
     public String getType() {
         return "lkPasswordResetApply";
@@ -24,18 +25,17 @@ public class PasswordResetApplyResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext ctx, Client client) throws Exception {
-        if(id == 0 || uuid == null || newPassword == null) {
+        if (id == 0 || uuid == null || newPassword == null) {
             sendError("Invalid request");
             return;
         }
-        if(newPassword.length() < 4 || newPassword.length() > 32)
-        {
+        if (newPassword.length() < 4 || newPassword.length() > 32) {
             sendError("Password length invalid");
             return;
         }
         SimpleCabinetUserDAO dao = (SimpleCabinetUserDAO) server.config.dao.userDAO;
         PasswordResetEntity entity = dao.findPasswordResetById(id);
-        if(entity == null || !entity.getUuid().equals(uuid)) {
+        if (entity == null || !entity.getUuid().equals(uuid)) {
             sendError("Invalid password reset token");
             return;
         }

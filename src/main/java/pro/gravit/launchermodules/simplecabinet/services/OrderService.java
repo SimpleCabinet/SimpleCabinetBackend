@@ -11,7 +11,6 @@ import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,18 +27,16 @@ public class OrderService {
         this.server = server;
     }
 
-    public void processOrder(OrderEntity entity)
-    {
+    public void processOrder(OrderEntity entity) {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         ProductEntity product = entity.getProduct();
         User user = entity.getUser();
-        if(entity.getSum() > user.getDonateMoney())
-        {
+        if (entity.getSum() > user.getDonateMoney()) {
             entity.setStatus(OrderEntity.OrderStatus.FAILED);
             dao.orderDAO.update(entity);
             return;
         }
-        if(product.getCount() > 0) {
+        if (product.getCount() > 0) {
             product.setCount(product.getCount() - 1);
             dao.productDAO.update(product);
         }
@@ -52,33 +49,29 @@ public class OrderService {
         });
     }
 
-    public void completeOrder(OrderEntity entity)
-    {
+    public void completeOrder(OrderEntity entity) {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         entity.setStatus(OrderEntity.OrderStatus.FINISHED);
         dao.orderDAO.update(entity);
         notifyUser(entity);
     }
 
-    public void failOrder(OrderEntity entity)
-    {
+    public void failOrder(OrderEntity entity) {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         entity.setStatus(OrderEntity.OrderStatus.FAILED);
         dao.orderDAO.update(entity);
         notifyUser(entity);
     }
 
-    private void deliveryOrder(OrderEntity entity)
-    {
+    private void deliveryOrder(OrderEntity entity) {
         String providerName = entity.getProduct().getSysDeliveryProvider();
         DeliveryProvider provider = module.config.deliveryProviders.get(providerName);
-        if(provider == null) {
+        if (provider == null) {
             LogHelper.warning("Error processing order %d. DeliveryProvider %s not found", entity.getId(), providerName == null ? "null" : providerName);
             failOrder(entity);
             return;
         }
-        if(!provider.safeDelivery(entity))
-        {
+        if (!provider.safeDelivery(entity)) {
             failOrder(entity);
         }
     }
@@ -94,8 +87,8 @@ public class OrderService {
     }
 
     public void updatedOrderStatus(long orderId, OrderEntity.OrderStatus status) {
-        ScheduledFuture<?> future =  processingOrdersMap.remove(orderId);
-        if(future != null) {
+        ScheduledFuture<?> future = processingOrdersMap.remove(orderId);
+        if (future != null) {
             future.cancel(true);
         }
     }

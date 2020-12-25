@@ -9,6 +9,7 @@ import pro.gravit.launchserver.socket.Client;
 public class UpdateExtendedInfoResponse extends AbstractUserResponse {
     public User.Gender gender;
     public String status;
+
     @Override
     public String getType() {
         return "lkUpdateExtendedInfo";

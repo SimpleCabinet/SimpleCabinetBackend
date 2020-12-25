@@ -44,14 +44,15 @@ public class PaymentService {
                 throw new IllegalStateException("Unexpected value: " + variant);
         }
     }
+
     //WARNING: Transaction not used. TODO: add transactions
     public boolean serviceRobokassaResultCompleted(int id, double sum) {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         PaymentId paymentId = dao.paymentDAO.findById(id);
-        if(paymentId == null) {
+        if (paymentId == null) {
             return false;
         }
-        if(Double.compare(paymentId.getSum(), sum) != 0) {
+        if (Double.compare(paymentId.getSum(), sum) != 0) {
             LogHelper.warning("Payment %d sum invalid. DB sum: %f, result sum %f", paymentId.getSum(), sum);
             //paymentId.setSum(sum);
         }
@@ -67,10 +68,10 @@ public class PaymentService {
     public boolean serviceUnitPayResultCompleted(int id, double sum) {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         PaymentId paymentId = dao.paymentDAO.findById(id);
-        if(paymentId == null) {
+        if (paymentId == null) {
             return false;
         }
-        if(Double.compare(paymentId.getSum(), sum) != 0) {
+        if (Double.compare(paymentId.getSum(), sum) != 0) {
             LogHelper.warning("Payment %d sum invalid. DB sum: %f, result sum %f", paymentId.getId(), paymentId.getSum(), sum);
             //paymentId.setSum(sum);
         }
@@ -84,34 +85,22 @@ public class PaymentService {
     }
 
     protected void deliveryPaymentId(SimpleCabinetDAOProvider dao, PaymentId id, User user) {
-        if(id.getSum() > 0)
-        {
-            user.setDonateMoney(user.getDonateMoney()+ id.getSum());
+        if (id.getSum() > 0) {
+            user.setDonateMoney(user.getDonateMoney() + id.getSum());
             dao.userDAO.update(user);
             module.syncService.updateUser(user, false, true);
         }
     }
 
-    public static class KeyValuePair {
-        public String key;
-        public String value;
-
-        public KeyValuePair(String key, String value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
     public String calculateUnitPaySignature(String method, List<KeyValuePair> hashParams) {
         MessageDigest digest = SecurityHelper.newDigest(SecurityHelper.DigestAlgorithm.SHA256);
         hashParams.sort(Comparator.comparing((e) -> e.key));
-        if(method != null)
-        {
+        if (method != null) {
             digest.update(method.getBytes());
             digest.update("{up}".getBytes());
         }
         hashParams.sort(Comparator.comparing((e) -> e.key));
-        for(KeyValuePair s : hashParams)
-        {
+        for (KeyValuePair s : hashParams) {
             String realValue = URLDecoder.decode(s.value, StandardCharsets.UTF_8);
             LogHelper.dev("Hash to %s", realValue);
             digest.update(realValue.getBytes());
@@ -121,27 +110,8 @@ public class PaymentService {
         return SecurityHelper.toHex(digest.digest());
     }
 
-    private String formatParam(String key, String value)
-    {
+    private String formatParam(String key, String value) {
         return String.format("&params[%s]=%s", key, value);
-    }
-
-    static class UnitPayPaymentInitResult {
-        public String type;
-        public String redirectUrl;
-        public String statusUrl;
-        public String receiptUrl;
-        public long paymentId;
-        public String message;
-    }
-
-    static class UnitPayErrorResult {
-        public String message;
-    }
-
-    static class UnitPayPaymentInitResultContainer {
-        public UnitPayPaymentInitResult result;
-        public UnitPayErrorResult error;
     }
 
     protected InitPaymentRequestEvent makeInitPaymentUnitPayRequestEvent(PaymentId id, User user, String ip) throws IOException {
@@ -153,11 +123,13 @@ public class PaymentService {
         builder.append(formatParam("account", paramAccount));
         builder.append(formatParam("sum", paramSum));
         builder.append(formatParam("projectId", String.valueOf(module.config.payments.unitPay.projectId)));
-        if(module.config.payments.unitPay.resultUrl != null) builder.append(formatParam("resultUrl", module.config.payments.unitPay.resultUrl));
+        if (module.config.payments.unitPay.resultUrl != null)
+            builder.append(formatParam("resultUrl", module.config.payments.unitPay.resultUrl));
         builder.append(formatParam("desc", id.getDescription()));
         builder.append(formatParam("ip", ip));
         builder.append(formatParam("test", module.config.payments.unitPay.testMode ? "1" : "0"));
-        if(module.config.payments.unitPay.login != null) builder.append(formatParam("login", module.config.payments.unitPay.login));
+        if (module.config.payments.unitPay.login != null)
+            builder.append(formatParam("login", module.config.payments.unitPay.login));
         builder.append(formatParam("secretKey", module.config.payments.unitPay.secretKey));
         List<KeyValuePair> hashParams = new ArrayList<>();
         hashParams.add(new KeyValuePair("account", paramAccount));
@@ -172,18 +144,16 @@ public class PaymentService {
         LogHelper.info(builder.toString());
         UnitPayPaymentInitResultContainer resultUnitPay = Launcher.gsonManager.gson.fromJson(HTTPRequest.jsonRequest(null, "GET", url), UnitPayPaymentInitResultContainer.class);
         LogHelper.dev("Output: %s", Launcher.gsonManager.configGson.toJson(resultUnitPay));
-        if(resultUnitPay.error != null) {
+        if (resultUnitPay.error != null) {
             throw new SecurityException(resultUnitPay.error.message);
-        }
-        else if(resultUnitPay.result != null) {
+        } else if (resultUnitPay.result != null) {
             String redirectUrl = resultUnitPay.result.redirectUrl;
             InitPaymentRequestEvent result = new InitPaymentRequestEvent();
             result.redirectUri = redirectUrl;
             result.method = "GET";
             result.params = new HashMap<>();
             return result;
-        }
-        else {
+        } else {
             throw new SecurityException("Unknown UnitPay response");
         }
     }
@@ -210,7 +180,7 @@ public class PaymentService {
 
     protected InitPaymentRequestEvent makeInitPaymentSelfRequestEvent(PaymentId id, User user, String ip) {
         SimpleCabinetConfig.PaymentSelfConfig config = module.config.payments.self;
-        if(config  == null) throw new SecurityException("this type not allow");
+        if (config == null) throw new SecurityException("this type not allow");
         InitPaymentRequestEvent result = new InitPaymentRequestEvent();
         result.redirectUri = "https://auth.robokassa.ru/Merchant/Index.aspx";
         result.method = "POST";
@@ -221,26 +191,56 @@ public class PaymentService {
         result.params.put("paymentId", invId);
         return result;
     }
+
     protected String calculateP1RobokassaHashString(String params, String postParams) {
-        if(postParams == null) {
+        if (postParams == null) {
             return String.format("%s:%s", params, module.config.payments.robokassa.password1);
-        }
-        else {
+        } else {
             return String.format("%s:%s:%s", params, module.config.payments.robokassa.password1, postParams);
         }
     }
+
     protected String calculateP2RobokassaHashString(String params, String postParams) {
-        if(postParams == null) {
+        if (postParams == null) {
             return String.format("%s:%s", params, module.config.payments.robokassa.password2);
-        }
-        else {
+        } else {
             return String.format("%s:%s:%s", params, module.config.payments.robokassa.password2, postParams);
         }
     }
+
     protected String calculateP1RobokassaHash(String params, String postParams) {
         return SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, calculateP1RobokassaHashString(params, postParams))).toUpperCase();
     }
+
     protected String calculateP2RobokassaHash(String params, String postParams) {
         return SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, calculateP2RobokassaHashString(params, postParams))).toUpperCase();
+    }
+
+    public static class KeyValuePair {
+        public String key;
+        public String value;
+
+        public KeyValuePair(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    static class UnitPayPaymentInitResult {
+        public String type;
+        public String redirectUrl;
+        public String statusUrl;
+        public String receiptUrl;
+        public long paymentId;
+        public String message;
+    }
+
+    static class UnitPayErrorResult {
+        public String message;
+    }
+
+    static class UnitPayPaymentInitResultContainer {
+        public UnitPayPaymentInitResult result;
+        public UnitPayErrorResult error;
     }
 }

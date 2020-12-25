@@ -11,6 +11,7 @@ import java.util.Set;
 
 public class EnumsCommand extends Command {
     public Set<Class<? extends Enum<?>>> enums = new HashSet<>();
+
     public EnumsCommand(LaunchServer server) {
         super(server);
         enums.add(AuditEntity.AuditType.class);
@@ -19,6 +20,18 @@ public class EnumsCommand extends Command {
         enums.add(ProductEntity.ProductType.class);
         enums.add(User.HashType.class);
         enums.add(User.Gender.class);
+    }
+
+    public static void printEnum(Class<? extends Enum<?>> clazz) {
+        try {
+            SecurityCheckCommand.printCheckResult(LogHelper.Level.INFO, clazz.getSimpleName(), String.format(">>> %s <<<", clazz.getSimpleName()), true);
+            Enum<?>[] values = clazz.getEnumConstants();
+            for (Enum<?> element : values) {
+                SecurityCheckCommand.printCheckResult(LogHelper.Level.INFO, String.valueOf(element.ordinal()), element.name(), true);
+            }
+        } catch (Throwable throwable) {
+            LogHelper.error(throwable);
+        }
     }
 
     @Override
@@ -33,22 +46,8 @@ public class EnumsCommand extends Command {
 
     @Override
     public void invoke(String... args) throws Exception {
-        for(Class<? extends Enum<?>> clazz : enums)
-        {
+        for (Class<? extends Enum<?>> clazz : enums) {
             printEnum(clazz);
-        }
-    }
-
-    public static void printEnum(Class<? extends Enum<?>> clazz)
-    {
-        try {
-            SecurityCheckCommand.printCheckResult(LogHelper.Level.INFO, clazz.getSimpleName(), String.format(">>> %s <<<", clazz.getSimpleName()), true);
-            Enum<?>[] values = clazz.getEnumConstants();
-            for(Enum<?> element : values) {
-                SecurityCheckCommand.printCheckResult(LogHelper.Level.INFO, String.valueOf(element.ordinal()), element.name(), true);
-            }
-        } catch (Throwable throwable) {
-            LogHelper.error(throwable);
         }
     }
 }

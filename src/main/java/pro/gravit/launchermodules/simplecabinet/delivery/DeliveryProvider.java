@@ -11,10 +11,23 @@ import pro.gravit.utils.helper.LogHelper;
 public abstract class DeliveryProvider {
     public static ProviderMap<DeliveryProvider> providers = new ProviderMap<>();
     private static boolean registeredProviders = false;
+
+    public static void registerProviders() {
+        if (!registeredProviders) {
+            providers.register("event", EventDeliveryProvider.class);
+            providers.register("debug", DebugDeliveryProvider.class);
+            providers.register("luckperms", LuckPermsDeliveryProvider.class);
+            providers.register("group", GroupDeliveryProvider.class);
+            providers.register("cabinet", CabinetDeliveryProvider.class);
+            registeredProviders = true;
+        }
+    }
+
     public abstract void init(LaunchServer server, SimpleCabinetModule module);
+
     protected abstract void delivery(OrderEntity entity) throws Exception;
-    public final boolean safeDelivery(OrderEntity entity)
-    {
+
+    public final boolean safeDelivery(OrderEntity entity) {
         try {
             delivery(entity);
             return true;
@@ -24,22 +37,12 @@ public abstract class DeliveryProvider {
             return false;
         }
     }
+
     public UserItemDeliveryEvent.OrderSystemInfo fetchSystemItemInfo(OrderEntity entity) {
         throw new UnsupportedOperationException();
     }
+
     public boolean isDeliveryUser(OrderEntity entity, User user) {
         return false;
-    }
-    public static void registerProviders()
-    {
-        if(!registeredProviders)
-        {
-            providers.register("event", EventDeliveryProvider.class);
-            providers.register("debug", DebugDeliveryProvider.class);
-            providers.register("luckperms", LuckPermsDeliveryProvider.class);
-            providers.register("group", GroupDeliveryProvider.class);
-            providers.register("cabinet", CabinetDeliveryProvider.class);
-            registeredProviders = true;
-        }
     }
 }

@@ -115,8 +115,7 @@ public class PasswordHelper {
         return SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, password));
     }
 
-    public static String hashPhpassPassword(String password)
-    {
+    public static String hashPhpassPassword(String password) {
         PHPass pass = new PHPass(8);
         return pass.hashPassword(password);
     }

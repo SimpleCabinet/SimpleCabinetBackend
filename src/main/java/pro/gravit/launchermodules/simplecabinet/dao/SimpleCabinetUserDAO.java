@@ -1,7 +1,10 @@
 package pro.gravit.launchermodules.simplecabinet.dao;
 
 import org.hibernate.*;
-import pro.gravit.launchermodules.simplecabinet.model.*;
+import pro.gravit.launchermodules.simplecabinet.model.HardwareId;
+import pro.gravit.launchermodules.simplecabinet.model.PasswordResetEntity;
+import pro.gravit.launchermodules.simplecabinet.model.User;
+import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
 import pro.gravit.launchserver.dao.UserDAO;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -34,9 +37,8 @@ public class SimpleCabinetUserDAO implements UserDAO {
         }
     }
 
-    public void deleteOrderUserGroups()
-    {
-        try(Session s = factory.openSession()) {
+    public void deleteOrderUserGroups() {
+        try (Session s = factory.openSession()) {
             s.beginTransaction();
             Query query = s.createQuery("delete from UserGroup where endDate < :current");
             query.setParameter("current", LocalDateTime.now());
@@ -49,7 +51,7 @@ public class SimpleCabinetUserDAO implements UserDAO {
 
     @Override
     public User findById(int id) {
-        return findById((long)id);
+        return findById((long) id);
     }
 
     public User findByUsername(String username) {
@@ -89,8 +91,7 @@ public class SimpleCabinetUserDAO implements UserDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<User> fetchPage(int startId, int limit, String name)
-    {
+    public List<User> fetchPage(int startId, int limit, String name) {
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -98,11 +99,11 @@ public class SimpleCabinetUserDAO implements UserDAO {
         Root<User> rootUser = personCriteria.from(User.class);
         Expression<Boolean> where = null;
         personCriteria.select(rootUser);
-        if(name != null) {
+        if (name != null) {
             where = cb.equal(rootUser.get("username"), name);
         }
-        if(where != null) personCriteria.where(where);
-        Query query  = em.createQuery(personCriteria);
+        if (where != null) personCriteria.where(where);
+        Query query = em.createQuery(personCriteria);
 
         query.setFirstResult(startId);
         query.setMaxResults(limit);
@@ -112,8 +113,7 @@ public class SimpleCabinetUserDAO implements UserDAO {
         return result;
     }
 
-    public HardwareId fetchHardwareId(User user)
-    {
+    public HardwareId fetchHardwareId(User user) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.lock(user, LockMode.NONE);
@@ -124,8 +124,7 @@ public class SimpleCabinetUserDAO implements UserDAO {
         }
     }
 
-    public User fetchUserInPasswordResetEntity(PasswordResetEntity entity)
-    {
+    public User fetchUserInPasswordResetEntity(PasswordResetEntity entity) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.lock(entity, LockMode.NONE);
@@ -136,8 +135,7 @@ public class SimpleCabinetUserDAO implements UserDAO {
         }
     }
 
-    public List<UserGroup> fetchGroups(User user)
-    {
+    public List<UserGroup> fetchGroups(User user) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.lock(user, LockMode.NONE);
@@ -149,7 +147,7 @@ public class SimpleCabinetUserDAO implements UserDAO {
     }
 
     public void save(pro.gravit.launchserver.dao.User user) {
-        if(!(user instanceof User)) throw new IllegalArgumentException("User type unsupported");
+        if (!(user instanceof User)) throw new IllegalArgumentException("User type unsupported");
         try (Session session = factory.openSession()) {
             Transaction tx1 = session.beginTransaction();
             session.save(user);
@@ -158,7 +156,7 @@ public class SimpleCabinetUserDAO implements UserDAO {
     }
 
     public void update(pro.gravit.launchserver.dao.User user) {
-        if(!(user instanceof User)) throw new IllegalArgumentException("User type unsupported");
+        if (!(user instanceof User)) throw new IllegalArgumentException("User type unsupported");
         try (Session session = factory.openSession()) {
             Transaction tx1 = session.beginTransaction();
             session.update(user);
@@ -167,7 +165,7 @@ public class SimpleCabinetUserDAO implements UserDAO {
     }
 
     public void delete(pro.gravit.launchserver.dao.User user) {
-        if(!(user instanceof User)) throw new IllegalArgumentException("User type unsupported");
+        if (!(user instanceof User)) throw new IllegalArgumentException("User type unsupported");
         try (Session session = factory.openSession()) {
             Transaction tx1 = session.beginTransaction();
             session.delete(user);

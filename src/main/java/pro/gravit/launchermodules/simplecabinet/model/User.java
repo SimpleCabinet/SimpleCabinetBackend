@@ -1,20 +1,70 @@
 package pro.gravit.launchermodules.simplecabinet.model;
 
-import org.mindrot.jbcrypt.BCrypt;
 import pro.gravit.launcher.ClientPermissions;
-import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.utils.PasswordHelper;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
 @Entity(name = "User")
 @Table(name = "users")
 @Cacheable
 public class User implements pro.gravit.launchserver.dao.User {
 
     public static HashType DEFAULT_PASSWORD_HASH = HashType.BCRYPT;
+    //Base and launcher
+    @Id
+    @GeneratedValue
+    private long id;
+    @Column(unique = true)
+    private String username;
+    @Column(name = "access_token")
+    private String accessToken;
+    @Column(name = "server_id")
+    private String serverId;
+    @Column(unique = true)
+    private UUID uuid;
+    //Password and permissions
+    @Column(name = "hash_type")
+    @Enumerated(EnumType.ORDINAL)
+    private HashType hashType = HashType.BCRYPT;
+    private String password;
+    private long permissions;
+    private long flags;
+    //Special
+    @Column(unique = true)
+    private String email;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hwid_id")
+    private HardwareId hardwareId;
+    //Economic info
+    @Column(name = "economy_money")
+    private long economyMoney;
+    @Column(name = "donate_money")
+    private double donateMoney;
+    @Column(name = "extended_money")
+    private double extendedMoney;
+    //Addional info (may be null)
+    @Enumerated(EnumType.ORDINAL)
+    private Gender gender;
+    private String status;
+    @Column(name = "registration_date")
+    private LocalDateTime registrationDate;
+    @Column(name = "last_login")
+    private LocalDateTime lastLoginDate;
+    @Column(name = "totp_secret_key")
+    private byte[] totpSecretKey;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserGroup> groups;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PaymentId> payments;
+
+    public static boolean isCorrectEmail(String email) //Very simple check
+    {
+        return email != null && email.contains("@") && email.length() >= 3;
+    }
 
     public String getEmail() {
         return email;
@@ -88,81 +138,13 @@ public class User implements pro.gravit.launchserver.dao.User {
         this.groups = groups;
     }
 
-    public enum HashType
-    {
-        BCRYPT(true),
-        DOUBLEMD5(false),
-        MD5(false),
-        SHA256(false),
-        AUTHMESHA256(true),
-        PHPASS(true);
-        boolean trusted;
-
-        public boolean isTrusted() {
-            return trusted;
-        }
-
-        HashType(boolean trusted) {
-            this.trusted = trusted;
-        }
-    }
-    public enum Gender
-    {
-        FEMALE,
-        MALE
-    }
-    //Base and launcher
-    @Id
-    @GeneratedValue
-    private long id;
-    @Column(unique = true)
-    private String username;
-    @Column(name = "access_token")
-    private String accessToken;
-    @Column(name = "server_id")
-    private String serverId;
-    @Column(unique = true)
-    private UUID uuid;
-
-    //Password and permissions
-    @Column(name = "hash_type")
-    @Enumerated(EnumType.ORDINAL)
-    private HashType hashType = HashType.BCRYPT;
-    private String password;
-    private long permissions;
-    private long flags;
-    //Special
-    @Column(unique = true)
-    private String email;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hwid_id")
-    private HardwareId hardwareId;
-
-    //Economic info
-    @Column(name = "economy_money")
-    private long economyMoney;
-    @Column(name = "donate_money")
-    private double donateMoney;
-    @Column(name = "extended_money")
-    private double extendedMoney;
-    //Addional info (may be null)
-    @Enumerated(EnumType.ORDINAL)
-    private Gender gender;
-    private String status;
-    @Column(name = "registration_date")
-    private LocalDateTime registrationDate;
-    @Column(name = "last_login")
-    private LocalDateTime lastLoginDate;
-
-    @Column(name = "totp_secret_key")
-    private byte[] totpSecretKey;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserGroup>  groups;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<PaymentId>  payments;
     @Override
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
@@ -183,21 +165,20 @@ public class User implements pro.gravit.launchserver.dao.User {
 
     @Override
     public void setPassword(String password) {
-        if(!hashType.isTrusted()) hashType = DEFAULT_PASSWORD_HASH;
+        if (!hashType.isTrusted()) hashType = DEFAULT_PASSWORD_HASH;
         String newPassword = PasswordHelper.hashPassword(hashType, password);
-        if(newPassword == null)
-        {
+        if (newPassword == null) {
             this.hashType = DEFAULT_PASSWORD_HASH;
             newPassword = PasswordHelper.hashPassword(hashType, password);
         }
         this.password = newPassword;
     }
-    public void setRawPassword(String password)
-    {
+
+    public void setRawPassword(String password) {
         this.password = password;
     }
-    public void setRawPasswordType(HashType type)
-    {
+
+    public void setRawPasswordType(HashType type) {
         this.hashType = type;
     }
 
@@ -231,15 +212,6 @@ public class User implements pro.gravit.launchserver.dao.User {
         this.uuid = uuid;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public static boolean isCorrectEmail(String email) //Very simple check
-    {
-        return email != null && email.contains("@") && email.length() >= 3;
-    }
-
     public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
@@ -254,5 +226,28 @@ public class User implements pro.gravit.launchserver.dao.User {
 
     public void setLastLoginDate(LocalDateTime lastLoginDate) {
         this.lastLoginDate = lastLoginDate;
+    }
+
+    public enum HashType {
+        BCRYPT(true),
+        DOUBLEMD5(false),
+        MD5(false),
+        SHA256(false),
+        AUTHMESHA256(true),
+        PHPASS(true);
+        boolean trusted;
+
+        HashType(boolean trusted) {
+            this.trusted = trusted;
+        }
+
+        public boolean isTrusted() {
+            return trusted;
+        }
+    }
+
+    public enum Gender {
+        FEMALE,
+        MALE
     }
 }

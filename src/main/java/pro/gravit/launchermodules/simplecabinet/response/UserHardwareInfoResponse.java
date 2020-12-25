@@ -16,12 +16,12 @@ public class UserHardwareInfoResponse extends AbstractUserResponse {
 
     @Override
     public void executeByUser(ChannelHandlerContext channelHandlerContext, User user, boolean self, Client client) throws Exception {
-        if(self) {
+        if (self) {
             sendError("Show self hardware not allowed");
             return;
         }
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
-        HardwareId id = ((SimpleCabinetUserDAO)dao.userDAO).fetchHardwareId(user);
+        HardwareId id = ((SimpleCabinetUserDAO) dao.userDAO).fetchHardwareId(user);
         sendResult(new UserHardwareInfoRequestEvent(id == null ? null : id.toHardwareInfo(), id == null ? null : id.getPublicKey()));
     }
 }

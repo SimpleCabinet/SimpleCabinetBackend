@@ -1,7 +1,6 @@
 package pro.gravit.launchermodules.simplecabinet.dao;
 
 import org.hibernate.*;
-import org.hibernate.query.Query;
 import pro.gravit.launchermodules.simplecabinet.model.HardwareId;
 import pro.gravit.launchermodules.simplecabinet.model.HardwareIdLogEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
@@ -40,8 +39,7 @@ public class SimpleCabinetHwidDAO {
 
     public HardwareId findHardwareForAll(Predicate<HardwareId> predicate) //WARNING: This operation very slow(filter by application)
     {
-        try(StatelessSession session = factory.openStatelessSession())
-        {
+        try (StatelessSession session = factory.openStatelessSession()) {
             session.setJdbcBatchSize(256);
             CriteriaBuilder cb = factory.getCriteriaBuilder();
             CriteriaQuery<HardwareId> personCriteria = cb.createQuery(HardwareId.class);
@@ -51,11 +49,9 @@ public class SimpleCabinetHwidDAO {
                     .setReadOnly(true)
 
                     .scroll(ScrollMode.FORWARD_ONLY);
-            while( ret.next() )
-            {
+            while (ret.next()) {
                 HardwareId id = (HardwareId) ret.get(0);
-                if(predicate.test(id))
-                {
+                if (predicate.test(id)) {
                     return id;
                 }
             }
@@ -63,8 +59,7 @@ public class SimpleCabinetHwidDAO {
         return null;
     }
 
-    public List<User> findUsersByHardwareId(HardwareId id)
-    {
+    public List<User> findUsersByHardwareId(HardwareId id) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.lock(id, LockMode.NONE);

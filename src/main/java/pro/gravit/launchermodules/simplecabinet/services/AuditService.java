@@ -17,8 +17,7 @@ public class AuditService {
         this.server = server;
     }
 
-    public void pushBaseAudit(AuditEntity.AuditType type, User user, String userIp, User target)
-    {
+    public void pushBaseAudit(AuditEntity.AuditType type, User user, String userIp, User target) {
         AuditEntity entity = new AuditEntity();
         entity.setUser(user);
         entity.setIp(userIp);
@@ -29,8 +28,7 @@ public class AuditService {
         dao.auditDAO.save(entity);
     }
 
-    public void pushAdvancedAudit(AuditEntity.AuditType type, User user, String userIp, User target, String arg1, String arg2)
-    {
+    public void pushAdvancedAudit(AuditEntity.AuditType type, User user, String userIp, User target, String arg1, String arg2) {
         AuditEntity entity = new AuditEntity();
         entity.setUser(user);
         entity.setIp(userIp);

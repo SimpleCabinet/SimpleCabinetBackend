@@ -7,7 +7,6 @@ import pro.gravit.launcher.modules.LauncherModuleInfo;
 import pro.gravit.launcher.modules.events.ClosePhase;
 import pro.gravit.launcher.modules.events.PreConfigPhase;
 import pro.gravit.launcher.modules.events.PreGsonPhase;
-import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launchermodules.simplecabinet.commands.CabinetCommand;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.delivery.DeliveryProvider;
@@ -32,7 +31,6 @@ import pro.gravit.launchserver.socket.handlers.NettyWebAPIHandler;
 import pro.gravit.utils.UniversalJsonAdapter;
 import pro.gravit.utils.Version;
 import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.FileNotFoundException;
@@ -60,14 +58,13 @@ public class SimpleCabinetModule extends LauncherModule {
     private LaunchServer server;
 
     public SimpleCabinetModule() {
-        super(new LauncherModuleInfo("SimpleCabinet", new Version(1,0,0, 1, Version.Type.STABLE), new String[]{"LaunchServerCore"}));
+        super(new LauncherModuleInfo("SimpleCabinet", new Version(1, 0, 0, 1, Version.Type.STABLE), new String[]{"LaunchServerCore"}));
     }
 
     @Override
     public void init(LauncherInitContext initContext) {
         LauncherModule module = modulesManager.getModule("LaunchServerCore");
-        if(!checkLaunchServerVersion(module.getModuleInfo().version))
-        {
+        if (!checkLaunchServerVersion(module.getModuleInfo().version)) {
             throw new RuntimeException("SimpleCabinet required LaunchServerCore 5.1.9 or higher");
         }
         registerEvent(this::preConfigPhase, PreConfigPhase.class);
@@ -79,22 +76,20 @@ public class SimpleCabinetModule extends LauncherModule {
     }
 
     public boolean checkLaunchServerVersion(Version version) {
-        if(version.major > 5) return true;
-        if(version.minor > 1) return true;
-        if(version.patch >= 9) return true;
-        return false;
+        if (version.major > 5) return true;
+        if (version.minor > 1) return true;
+        return version.patch >= 9;
     }
 
-    public void preGsonPhase(PreGsonPhase preGsonPhase)
-    {
+    public void preGsonPhase(PreGsonPhase preGsonPhase) {
         preGsonPhase.gsonBuilder.registerTypeAdapter(DeliveryProvider.class, new UniversalJsonAdapter<>(DeliveryProvider.providers));
         DeliveryProvider.registerProviders();
     }
 
     public void exitPhase(pro.gravit.launcher.modules.events.ClosePhase closePhase) {
-        if(config != null && config.deliveryProviders != null) {
-            for(DeliveryProvider provider : config.deliveryProviders.values()) {
-                if(provider instanceof AutoCloseable) {
+        if (config != null && config.deliveryProviders != null) {
+            for (DeliveryProvider provider : config.deliveryProviders.values()) {
+                if (provider instanceof AutoCloseable) {
                     try {
                         ((AutoCloseable) provider).close();
                     } catch (Exception e) {
@@ -105,8 +100,7 @@ public class SimpleCabinetModule extends LauncherModule {
         }
     }
 
-    public void preConfigPhase(PreConfigPhase preConfigPhase)
-    {
+    public void preConfigPhase(PreConfigPhase preConfigPhase) {
         DaoProvider.providers.register("simplecabinet", SimpleCabinetDAOProvider.class);
         HWIDProvider.providers.register("cabinet", CabinetHWIDProvider.class);
         AuthProvider.providers.register("cabinet", CabinetAuthProvider.class);
@@ -132,13 +126,11 @@ public class SimpleCabinetModule extends LauncherModule {
         NettyWebAPIHandler.addNewSeverlet("lk/robokassa", new RobokassaSeverlet(this));
     }
 
-    public void getLaunchServerEvent(NewLaunchServerInstanceEvent event)
-    {
+    public void getLaunchServerEvent(NewLaunchServerInstanceEvent event) {
         server = event.launchServer;
     }
 
-    public void initPhase(LaunchServerInitPhase initPhase)
-    {
+    public void initPhase(LaunchServerInitPhase initPhase) {
         SimpleCabinetModule module = this;
         baseConfigPath = modulesConfigManager.getModuleConfigDir(moduleInfo.name);
         configurable = new JsonConfigurable<SimpleCabinetConfig>(SimpleCabinetConfig.class, modulesConfigManager.getModuleConfig(moduleInfo.name)) {
@@ -161,7 +153,7 @@ public class SimpleCabinetModule extends LauncherModule {
         try {
             configurable.loadConfig();
         } catch (IOException e) {
-            if(!(e instanceof FileNotFoundException)) LogHelper.error(e);
+            if (!(e instanceof FileNotFoundException)) LogHelper.error(e);
             configurable.setConfig(configurable.getDefaultConfig());
         }
         try {
@@ -169,8 +161,8 @@ public class SimpleCabinetModule extends LauncherModule {
         } catch (IOException e) {
             LogHelper.error(e);
         }
-        if(config.workersCorePoolSize <= 0) config.workersCorePoolSize = 3;
-        if(config.schedulerCorePoolSize <= 0) config.schedulerCorePoolSize = 2;
+        if (config.workersCorePoolSize <= 0) config.workersCorePoolSize = 3;
+        if (config.schedulerCorePoolSize <= 0) config.schedulerCorePoolSize = 2;
         this.scheduler = Executors.newScheduledThreadPool(config.schedulerCorePoolSize);
         this.workers = Executors.newWorkStealingPool(config.workersCorePoolSize);
         this.mail = new SimpleCabinetMailSender(this);
@@ -180,7 +172,7 @@ public class SimpleCabinetModule extends LauncherModule {
         this.auditService = new AuditService(this, server);
         server.commandHandler.registerCommand("cabinet", new CabinetCommand(server));
         server.sessionManager.clientRestoreHook.registerHook((c) -> {
-            if(c.daoObject != null && server.config.dao != null) {
+            if (c.daoObject != null && server.config.dao != null) {
                 User user = (User) c.daoObject;
                 SimpleCabinetUserDAO userDAO = (SimpleCabinetUserDAO) server.config.dao.userDAO;
                 userDAO.fetchGroups(user);
@@ -189,19 +181,17 @@ public class SimpleCabinetModule extends LauncherModule {
         });
         this.scheduler.scheduleAtFixedRate(syncService::deleteOlderUserGroups, 0, 60, TimeUnit.SECONDS);
     }
-    public void closePhase(ClosePhase closePhase)
-    {
-        if(this.workers != null)
+
+    public void closePhase(ClosePhase closePhase) {
+        if (this.workers != null)
             this.workers.shutdownNow();
-        if(this.scheduler != null)
+        if (this.scheduler != null)
             this.scheduler.shutdownNow();
     }
 
-    private Path exportFile(Path target, String name) throws IOException
-    {
-        if(Files.exists(target)) return target;
-        try(InputStream input = IOHelper.newInput(Objects.requireNonNull(SimpleCabinetModule.class.getClassLoader().getResource("pro/gravit/launchermodules/simplecabinet/".concat(name)))))
-        {
+    private Path exportFile(Path target, String name) throws IOException {
+        if (Files.exists(target)) return target;
+        try (InputStream input = IOHelper.newInput(Objects.requireNonNull(SimpleCabinetModule.class.getClassLoader().getResource("pro/gravit/launchermodules/simplecabinet/".concat(name))))) {
             IOHelper.transfer(input, target);
         }
         return target;

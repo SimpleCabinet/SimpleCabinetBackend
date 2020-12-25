@@ -9,19 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class FetchOrdersRequestEvent extends RequestEvent {
-    public static class PublicOrderInfo {
-        public long orderId;
-        public long productId;
-        public LocalDateTime date;
-        public OrderEntity.OrderStatus status;
-        public UserItemDeliveryEvent.OrderSystemInfo systemInfo;
-        public int part;
-        public String userUsername;
-        public UUID userUUID;
-        public boolean cantDelivery;
-    }
     public List<PublicOrderInfo> list;
-
     public int maxQuery;
 
     public FetchOrdersRequestEvent(List<PublicOrderInfo> list) {
@@ -36,5 +24,17 @@ public class FetchOrdersRequestEvent extends RequestEvent {
     @Override
     public String getType() {
         return "lkFetchOrders";
+    }
+
+    public static class PublicOrderInfo {
+        public long orderId;
+        public long productId;
+        public LocalDateTime date;
+        public OrderEntity.OrderStatus status;
+        public UserItemDeliveryEvent.OrderSystemInfo systemInfo;
+        public int part;
+        public String userUsername;
+        public UUID userUUID;
+        public boolean cantDelivery;
     }
 }

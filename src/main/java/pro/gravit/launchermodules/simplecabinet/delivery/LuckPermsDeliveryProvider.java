@@ -6,7 +6,6 @@ import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
-import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.auth.MySQLSourceConfig;
 import pro.gravit.launchserver.auth.PostgreSQLSourceConfig;
@@ -19,15 +18,15 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.UUID;
 
 public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoCloseable {
-    private transient LaunchServer server;
-    private transient SimpleCabinetModule module;
     public MySQLSourceConfig mySQLSource;
     public PostgreSQLSourceConfig postgreSQLSource;
     public String sql;
+    private transient LaunchServer server;
+    private transient SimpleCabinetModule module;
+
     @Override
     public void init(LaunchServer server, SimpleCabinetModule module) {
         this.server = server;
@@ -39,16 +38,16 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         ProductEntity product = entity.getProduct();
         User user = entity.getUser();
-        if(product.getType() != ProductEntity.ProductType.GROUP) {
+        if (product.getType() != ProductEntity.ProductType.GROUP) {
             LogHelper.warning("LuckyPermsDeliveryProvider not support type %s (order %d). Canceled", entity.getProduct().getType().toString(), entity.getId());
             module.orderService.failOrder(entity);
             return;
         }
         String groupName = product.getSysId();
-        int days = product.getSysQuantity()*entity.getQuantity();
+        int days = product.getSysQuantity() * entity.getQuantity();
         LogHelper.debug("Delivery lk group %s to user %s (%d days)", groupName, user.getUsername(), days);
-        LocalDateTime endDate = GroupDeliveryProvider.deliveryGroup(module, (SimpleCabinetUserDAO)dao.userDAO, user, groupName, days > 0 ? Duration.ofDays(days) : null, product.isAllowStack());
-        if(endDate == null) endDate = days > 0 ? LocalDateTime.now().plusDays(days) : null;
+        LocalDateTime endDate = GroupDeliveryProvider.deliveryGroup(module, (SimpleCabinetUserDAO) dao.userDAO, user, groupName, days > 0 ? Duration.ofDays(days) : null, product.isAllowStack());
+        if (endDate == null) endDate = days > 0 ? LocalDateTime.now().plusDays(days) : null;
 
         LogHelper.debug("Delivery luckperms group %s to user %s (%d days)", groupName, user.getUsername(), days);
         deliveryWithSource(groupName, product.getSysExtra(), product.getSysNbt(), user.getUuid(), endDate);
@@ -56,9 +55,9 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
     }
 
     private void deliveryWithSource(String groupName, String extra, String nbt, UUID userUUID, LocalDateTime endDate) throws IOException, SQLException {
-        if(mySQLSource != null)
+        if (mySQLSource != null)
             deliveryWithMySQLSource(groupName, extra, nbt, userUUID, endDate);
-        else if(postgreSQLSource != null)
+        else if (postgreSQLSource != null)
             deliveryWithPostgreSQLSource(groupName, extra, nbt, userUUID, endDate);
         else {
             throw new IllegalArgumentException("mySQLSource or postgreSQLSource not configured");
@@ -68,8 +67,7 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
     private void deliveryWithMySQLSource(String groupName, String extra, String nbt, UUID userUUID, LocalDateTime endDate) throws IOException, SQLException {
         LogHelper.debug("Delivery luckperms group %s to user %s (%s end date)", groupName, userUUID.toString(), endDate == null ? "INF" : endDate.toString());
         long timestamp = endDate == null ? 0 : endDate.toEpochSecond(ZoneOffset.UTC);
-        try(Connection connection = mySQLSource.getConnection())
-        {
+        try (Connection connection = mySQLSource.getConnection()) {
             PreparedStatement query = connection.prepareStatement(sql);
             query.setString(1, userUUID.toString());
             query.setString(2, "group.".concat(groupName.toLowerCase()));
@@ -85,8 +83,7 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
     private void deliveryWithPostgreSQLSource(String groupName, String extra, String nbt, UUID userUUID, LocalDateTime endDate) throws IOException, SQLException {
         LogHelper.debug("Delivery luckperms group %s to user %s (%s end date)", groupName, userUUID.toString(), endDate.toString());
         long timestamp = endDate.toEpochSecond(ZoneOffset.UTC);
-        try(Connection connection = postgreSQLSource.getConnection())
-        {
+        try (Connection connection = postgreSQLSource.getConnection()) {
             PreparedStatement query = connection.prepareStatement(sql);
             query.setString(1, userUUID.toString());
             query.setString(2, "group.".concat(groupName.toLowerCase()));
@@ -101,9 +98,9 @@ public class LuckPermsDeliveryProvider extends DeliveryProvider implements AutoC
 
     @Override
     public void close() throws Exception {
-        if(mySQLSource != null)
+        if (mySQLSource != null)
             mySQLSource.close();
-        if(postgreSQLSource != null)
+        if (postgreSQLSource != null)
             postgreSQLSource.close();
     }
 }

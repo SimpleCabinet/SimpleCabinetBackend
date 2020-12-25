@@ -1,7 +1,8 @@
 package pro.gravit.launchermodules.simplecabinet.dao;
 
 import org.hibernate.*;
-import pro.gravit.launchermodules.simplecabinet.model.*;
+import pro.gravit.launchermodules.simplecabinet.model.ProductEnchantEntity;
+import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -24,9 +25,9 @@ public class SimpleCabinetProductDAO {
             return s.get(ProductEntity.class, id);
         }
     }
+
     @SuppressWarnings("unchecked")
-    public List<ProductEntity> fetchPage(int startId, int limit, ProductEntity.ProductType type, String name, boolean active)
-    {
+    public List<ProductEntity> fetchPage(int startId, int limit, ProductEntity.ProductType type, String name, boolean active) {
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -34,23 +35,25 @@ public class SimpleCabinetProductDAO {
         Root<ProductEntity> rootUser = personCriteria.from(ProductEntity.class);
         Expression<Boolean> where = null;
         personCriteria.select(rootUser);
-        if(type != null) {
+        if (type != null) {
             where = cb.equal(rootUser.get("type"), type);
         }
-        if(name != null) {
-            if(where == null) where = cb.equal(rootUser.get("name"), name);
+        if (name != null) {
+            if (where == null) where = cb.equal(rootUser.get("name"), name);
             else where = cb.and(where, cb.equal(rootUser.get("name"), name));
         }
-        if(active) {
-            if(where == null) where = cb.and(cb.and(cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now())),
-                    cb.notEqual(rootUser.get("count"), 0)),
-                    cb.equal(rootUser.get("visible"), true));
-            else where = cb.and(cb.and(cb.and(where, cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now()))),
-                    cb.notEqual(rootUser.get("count"), 0)),
-                    cb.equal(rootUser.get("visible"), true));
+        if (active) {
+            if (where == null)
+                where = cb.and(cb.and(cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now())),
+                        cb.notEqual(rootUser.get("count"), 0)),
+                        cb.equal(rootUser.get("visible"), true));
+            else
+                where = cb.and(cb.and(cb.and(where, cb.or(cb.isNull(rootUser.get("endDate")), cb.greaterThan(rootUser.get("endDate"), LocalDateTime.now()))),
+                        cb.notEqual(rootUser.get("count"), 0)),
+                        cb.equal(rootUser.get("visible"), true));
         }
-        if(where != null) personCriteria.where(where);
-        Query query  = em.createQuery(personCriteria);
+        if (where != null) personCriteria.where(where);
+        Query query = em.createQuery(personCriteria);
 
         query.setFirstResult(startId);
         query.setMaxResults(limit);
@@ -60,8 +63,7 @@ public class SimpleCabinetProductDAO {
         return result;
     }
 
-    public List<ProductEnchantEntity> fetchEnchantsInProduct(ProductEntity entity)
-    {
+    public List<ProductEnchantEntity> fetchEnchantsInProduct(ProductEntity entity) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.lock(entity, LockMode.NONE);

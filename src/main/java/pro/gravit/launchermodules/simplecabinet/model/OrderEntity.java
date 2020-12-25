@@ -5,18 +5,14 @@ import javax.persistence.*;
 @Entity(name = "Order")
 @Table(name = "orders")
 public class OrderEntity {
-    public enum OrderStatus
-    {
-        CREATED, PROCESS, DELIVERY, FINISHED, FAILED
-    }
     @Id
     @GeneratedValue
     private long id;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name ="product_id")
+    @JoinColumn(name = "product_id")
     private ProductEntity product;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
     private double sum;
     private int quantity;
@@ -74,5 +70,9 @@ public class OrderEntity {
 
     public void setSysPart(int sysPart) {
         this.sysPart = sysPart;
+    }
+
+    public enum OrderStatus {
+        CREATED, PROCESS, DELIVERY, FINISHED, FAILED
     }
 }

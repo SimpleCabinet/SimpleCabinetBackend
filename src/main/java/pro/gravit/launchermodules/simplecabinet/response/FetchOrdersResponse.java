@@ -10,10 +10,8 @@ import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
 import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
-import pro.gravit.launchserver.socket.response.SimpleResponse;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class FetchOrdersResponse extends AbstractUserResponse {
@@ -23,6 +21,7 @@ public class FetchOrdersResponse extends AbstractUserResponse {
     public long orderId;
     public boolean fetchSystemInfo;
     public boolean deliveryUser;
+
     @Override
     public String getType() {
         return "lkFetchOrders";
@@ -32,24 +31,23 @@ public class FetchOrdersResponse extends AbstractUserResponse {
     public void executeByUser(ChannelHandlerContext channelHandlerContext, User user, boolean self, Client client) throws Exception {
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
-        if(orderId > 0) {
-            if(!checkPermissionForNonSelf(client)) {
+        if (orderId > 0) {
+            if (!checkPermissionForNonSelf(client)) {
                 sendError("Permissions denied");
                 return;
             }
             OrderEntity entity = dao.orderDAO.findById(orderId);
-            if(entity == null) {
+            if (entity == null) {
                 sendError("Order not found");
                 return;
             }
             sendResult(new FetchOrdersRequestEvent(List.of(getPublicInfo(entity, fetchSystemInfo, deliveryUser, user))));
-        }
-        else {
-            if(( deliveryUser || fetchSystemInfo ) && !checkPermissionForNonSelf(client)) {
+        } else {
+            if ((deliveryUser || fetchSystemInfo) && !checkPermissionForNonSelf(client)) {
                 sendError("Permissions denied");
                 return;
             }
-            List<FetchOrdersRequestEvent.PublicOrderInfo> list = dao.orderDAO.fetchPage((int) lastId*MAX_QUERY, MAX_QUERY, filterByType, user).stream().map(a -> getPublicInfo(a, fetchSystemInfo, deliveryUser, (User) client.daoObject)).collect(Collectors.toList());
+            List<FetchOrdersRequestEvent.PublicOrderInfo> list = dao.orderDAO.fetchPage((int) lastId * MAX_QUERY, MAX_QUERY, filterByType, user).stream().map(a -> getPublicInfo(a, fetchSystemInfo, deliveryUser, (User) client.daoObject)).collect(Collectors.toList());
             sendResult(new FetchOrdersRequestEvent(list, MAX_QUERY));
         }
     }
@@ -62,17 +60,17 @@ public class FetchOrdersResponse extends AbstractUserResponse {
         orderInfo.date = null; // TODO
         orderInfo.part = entity.getSysPart();
         orderInfo.status = entity.getStatus();
-        if(isAdmin || checkDeliveryUser) {
+        if (isAdmin || checkDeliveryUser) {
             try {
                 ProductEntity product = dao.orderDAO.fetchProductInOrder(entity);
                 User user = dao.orderDAO.fetchUserInOrder(entity);
-                if(product.getType() != ProductEntity.ProductType.ITEM) return orderInfo;
+                if (product.getType() != ProductEntity.ProductType.ITEM) return orderInfo;
                 DeliveryProvider provider = module.config.deliveryProviders.get(product.getSysDeliveryProvider());
-                if(provider == null) return orderInfo;
-                if(checkDeliveryUser && !provider.isDeliveryUser(entity, deliveryUser)) {
+                if (provider == null) return orderInfo;
+                if (checkDeliveryUser && !provider.isDeliveryUser(entity, deliveryUser)) {
                     orderInfo.cantDelivery = true;
                 }
-                if(isAdmin)
+                if (isAdmin)
                     orderInfo.systemInfo = provider.fetchSystemItemInfo(entity);
                 orderInfo.userUsername = user.getUsername();
                 orderInfo.userUUID = user.getUuid();
@@ -85,6 +83,6 @@ public class FetchOrdersResponse extends AbstractUserResponse {
 
     @Override
     public boolean checkPermissionForNonSelf(Client client) {
-        return client.permissions != null && ( client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN) || client.permissions.isPermission(ClientPermissions.PermissionConsts.MANAGEMENT) );
+        return client.permissions != null && (client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN) || client.permissions.isPermission(ClientPermissions.PermissionConsts.MANAGEMENT));
     }
 }

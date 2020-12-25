@@ -1,6 +1,5 @@
 package pro.gravit.launchermodules.simplecabinet.response;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import pro.gravit.launcher.event.request.ChangeUsernameRequestEvent;
 import pro.gravit.launcher.events.request.ExitRequestEvent;
@@ -9,20 +8,18 @@ import pro.gravit.launchermodules.simplecabinet.event.UserChangedUsernameEvent;
 import pro.gravit.launchermodules.simplecabinet.model.AuditEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
-import pro.gravit.launchserver.socket.handlers.WebSocketFrameHandler;
 import pro.gravit.launchserver.socket.response.auth.ExitResponse;
 
 public class ChangeUsernameResponse extends AbstractUserResponse {
     public String newUsername;
+
     @Override
     public void executeByUser(ChannelHandlerContext channelHandlerContext, User user, boolean self, Client client) {
-        if(self)
-        {
+        if (self) {
             sendError("Change username for yourself not allow");
             return;
         }
-        if(server.config.dao.userDAO.findByUsername(newUsername) != null)
-        {
+        if (server.config.dao.userDAO.findByUsername(newUsername) != null) {
             sendError("Username busy");
             return;
         }

@@ -59,7 +59,7 @@ public class SimpleCabinetMailSender {
             message.setSubject(title);
             message.setContent(content, "text/html; charset=UTF-8");
             sendEmail(message);
-        }  catch (MessagingException e) {
+        } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
     }

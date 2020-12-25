@@ -9,7 +9,7 @@ public class HardwareIdLogEntity {
     @GeneratedValue
     private long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="hwid_id")
+    @JoinColumn(name = "hwid_id")
     private HardwareId hardwareId;
     private byte[] newPublicKey;
 

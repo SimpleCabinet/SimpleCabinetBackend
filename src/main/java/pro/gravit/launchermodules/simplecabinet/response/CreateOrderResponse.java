@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class CreateOrderResponse extends SimpleResponse {
     public long productId;
     public int quantity;
+
     @Override
     public String getType() {
         return "lkCreateOrder";
@@ -23,17 +24,15 @@ public class CreateOrderResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext channelHandlerContext, Client client) throws Exception {
-        if(productId <= 0 || quantity <= 0) {
+        if (productId <= 0 || quantity <= 0) {
             sendError("Invalid request");
             return;
         }
-        if(!client.isAuth || client.username == null)
-        {
+        if (!client.isAuth || client.username == null) {
             sendError("Permissions denied");
             return;
         }
-        if(client.daoObject == null)
-        {
+        if (client.daoObject == null) {
             sendError("Your account not connected to lk");
             return;
         }
@@ -41,33 +40,29 @@ public class CreateOrderResponse extends SimpleResponse {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         User user = (User) client.daoObject;
         ProductEntity productEntity = dao.productDAO.findById(productId);
-        if(productEntity == null)
-        {
+        if (productEntity == null) {
             sendError("Product not found");
             return;
         }
         double totalSum = productEntity.getPrice() * quantity;
-        if(totalSum < 0)
-        {
+        if (totalSum < 0) {
             sendError("Sum invalid");
             return;
         }
-        if(totalSum > user.getDonateMoney())
-        {
+        if (totalSum > user.getDonateMoney()) {
             sendError("Insufficient funds in your account");
             return;
         }
         //Limits
-        if(productEntity.getCount() == 0) {
+        if (productEntity.getCount() == 0) {
             sendError("Product is no longer in stock");
             return;
         }
-        if(!productEntity.isVisible()) {
+        if (!productEntity.isVisible()) {
             sendError("Product is not available for order");
             return;
         }
-        if(productEntity.getEndDate() != null && productEntity.getEndDate().isBefore(LocalDateTime.now()))
-        {
+        if (productEntity.getEndDate() != null && productEntity.getEndDate().isBefore(LocalDateTime.now())) {
             sendError("Product is not available for order");
             return;
         }
@@ -78,7 +73,7 @@ public class CreateOrderResponse extends SimpleResponse {
         orderEntity.setUser(user);
         orderEntity.setQuantity(quantity);
         orderEntity.setSum(totalSum);
-        orderEntity.setSysPart(quantity*productEntity.getSysQuantity());
+        orderEntity.setSysPart(quantity * productEntity.getSysQuantity());
         dao.orderDAO.save(orderEntity);
         server.modulesManager.invokeEvent(new CreatedOrderEvent(orderEntity));
         module.workers.submit(() -> {

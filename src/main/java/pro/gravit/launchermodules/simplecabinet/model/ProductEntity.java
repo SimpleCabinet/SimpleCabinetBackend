@@ -10,6 +10,32 @@ public class ProductEntity {
     @Id
     @GeneratedValue
     private long id;
+    private ProductType type;
+    private String name;
+    private String description;
+    private double price;
+    //Limitations
+    private long count;
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+    @Column(name = "allow_stack")
+    private boolean allowStack;
+    private boolean visible;
+    @Column(name = "picture_url")
+    private String pictureUrl;
+    //Sys
+    @Column(name = "sys_id")
+    private String sysId;
+    @Column(name = "sys_quantity")
+    private int sysQuantity;
+    @Column(name = "sys_extra")
+    private String sysExtra;
+    @Column(name = "sys_nbt")
+    private String sysNbt;
+    @Column(name = "sys_delivery_provider")
+    private String sysDeliveryProvider;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductEnchantEntity> enchants;
 
     public long getId() {
         return id;
@@ -134,35 +160,8 @@ public class ProductEntity {
     public void setSysDeliveryProvider(String sysDeliveryProvider) {
         this.sysDeliveryProvider = sysDeliveryProvider;
     }
-
     public enum ProductType {
         GROUP, ITEM, SPECIAL
     }
-    private ProductType type;
-    private String name;
-    private String description;
-    private double price;
-    //Limitations
-    private long count;
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
-    @Column(name = "allow_stack")
-    private boolean allowStack;
-    private boolean visible;
-    @Column(name = "picture_url")
-    private String pictureUrl;
-    //Sys
-    @Column(name = "sys_id")
-    private String sysId;
-    @Column(name = "sys_quantity")
-    private int sysQuantity;
-    @Column(name = "sys_extra")
-    private String sysExtra;
-    @Column(name = "sys_nbt")
-    private String sysNbt;
-    @Column(name = "sys_delivery_provider")
-    private String sysDeliveryProvider;
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductEnchantEntity> enchants;
 
 }

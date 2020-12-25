@@ -10,19 +10,22 @@ public class UserItemDeliveryEvent implements WebSocketEvent {
     public String userUsername;
     public UUID userUuid;
     public int part;
+    public OrderSystemInfo data;
+
+    @Override
+    public String getType() {
+        return "lkUserOrderDelivery";
+    }
+
     public static class OrderSystemInfo {
         public String itemId;
         public String itemExtra;
+        public List<OrderSystemEnchantInfo> enchants;
+        public String itemNbt;
+
         public static class OrderSystemEnchantInfo {
             public String name;
             public int level;
         }
-        public List<OrderSystemEnchantInfo> enchants;
-        public String itemNbt;
-    }
-    public OrderSystemInfo data;
-    @Override
-    public String getType() {
-        return "lkUserOrderDelivery";
     }
 }

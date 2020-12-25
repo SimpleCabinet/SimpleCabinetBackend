@@ -6,6 +6,21 @@ import java.time.LocalDateTime;
 @Entity(name = "Audit")
 @Table(name = "audit_log")
 public class AuditEntity {
+    @Id
+    @GeneratedValue
+    private long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_user_id")
+    private User target;
+    private AuditType type;
+    private LocalDateTime time;
+    private String arg1;
+    private String arg2;
+    private String ip;
+
     public long getId() {
         return id;
     }
@@ -65,23 +80,8 @@ public class AuditEntity {
     public void setIp(String ip) {
         this.ip = ip;
     }
-
     public enum AuditType {
         UNKNOWN, CHANGE_PASSWORD, CHANGE_USERNAME, PASSWORD_RESET, CREATE_PRODUCT, DISABLE_2FA
     }
-    @Id
-    @GeneratedValue
-    private long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="user_id")
-    private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="target_user_id")
-    private User target;
-    private AuditType type;
-    private LocalDateTime time;
-    private String arg1;
-    private String arg2;
-    private String ip;
 
 }

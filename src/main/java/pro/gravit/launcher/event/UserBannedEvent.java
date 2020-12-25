@@ -6,6 +6,7 @@ public class UserBannedEvent implements WebSocketEvent {
     public String username;
     public boolean hardware;
     public String adminUsername;
+
     @Override
     public String getType() {
         return "lkUserBanned";

@@ -3,10 +3,8 @@ package pro.gravit.launchermodules.simplecabinet.commands;
 import pro.gravit.launchermodules.simplecabinet.commands.cabinet.*;
 import pro.gravit.launchserver.LaunchServer;
 import pro.gravit.launchserver.command.Command;
-import pro.gravit.utils.helper.LogHelper;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class CabinetCommand extends Command {
     public CabinetCommand(LaunchServer server) {
@@ -17,7 +15,6 @@ public class CabinetCommand extends Command {
         childCommands.put("check", new CheckCommand(server));
         childCommands.put("helper", new HelperCommand(server));
     }
-
 
 
     @Override

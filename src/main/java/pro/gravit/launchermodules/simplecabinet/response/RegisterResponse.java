@@ -19,6 +19,7 @@ public class RegisterResponse extends SimpleResponse {
     public String email;
     public String password;
     public User.Gender gender;
+
     @Override
     public String getType() {
         return "lkRegister";
@@ -26,27 +27,23 @@ public class RegisterResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext ctx, Client client) throws Exception {
-        if(username == null || password == null || !VerifyHelper.isValidUsername(username) || !User.isCorrectEmail(email))
-        {
+        if (username == null || password == null || !VerifyHelper.isValidUsername(username) || !User.isCorrectEmail(email)) {
             sendError("Incorrect request");
             return;
         }
-        if(password.length() < 4 || password.length() > 32)
-        {
+        if (password.length() < 4 || password.length() > 32) {
             sendError("Password length invalid");
             return;
         }
         AuthHookManager.RegContext context = new AuthHookManager.RegContext(username, password, ip, false);
         try {
             server.authHookManager.registraion.hook(context);
-        } catch (HookException e)
-        {
+        } catch (HookException e) {
             sendError(e.getMessage());
             return;
         }
         SimpleCabinetUserDAO dao = (SimpleCabinetUserDAO) server.config.dao.userDAO;
-        if(dao.findByUsername(username) != null || dao.findByEmail(email) != null)
-        {
+        if (dao.findByUsername(username) != null || dao.findByEmail(email) != null) {
             sendError("User already registered");
             return;
         }

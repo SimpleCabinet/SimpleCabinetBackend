@@ -20,13 +20,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class UploadSkinResponse extends SimpleResponse {
-    public enum SkinType
-    {
-        SKIN,
-        CLOAK
-    }
     public SkinType skinType;
     public byte[] data;
+
     @Override
     public String getType() {
         return "lkUploadSkin";
@@ -34,34 +30,29 @@ public class UploadSkinResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext ctx, Client client) throws Exception {
-        if(!client.isAuth || client.username == null || skinType == null || data == null)
-        {
+        if (!client.isAuth || client.username == null || skinType == null || data == null) {
             sendError("Permissions denied or invalid request");
             return;
         }
-        if(client.daoObject == null)
-        {
+        if (client.daoObject == null) {
             sendError("Your account not connected to lk");
             return;
         }
         SimpleCabinetConfig.SkinSizeConfig sizeConfig = null;
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
-        ((SimpleCabinetUserDAO)server.config.dao.userDAO).fetchGroups((User) client.daoObject);
+        ((SimpleCabinetUserDAO) server.config.dao.userDAO).fetchGroups((User) client.daoObject);
         sizeConfig = module.configurable.getConfig().findSkinSizeConfig((User) client.daoObject, skinType);
-        if(sizeConfig == null)
-        {
+        if (sizeConfig == null) {
             sendError("Permissions denied");
             return;
         }
-        if(data.length > sizeConfig.maxBytes)
-        {
+        if (data.length > sizeConfig.maxBytes) {
             sendError("The file too large");
             return;
         }
         try {
             BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
-            if(image.getHeight() > sizeConfig.maxHeight || image.getWidth() > sizeConfig.maxWidth)
-            {
+            if (image.getHeight() > sizeConfig.maxHeight || image.getWidth() > sizeConfig.maxWidth) {
                 sendError("Image height or width too high");
                 return;
             }
@@ -71,10 +62,14 @@ public class UploadSkinResponse extends SimpleResponse {
             IOHelper.write(targetPath, data);
             server.modulesManager.invokeEvent(new UploadedSkinEvent((User) client.daoObject, skinType, targetPath));
             sendResult(new UploadSkinRequestEvent());
-        } catch (IOException ex)
-        {
+        } catch (IOException ex) {
             sendError("This file not valid image");
         }
 
+    }
+
+    public enum SkinType {
+        SKIN,
+        CLOAK
     }
 }

@@ -5,7 +5,6 @@ import pro.gravit.launcher.ClientPermissions;
 import pro.gravit.launcher.event.request.ChangeOrderStatusRequestEvent;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetDAOProvider;
 import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
-import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.event.OrderStatusChangedEvent;
 import pro.gravit.launchermodules.simplecabinet.model.OrderEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
@@ -17,6 +16,7 @@ public class ChangeOrderStatusResponse extends SimpleResponse {
     public OrderEntity.OrderStatus status;
     public boolean isParted;
     public int part;
+
     @Override
     public String getType() {
         return "lkChangeOrderStatus";
@@ -24,17 +24,15 @@ public class ChangeOrderStatusResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext ctx, Client client) throws Exception {
-        if(orderId <= 0 || status == null) {
+        if (orderId <= 0 || status == null) {
             sendError("Invalid request");
             return;
         }
-        if(!client.isAuth || client.username == null || client.permissions == null || !(client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN) || client.permissions.isPermission(ClientPermissions.PermissionConsts.MANAGEMENT)))
-        {
+        if (!client.isAuth || client.username == null || client.permissions == null || !(client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN) || client.permissions.isPermission(ClientPermissions.PermissionConsts.MANAGEMENT))) {
             sendError("Permissions denied");
             return;
         }
-        if(client.daoObject == null)
-        {
+        if (client.daoObject == null) {
             sendError("Your account not connected to lk");
             return;
         }
@@ -42,11 +40,11 @@ public class ChangeOrderStatusResponse extends SimpleResponse {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         User user = (User) client.daoObject;
         OrderEntity entity = dao.orderDAO.findById(orderId);
-        if(entity == null) {
+        if (entity == null) {
             sendError("Order not found");
             return;
         }
-        if(isParted) {
+        if (isParted) {
             entity.setSysPart(part);
         }
         entity.setStatus(status);

@@ -3,9 +3,6 @@ package pro.gravit.launchermodules.simplecabinet.dao;
 import org.hibernate.*;
 import pro.gravit.launchermodules.simplecabinet.model.PaymentId;
 import pro.gravit.launchermodules.simplecabinet.model.User;
-import pro.gravit.launchermodules.simplecabinet.model.UserGroup;
-
-import java.util.List;
 
 public class SimpleCabinetPaymentDAO {
     private transient final SessionFactory factory;
@@ -20,8 +17,7 @@ public class SimpleCabinetPaymentDAO {
         }
     }
 
-    public User fetchUser(PaymentId paymentId)
-    {
+    public User fetchUser(PaymentId paymentId) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             session.lock(paymentId, LockMode.NONE);

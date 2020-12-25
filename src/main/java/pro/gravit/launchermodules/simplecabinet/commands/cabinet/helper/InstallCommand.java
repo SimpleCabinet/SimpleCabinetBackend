@@ -26,8 +26,7 @@ public class InstallCommand extends Command {
         return "interactive install script";
     }
 
-    public SimpleCabinetDAOProvider configureDatabase() throws Exception
-    {
+    public SimpleCabinetDAOProvider configureDatabase() throws Exception {
         LogHelper.info("Aluriel: Configure database");
         System.out.print("Print your database engine(mysql/postgresql): ");
         String dbType = server.commandHandler.readLine();
@@ -35,8 +34,7 @@ public class InstallCommand extends Command {
         String jdbcUrlName;
         boolean stringUUID;
         String dialect = null;
-        switch (dbType.toLowerCase())
-        {
+        switch (dbType.toLowerCase()) {
             case "mysql": {
                 driverName = "com.mysql.cj.jdbc.Driver";
                 jdbcUrlName = "mysql";
@@ -45,11 +43,9 @@ public class InstallCommand extends Command {
                 LogHelper.info("Aluriel: MariaDB 10.3 or higher is recommended");
                 System.out.print("Are you using MariaDB 10.3 or higher?(Y/N) ");
                 String reply = server.commandHandler.readLine();
-                if(reply.toLowerCase().equals("y"))
-                {
+                if (reply.equalsIgnoreCase("y")) {
                     dialect = "org.hibernate.dialect.MariaDB103Dialect";
-                }
-                else {
+                } else {
                     System.out.print("Press your dialect(MariaDB103Dialect, MySQL8Dialect or other): ");
                     dialect = "org.hibernate.dialect.".concat(server.commandHandler.readLine());
                     Class.forName(dialect);
@@ -97,60 +93,52 @@ public class InstallCommand extends Command {
     public void invoke(String... args) throws Exception {
         LogHelper.subInfo("Aluriel: Hi, I'm a bot girl from the GravitLauncher discord server");
         LogHelper.subInfo("Aluriel: I will help you setup SimpleCabinet");
-        if(!(server.config.dao instanceof SimpleCabinetDAOProvider))
-        {
+        if (!(server.config.dao instanceof SimpleCabinetDAOProvider)) {
             SimpleCabinetDAOProvider daoProvider = configureDatabase();
             System.out.print("Aluriel: Do you want to re-create tables?(ALL DATA WILL BE DELETED)(Y/N): ");
             String reply = server.commandHandler.readLine();
-            if(reply.toLowerCase().equals("y"))
-            {
+            if (reply.equalsIgnoreCase("y")) {
                 System.getProperties().setProperty("hibernate.hbm2ddl.auto", "create");
                 LogHelper.info("Aluriel: Okay, you want to re-create tables");
-            }
-            else {
+            } else {
                 System.getProperties().setProperty("hibernate.hbm2ddl.auto", "update");
                 LogHelper.info("Aluriel: Okay, if possible, the data will be saved");
             }
             daoProvider.init(server);
             LogHelper.info("Wait 2 seconds...");
             Thread.sleep(2000);
-            if(daoProvider.isOpen()) LogHelper.info("Successful initialization!");
+            if (daoProvider.isOpen()) LogHelper.info("Successful initialization!");
             else {
                 LogHelper.error("Failed initialization (!)");
                 daoProvider.close();
                 return;
             }
-            if(server.config.dao instanceof AutoCloseable) ((AutoCloseable) server.config.dao).close();
+            if (server.config.dao instanceof AutoCloseable) ((AutoCloseable) server.config.dao).close();
             server.unregisterObject("dao", server.config.dao);
             server.config.dao = daoProvider;
             server.registerObject("dao", server.config.dao);
         }
-        if(!(server.config.protectHandler instanceof AdvancedProtectHandler) || !((AdvancedProtectHandler) server.config.protectHandler).enableHardwareFeature)
-        {
+        if (!(server.config.protectHandler instanceof AdvancedProtectHandler) || !((AdvancedProtectHandler) server.config.protectHandler).enableHardwareFeature) {
             LogHelper.warning("Aluriel: HWIDProvider not configured. Skip");
-        }
-        else if(!(((AdvancedProtectHandler) server.config.protectHandler).provider instanceof CabinetHWIDProvider))
-        {
+        } else if (!(((AdvancedProtectHandler) server.config.protectHandler).provider instanceof CabinetHWIDProvider)) {
             AdvancedProtectHandler protectHandler = ((AdvancedProtectHandler) server.config.protectHandler);
-            if(protectHandler.provider != null) protectHandler.provider.close();
+            if (protectHandler.provider != null) protectHandler.provider.close();
             CabinetHWIDProvider hwidProvider = new CabinetHWIDProvider();
             hwidProvider.criticalCompareLevel = 1.0;
             protectHandler.provider = hwidProvider;
         }
         AuthProviderPair pair = server.config.getAuthProviderPair("std");
-        if(pair == null)
+        if (pair == null)
             pair = server.config.getAuthProviderPair();
-        if(pair == null) {
+        if (pair == null) {
             LogHelper.error("Aluriel: Not found correct auth id. Critical error");
             return;
         }
         LogHelper.info("Aluriel: Selected auth id %s", pair.name);
-        if(!(pair.handler instanceof HibernateAuthHandler))
-        {
+        if (!(pair.handler instanceof HibernateAuthHandler)) {
             pair.handler = new HibernateAuthHandler();
         }
-        if(!(pair.provider instanceof CabinetAuthProvider))
-        {
+        if (!(pair.provider instanceof CabinetAuthProvider)) {
             pair.provider = new CabinetAuthProvider();
         }
         LogHelper.info("Alurial: Save LaunchServer config");

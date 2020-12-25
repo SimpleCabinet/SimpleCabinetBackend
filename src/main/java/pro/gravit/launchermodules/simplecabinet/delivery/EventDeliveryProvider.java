@@ -22,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class EventDeliveryProvider extends DeliveryProvider {
-    private transient LaunchServer server;
-    private transient SimpleCabinetModule module;
     public UUID serverUUID;
     public boolean multiserver;
     public boolean noAutoDelivery;
     public List<UUID> list;
+    private transient LaunchServer server;
+    private transient SimpleCabinetModule module;
 
     @Override
     public void init(LaunchServer server, SimpleCabinetModule module) {
@@ -40,7 +40,7 @@ public class EventDeliveryProvider extends DeliveryProvider {
         SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
         ProductEntity product = entity.getProduct();
         User user = entity.getUser();
-        if(product.getType() != ProductEntity.ProductType.ITEM) {
+        if (product.getType() != ProductEntity.ProductType.ITEM) {
             LogHelper.warning("EventDeliveryProvider not support type %s (order %d). Canceled", entity.getProduct().getType().toString(), entity.getId());
             module.orderService.failOrder(entity);
             return;
@@ -51,16 +51,14 @@ public class EventDeliveryProvider extends DeliveryProvider {
         event.userUuid = user.getUuid();
         event.part = entity.getSysPart();
         event.data = fetchSystemItemInfo(entity);
-        if(noAutoDelivery) {
+        if (noAutoDelivery) {
             entity.setStatus(OrderEntity.OrderStatus.DELIVERY);
             dao.orderDAO.update(entity);
             module.orderService.updatedOrderStatus(entity.getId(), OrderEntity.OrderStatus.DELIVERY);
             module.orderService.notifyUser(entity);
-        }
-        else if(!multiserver) {
+        } else if (!multiserver) {
             schDeliveryToOneServerLoop(dao.orderDAO, entity, serverUUID, event);
-        }
-        else {
+        } else {
             schDeliveryToMultiServerLoop(dao.orderDAO, entity, list, event);
         }
     }
@@ -73,15 +71,15 @@ public class EventDeliveryProvider extends DeliveryProvider {
         AtomicInteger count = new AtomicInteger(0);
 
         ScheduledFuture<?> future = module.scheduler.scheduleAtFixedRate(() -> {
-                deliveryToOneServer(uuid, event);
-                int current = count.incrementAndGet();
-                if(current > 5) {
-                    entity.setStatus(OrderEntity.OrderStatus.DELIVERY);
-                    dao.update(entity);
-                    module.orderService.updatedOrderStatus(entity.getId(), OrderEntity.OrderStatus.DELIVERY);
-                    module.orderService.notifyUser(entity);
-                }
-            }, 0, 5, TimeUnit.SECONDS);
+            deliveryToOneServer(uuid, event);
+            int current = count.incrementAndGet();
+            if (current > 5) {
+                entity.setStatus(OrderEntity.OrderStatus.DELIVERY);
+                dao.update(entity);
+                module.orderService.updatedOrderStatus(entity.getId(), OrderEntity.OrderStatus.DELIVERY);
+                module.orderService.notifyUser(entity);
+            }
+        }, 0, 5, TimeUnit.SECONDS);
         module.orderService.addScheduledFuture(entity.getId(), future);
     }
 
@@ -89,7 +87,7 @@ public class EventDeliveryProvider extends DeliveryProvider {
         Queue<UUID> queue = new ConcurrentLinkedQueue<>(uuids);
         Runnable runnable = () -> {
             UUID uuid = queue.poll();
-            if(uuid == null) {
+            if (uuid == null) {
                 entity.setStatus(OrderEntity.OrderStatus.DELIVERY);
                 dao.update(entity);
                 module.orderService.updatedOrderStatus(entity.getId(), OrderEntity.OrderStatus.DELIVERY);
@@ -103,10 +101,9 @@ public class EventDeliveryProvider extends DeliveryProvider {
 
     @Override
     public boolean isDeliveryUser(OrderEntity entity, User user) {
-        if(multiserver) {
+        if (multiserver) {
             return list.contains(user.getUuid());
-        }
-        else {
+        } else {
             return user.getUuid().equals(serverUUID);
         }
     }

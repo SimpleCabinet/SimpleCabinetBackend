@@ -31,8 +31,7 @@ public class AddServerCommand extends Command {
         SimpleCabinetUserDAO dao = (SimpleCabinetUserDAO) server.config.dao.userDAO;
         User user = new User();
         String username = args[0];
-        if(!username.endsWith("Bot") && !username.endsWith("bot"))
-        {
+        if (!username.endsWith("Bot") && !username.endsWith("bot")) {
             username = username.concat("Bot");
         }
         user.setUsername(username);

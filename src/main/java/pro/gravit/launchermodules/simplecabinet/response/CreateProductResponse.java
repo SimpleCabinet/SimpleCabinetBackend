@@ -10,7 +10,6 @@ import pro.gravit.launchermodules.simplecabinet.model.ProductEntity;
 import pro.gravit.launchermodules.simplecabinet.model.User;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
-import pro.gravit.utils.helper.LogHelper;
 
 import java.time.LocalDateTime;
 
@@ -38,17 +37,15 @@ public class CreateProductResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext channelHandlerContext, Client client) throws Exception {
-        if(productType == null || name == null || price < 0 || count == 0) {
+        if (productType == null || name == null || price < 0 || count == 0) {
             sendError("Invalid request");
             return;
         }
-        if(!client.isAuth || client.username == null || client.permissions == null || !client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN))
-        {
+        if (!client.isAuth || client.username == null || client.permissions == null || !client.permissions.isPermission(ClientPermissions.PermissionConsts.ADMIN)) {
             sendError("Permissions denied");
             return;
         }
-        if(client.daoObject == null)
-        {
+        if (client.daoObject == null) {
             sendError("Your account not connected to lk");
             return;
         }
