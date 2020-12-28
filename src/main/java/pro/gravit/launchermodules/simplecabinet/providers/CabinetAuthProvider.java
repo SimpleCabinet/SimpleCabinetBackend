@@ -50,36 +50,42 @@ public class CabinetAuthProvider extends AuthProvider {
         if (user.getPermissions().isFlag(ClientPermissions.FlagConsts.BANNED)) {
             throw new AuthException("User banned");
         }
+        String firstPassword = null;
+        String totpPassword = null;
+        if(password instanceof AuthPlainPassword) {
+            firstPassword = ((AuthPlainPassword) password).password;
+        }
+        else if(password instanceof Auth2FAPassword) {
+            if (((Auth2FAPassword) password).firstPassword instanceof AuthECPassword) {
+                firstPassword = IOHelper.decode(SecurityHelper.decrypt(server.runtime.passwordEncryptKey
+                        , ((AuthECPassword) ((Auth2FAPassword) password).firstPassword).password));
+            }
+            else if(((Auth2FAPassword) password).firstPassword instanceof AuthPlainPassword) {
+                firstPassword = ((AuthPlainPassword) ((Auth2FAPassword) password).firstPassword).password;
+            }
+            if(((Auth2FAPassword) password).secondPassword instanceof AuthTOTPPassword) {
+                totpPassword = ((AuthTOTPPassword) ((Auth2FAPassword) password).secondPassword).totp;
+            }
+        }
+        if(firstPassword == null) {
+            throw new AuthException("Password type wrong");
+        }
+        if (!user.verifyPassword(firstPassword)) {
+            throw new AuthException("User or password incorrect");
+        }
         byte[] keyBytes = user.getTotpSecretKey();
-        if (keyBytes != null) {
-            if (password instanceof Auth2FAPassword && ((Auth2FAPassword) password).firstPassword instanceof AuthECPassword) {
-                ((Auth2FAPassword) password).firstPassword = new AuthPlainPassword(IOHelper.decode(SecurityHelper.decrypt(server.runtime.passwordEncryptKey
-                        , ((AuthECPassword) ((Auth2FAPassword) password).firstPassword).password)));
-            }
-            if (!(password instanceof Auth2FAPassword) || !(((Auth2FAPassword) password).secondPassword instanceof AuthTOTPPassword) || !(((Auth2FAPassword) password).firstPassword instanceof AuthPlainPassword)) {
+        if(keyBytes != null) {
+            if (totpPassword == null) {
                 throw new AuthException(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE);
-            }
-            Auth2FAPassword auth2FAPassword = (Auth2FAPassword) password;
-            AuthPlainPassword firstPassword = (AuthPlainPassword) auth2FAPassword.firstPassword;
-            AuthTOTPPassword secondPassword = (AuthTOTPPassword) auth2FAPassword.secondPassword;
-            if (!user.verifyPassword(firstPassword.password)) {
-                throw new AuthException("User or password incorrect");
             }
             int result = generateTotp(keyBytes, Instant.now());
             try {
-                int totpPassword = Integer.parseInt(secondPassword.totp);
-                if (totpPassword != result) {
+                int totp = Integer.parseInt(totpPassword);
+                if (totp != result) {
                     throw new AuthException("TOTP password wrong");
                 }
             } catch (NumberFormatException e) {
                 throw new AuthException("TOTP password not number");
-            }
-        } else {
-            if (!(password instanceof AuthPlainPassword)) {
-                throw new AuthException("Password type not supported");
-            }
-            if (!user.verifyPassword(((AuthPlainPassword) password).password)) {
-                throw new AuthException("User or password incorrect");
             }
         }
         return new AuthProviderDAOResult(user.getUsername(), SecurityHelper.randomStringToken(), user.getPermissions(), user);
