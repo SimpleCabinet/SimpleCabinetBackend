@@ -53,8 +53,9 @@ public class UploadSkinResponse extends SimpleResponse {
         if(remove) {
             if(Files.exists(targetPath)) {
                 Files.delete(targetPath);
-                sendResult(new UploadSkinRequestEvent());
             }
+            sendResult(new UploadSkinRequestEvent());
+            return;
         }
         if (data.length > sizeConfig.maxBytes) {
             sendError("The file too large");
