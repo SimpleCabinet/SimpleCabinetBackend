@@ -7,6 +7,7 @@ import pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule;
 import pro.gravit.launchermodules.simplecabinet.dao.SimpleCabinetUserDAO;
 import pro.gravit.launchermodules.simplecabinet.event.UploadedSkinEvent;
 import pro.gravit.launchermodules.simplecabinet.model.User;
+import pro.gravit.launchermodules.simplecabinet.providers.CabinetTextureProvider;
 import pro.gravit.launchserver.socket.Client;
 import pro.gravit.launchserver.socket.response.SimpleResponse;
 import pro.gravit.utils.helper.IOHelper;
@@ -16,12 +17,14 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class UploadSkinResponse extends SimpleResponse {
     public SkinType skinType;
     public byte[] data;
+    public boolean remove;
 
     @Override
     public String getType() {
@@ -30,7 +33,7 @@ public class UploadSkinResponse extends SimpleResponse {
 
     @Override
     public void execute(ChannelHandlerContext ctx, Client client) throws Exception {
-        if (!client.isAuth || client.username == null || skinType == null || data == null) {
+        if (!client.isAuth || client.username == null || skinType == null || (data == null && !remove)) {
             sendError("Permissions denied or invalid request");
             return;
         }
@@ -46,6 +49,13 @@ public class UploadSkinResponse extends SimpleResponse {
             sendError("Permissions denied");
             return;
         }
+        Path targetPath = Paths.get(CabinetTextureProvider.getTextureURL(sizeConfig.url, client.uuid, client.username, ""));
+        if(remove) {
+            if(Files.exists(targetPath)) {
+                Files.delete(targetPath);
+                sendResult(new UploadSkinRequestEvent());
+            }
+        }
         if (data.length > sizeConfig.maxBytes) {
             sendError("The file too large");
             return;
@@ -56,7 +66,6 @@ public class UploadSkinResponse extends SimpleResponse {
                 sendError("Image height or width too high");
                 return;
             }
-            Path targetPath = Paths.get(String.format(sizeConfig.url, sizeConfig.useUuidInUrl ? client.daoObject.getUuid() : client.username));
             LogHelper.debug("User %s upload skin. Write %d bytes to %s", client.username, data.length, targetPath.toAbsolutePath().toString());
             IOHelper.createParentDirs(targetPath);
             IOHelper.write(targetPath, data);
