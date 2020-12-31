@@ -41,6 +41,7 @@ public class CabinetDeliveryProvider extends DeliveryProvider {
             return;
         }
         dao.userDAO.update(user);
+        module.syncService.updateUser(user, false, true);
         module.orderService.completeOrder(entity);
     }
 }

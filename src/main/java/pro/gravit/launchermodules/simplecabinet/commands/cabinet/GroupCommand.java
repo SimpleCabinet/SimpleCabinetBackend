@@ -61,7 +61,10 @@ public class GroupCommand extends Command {
                 userGroup.setEndDate(endTime);
                 userGroup.setStartDate(date);
                 userGroup.setGroupName(group.name);
-                ((SimpleCabinetUserDAO) server.config.dao.userDAO).save(userGroup);
+                //((SimpleCabinetUserDAO) server.config.dao.userDAO).save(userGroup);
+                user.getGroups().add(userGroup);
+                server.config.dao.userDAO.update(user);
+                module.syncService.updateUser(user, false, true);
                 LogHelper.info("Successful added group %s to %s (end time %s)", group.name, user.getUsername(), endTime == null ? "no" : endTime.toString());
             }
         } else if (args[0].equals("remove")) {
@@ -77,6 +80,9 @@ public class GroupCommand extends Command {
                 return;
             }
             ((SimpleCabinetUserDAO) server.config.dao.userDAO).delete(entity);
+            user.getGroups().remove(entity);
+            server.config.dao.userDAO.update(user);
+            module.syncService.updateUser(user, false, true);
             LogHelper.info("Successful removed group %s from %s", group.name, user.getUsername());
         } else {
             LogHelper.error("Action %s not found", args[0]);

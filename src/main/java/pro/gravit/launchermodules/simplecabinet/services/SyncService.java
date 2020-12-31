@@ -21,6 +21,8 @@ public class SyncService {
     }
 
     public void updateUser(User user, boolean isUserInfo, boolean isExtInfo) {
+        SimpleCabinetUserDAO userDAO = (SimpleCabinetUserDAO) server.config.dao.userDAO;
+        userDAO.fetchGroups(user);
         String username = user.getUsername();
         ExtendedInfoRequestEvent extendedInfoRequestEvent;
         CurrentUserRequestEvent currentUserRequestEvent;

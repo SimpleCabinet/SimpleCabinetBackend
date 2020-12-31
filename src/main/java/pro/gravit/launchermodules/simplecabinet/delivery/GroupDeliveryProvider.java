@@ -40,7 +40,10 @@ public class GroupDeliveryProvider extends DeliveryProvider {
                 group.setStartDate(LocalDateTime.now());
                 group.setUser(user);
                 group.setGroupName(groupName);
+                user.getGroups().add(group);
                 userDAO.save(group);
+                userDAO.save(user);
+                module.syncService.updateUser(user, false, true);
             } else return null;
         } else {
             userDAO.update(group);

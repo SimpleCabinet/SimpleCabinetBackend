@@ -30,7 +30,12 @@ public class CheckCommand extends Command {
         if (!(server.config.dao instanceof SimpleCabinetDAOProvider)) {
             LogHelper.error("[Check] DAO: FAIL");
         } else {
-            LogHelper.info("[Check] DAO: OK");
+            SimpleCabinetDAOProvider dao = (SimpleCabinetDAOProvider) server.config.dao;
+            if(!dao.isOpen() || dao.userDAO == null) {
+                LogHelper.error("[Check] DAO: FAIL");
+            } else {
+                LogHelper.info("[Check] DAO: OK");
+            }
         }
         if (!(server.config.protectHandler instanceof AdvancedProtectHandler) || !((AdvancedProtectHandler) server.config.protectHandler).enableHardwareFeature) {
             LogHelper.warning("[Check] HardwareId: NOT CONFIGURED");
