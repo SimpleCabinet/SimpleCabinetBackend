@@ -250,7 +250,7 @@ itemId - название группы, которую хотите выдава
         "password": "intotheunknown",
         "database": "database"
       },
-    "sql": "INSERT INTO `lp_user_permissions` (`uuid`, `permission`, `value`, `server`, `world`, `expiry`, `contexts`) VALUES (?, ?, ?, ?, ?, ?, ?);",
+    "sql": "INSERT INTO lp_user_permissions (uuid, permission, value, server, world, expiry, contexts) VALUES (?, ?, ?, ?, ?, ?, ?);",
     "type": "luckperms"
     }
 ```
