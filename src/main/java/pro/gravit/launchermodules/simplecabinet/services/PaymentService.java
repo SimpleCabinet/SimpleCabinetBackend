@@ -115,8 +115,8 @@ public class PaymentService {
     }
 
     protected InitPaymentRequestEvent makeInitPaymentUnitPayRequestEvent(PaymentId id, User user, String ip) throws IOException {
-        SimpleCabinetConfig.PaymentRobokassaConfig config = module.config.payments.robokassa;
-        StringBuilder builder = new StringBuilder("https://unitpay.ru/api?method=initPayment");
+        SimpleCabinetConfig.PaymentUnitPayConfig config = module.config.payments.unitPay;
+        StringBuilder builder = new StringBuilder(config.url+"?method=initPayment");
         String paramAccount = String.valueOf(id.getId());
         String paramSum = String.valueOf(id.getSum());
         builder.append(formatParam("paymentType", "card"));
@@ -128,7 +128,7 @@ public class PaymentService {
         builder.append(formatParam("desc", id.getDescription()));
         builder.append(formatParam("ip", ip));
         builder.append(formatParam("test", module.config.payments.unitPay.testMode ? "1" : "0"));
-        if (module.config.payments.unitPay.login != null)
+        if (module.config.payments.unitPay.testMode)
             builder.append(formatParam("login", module.config.payments.unitPay.login));
         builder.append(formatParam("secretKey", module.config.payments.unitPay.secretKey));
         List<KeyValuePair> hashParams = new ArrayList<>();

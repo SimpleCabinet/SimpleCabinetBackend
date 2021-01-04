@@ -35,6 +35,9 @@ public class SimpleCabinetConfig {
         config.payments = new PaymentsConfig();
         config.payments.unitPay = new PaymentUnitPayConfig();
         config.payments.unitPay.secretKey = "yourSecretKey";
+        config.payments.unitPay.resultUrl = "https://yoursite.ru";
+        config.payments.unitPay.login = "emailInTestMode";
+        config.payments.unitPay.url = "https://unitpay.money/api";
         config.payments.robokassa = new PaymentRobokassaConfig();
         config.payments.robokassa.merchantId = "yourMerchantId";
         config.payments.robokassa.password1 = "yourPassword1";
@@ -161,6 +164,7 @@ public class SimpleCabinetConfig {
         public String resultUrl;
         public boolean testMode;
         public String login;
+        public String url = "https://unitpay.ru/api";
     }
 
     public static class PaymentRobokassaConfig {

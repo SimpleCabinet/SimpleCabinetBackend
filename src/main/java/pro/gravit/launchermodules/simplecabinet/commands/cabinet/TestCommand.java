@@ -29,7 +29,7 @@ public class TestCommand extends Command {
     @Override
     public void invoke(String... args) throws Exception {
         SimpleCabinetModule module = server.modulesManager.getModule(SimpleCabinetModule.class);
-        StringBuilder builder = new StringBuilder("https://unitpay.ru/api?method=initPayment");
+        StringBuilder builder = new StringBuilder(module.config.payments.unitPay.url+"?method=initPayment");
         builder.append(formatParam("paymentType", args[0]));
         builder.append(formatParam("account", args[1]));
         builder.append(formatParam("sum", args[2]));
@@ -38,7 +38,8 @@ public class TestCommand extends Command {
         builder.append(formatParam("desc", args[4]));
         builder.append(formatParam("ip", "8.8.8.8"));
         builder.append(formatParam("test", module.config.payments.unitPay.testMode ? "1" : "0"));
-        builder.append(formatParam("login", module.config.payments.unitPay.login));
+        if(module.config.payments.unitPay.testMode)
+            builder.append(formatParam("login", module.config.payments.unitPay.login));
         builder.append(formatParam("secretKey", module.config.payments.unitPay.secretKey));
         String signatureString = String.format("%s{up}%s{up}%s{up}%s", args[1], args[4], args[2], module.config.payments.unitPay.secretKey);
         String hex = SecurityHelper.toHex(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.SHA256, signatureString));
