@@ -14,6 +14,7 @@ public class CabinetCommand extends Command {
         childCommands.put("test", new TestCommand(server));
         childCommands.put("check", new CheckCommand(server));
         childCommands.put("helper", new HelperCommand(server));
+        childCommands.put("money", new MoneyCommand(server));
     }
 
 
