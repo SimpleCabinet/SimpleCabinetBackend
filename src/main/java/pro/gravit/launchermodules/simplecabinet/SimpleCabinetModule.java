@@ -60,7 +60,7 @@ public class SimpleCabinetModule extends LauncherModule {
     private LaunchServer server;
 
     public SimpleCabinetModule() {
-        super(new LauncherModuleInfo("SimpleCabinet", new Version(1, 0, 0, 1, Version.Type.STABLE), new String[]{"LaunchServerCore"}));
+        super(new LauncherModuleInfo("SimpleCabinet", new Version(1, 0, 1, 1, Version.Type.STABLE), new String[]{"LaunchServerCore"}));
     }
 
     @Override

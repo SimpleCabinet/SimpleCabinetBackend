@@ -5,7 +5,7 @@ plugins {
 sourceCompatibility = '11'
 targetCompatibility = '11'
 group 'org.example'
-version '1.0.0'
+version '1.0.1'
 def mainClassName = "pro.gravit.launchermodules.simplecabinet.SimpleCabinetModule"
 
 repositories {
