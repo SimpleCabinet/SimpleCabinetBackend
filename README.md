@@ -74,7 +74,7 @@ org.hibernate.dialect.MariaDBDialect     | MariaDB 5.1 и 5.2
 данных**
 create-drop | Создаст таблицы **с уничтожением данных** и **удалит их при закрытии лаунчсервера**
 none | Ничего не делать (по умолчанию)
-
+# Что делать если вы неправильно указали диалект
 - Остановите лаунчсервер и в `LaunchServer.json` измените диалект на правильный
 
 - Запустите лаунчсервер с опцией `-Dhibernate.hbm2ddl.auto=create` для пересоздания таблиц
@@ -244,8 +244,8 @@ itemId - название группы, которую хотите выдава
 ```
 "luckperms": {
       "postgreSQLSource": {
-        "address": "localhost",
-        "port": 5432,
+        "addresses": [ "localhost" ],
+        "ports": [ 5432 ],
         "username": "simplecabinet",
         "password": "intotheunknown",
         "database": "database"
