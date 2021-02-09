@@ -18,9 +18,9 @@ jar {
     manifest.attributes("Module-Main-Class": mainClassName)
 }
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.1.9-SNAPSHOT"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.1.9-SNAPSHOT"
-    implementation "pro.gravit.launcher:launchserver-api:5.1.9-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-core:5.1.10-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.1.10-SNAPSHOT"
+    implementation "pro.gravit.launcher:launchserver-api:5.1.10-SNAPSHOT"
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'com.eatthepath:java-otp:0.2.0'

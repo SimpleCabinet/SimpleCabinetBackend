@@ -41,8 +41,7 @@ public class GroupDeliveryProvider extends DeliveryProvider {
                 group.setUser(user);
                 group.setGroupName(groupName);
                 user.getGroups().add(group);
-                userDAO.save(group);
-                userDAO.save(user);
+                userDAO.update(user);
                 module.syncService.updateUser(user, false, true);
             } else return null;
         } else {
