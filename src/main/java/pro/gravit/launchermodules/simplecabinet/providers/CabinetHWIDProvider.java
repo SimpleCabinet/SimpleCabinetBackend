@@ -41,6 +41,11 @@ public class CabinetHWIDProvider extends HWIDProvider implements Reconfigurable 
         if (id != null && id.isBanned()) {
             throw new SecurityException("Your HWID banned");
         }
+        if (client.daoObject != null) {
+            User user = (User) client.daoObject;
+            user.setHardwareId(id);
+            userDAO.update(user);
+        }
         return id == null ? null : id.toHardwareInfo();
     }
 
